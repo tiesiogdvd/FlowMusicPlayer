@@ -1,9 +1,14 @@
 package eu.tutorial.androidapplicationfilesystem;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
@@ -26,6 +31,48 @@ public class MainActivity extends AppCompatActivity {
     NeumorphImageButton btnFavorite;
     NeumorphImageButton btnMusicImage;
     MediaPlayer mp;
+    String receivedPath;
+
+
+    ActivityResultLauncher <Intent> activityLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                public void onActivityResult(ActivityResult result) {
+                    if(result.getResultCode()==1){
+                        Intent intent = result.getData();
+                        if(intent!=null){
+                            String data = intent.getStringExtra("result");
+                            receivedPath = data;
+                            System.out.println(data);
+                            play(data);
+                            Toast.makeText(MainActivity.this, data, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+            }
+    );
+
+    private void play(String path) { //Play music from local storage
+        mp.release();
+        mp = MediaPlayer.create(MainActivity.this, Uri.parse(path));
+        mp.start();
+        btnPlay.setImageResource(R.drawable.ic_action_pause);
+    }
+    private void play(int resid) { //Play music from app resource
+        mp.release();
+        mp = MediaPlayer.create(MainActivity.this, resid);
+        mp.start();
+        btnPlay.setImageResource(R.drawable.ic_action_pause);
+    }
+
+    private void Pause(){
+        mp.pause();
+        btnPlay.setImageResource(R.drawable.ic_action_play);
+    }
+    private void Unpause(){
+        mp.start();
+        btnPlay.setImageResource(R.drawable.ic_action_play);
+    }
 
 
 
@@ -121,7 +168,8 @@ public class MainActivity extends AppCompatActivity {
                     Intent intent = new Intent(MainActivity.this, FileListActivity.class); //Creates an intent from the current Activity to FileListActivity's class
                     String path = Environment.getExternalStorageDirectory().getPath();
                     intent.putExtra("path", path); //Includes data which FileListActivity will use, in this case it will be given storage path
-                    startActivity(intent);
+                    //startActivity(intent);
+                    activityLauncher.launch(intent);
                 }else{
                     //permission not allowed
                     requestPermission();
@@ -132,9 +180,7 @@ public class MainActivity extends AppCompatActivity {
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mp.release();
-                mp = MediaPlayer.create(MainActivity.this, R.raw.music1);
-                mp.start();
+                play(R.raw.music1);
             }
         });
 
@@ -142,10 +188,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String path = Environment.getExternalStorageDirectory().getPath()+"/MuzikaTest/Complicated.mp3";
-                mp.release();
-                //mp = MediaPlayer.create(MainActivity.this, R.raw.music1);
-                mp = MediaPlayer.create(MainActivity.this, Uri.parse(path));
-                mp.start();
+                play(path);
             }
         });
     }

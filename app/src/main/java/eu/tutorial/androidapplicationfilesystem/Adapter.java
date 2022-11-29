@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,9 +14,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
 
 
 //RecyclerView adapter binds data to ViewHolders. ViewHolder is a container of an item. ViewGroup is a group of these containers.
@@ -25,11 +29,13 @@ public class Adapter extends RecyclerView.Adapter <Adapter.ViewHolder> {
 
     Context context;
     File[] filesAndFolders;
+    ActivityResultLauncher<Intent> activityLauncher;
 
 
-    public Adapter(Context context, File[] filesAndFolders) {
+    public Adapter(Context context, File[] filesAndFolders, ActivityResultLauncher <Intent> activityLauncher){
         this.context = context;
         this.filesAndFolders = filesAndFolders;
+        this.activityLauncher = activityLauncher;
     }
 
 
@@ -89,23 +95,48 @@ public class Adapter extends RecyclerView.Adapter <Adapter.ViewHolder> {
                     Intent intent = new Intent(context, FileListActivity.class); //Creates an intent from the current Activity to another FileListActivity's class
                     String path = selectedFile.getAbsolutePath(); //gets an absolute path of selectedFile
                     intent.putExtra("path", path);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); //it will open the same activity over and over
-                    context.startActivity(intent);
+                    //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); //it will open the same activity over and over
+                    //context.startActivity(intent);
+                    activityLauncher.launch(intent);
 
                 }else {
                     try {
-                        Intent intent = new Intent();
-                        intent.setAction(Intent.ACTION_VIEW);
+                        //opens selected file on click
+
+                        /*Intent intent = new Intent();
+                        //intent.setAction(Intent.ACTION_VIEW);
                         String type = "image/*";
-                        intent.setDataAndType(Uri.parse(selectedFile.getAbsolutePath()), type);
+                        intent.setDataAndType(Uri.parse(selectedFile.getAbsolutePath()),type);
+                        Toast.makeText(context, Uri.parse(selectedFile.getAbsolutePath()).toString(), Toast.LENGTH_SHORT).show();
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         context.startActivity(intent);
-                        //opens selected file on click
+                        //opens selected file on click*/
+
+                        Intent intent = new Intent();
+                        ArrayList <String> audioFileTypes = new ArrayList<>();
+                        Collections.addAll(audioFileTypes,".3gp",".mp4",".m4a",".aac",".ts",".amr",".flac",".mp4",".mid",".midi",".xmf",".mxmf",".rtttl",".rtx",".ota",".mp3",".mkv",".ogg",".wav");
+                        //audioFileTypes.contains(".mp3")
+                        String fileType = selectedFile.getAbsolutePath().substring(selectedFile.getAbsolutePath().lastIndexOf("."));
+                        //System.out.println(audioFileTypes.contains(fileType));
+                        if(!audioFileTypes.contains(fileType)){
+                            throw new Exception ("not an audio file type");
+                        }
+                        //intent.setDataAndType(Uri.parse(selectedFile.getAbsolutePath()),fileType);
+                        //Toast.makeText(context, Uri.parse(selectedFile.getAbsolutePath()).toString(), Toast.LENGTH_SHORT).show();
+                        //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        //context.startActivity(intent);
+                        intent.putExtra("result",selectedFile.getAbsolutePath());
+                        ((FileListActivity)context).setResult(1, intent);
+                        ((FileListActivity)context).finish();  //required to access these functions from the adapter
+
                     } catch(Exception e){
-                        Toast.makeText(context, "Cannot open file", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Cannot open file: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        System.out.println(e.getMessage());
                     }
                 }
             }
         });
     }
+
+
 }

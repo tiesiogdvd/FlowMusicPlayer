@@ -6,12 +6,20 @@
     android:layout_height="match_parent"
     tools:context=".FileListActivity">
 
+
+    <Button
+        android:id="@+id/backButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Back"/>
+
     <TextView
         android:id="@+id/dataPath"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Path "
-        android:textSize="30dp"/>
+        android:textSize="30dp"
+        android:layout_toRightOf="@+id/backButton"/>
 
     <TextView
         android:layout_width="wrap_content"

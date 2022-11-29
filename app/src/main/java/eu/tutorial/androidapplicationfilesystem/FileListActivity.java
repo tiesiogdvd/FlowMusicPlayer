@@ -1,11 +1,20 @@
 package eu.tutorial.androidapplicationfilesystem;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,6 +25,36 @@ import java.util.Arrays;
 
 public class FileListActivity extends AppCompatActivity {
 
+    private static final String TAG = "MainActivity";
+
+    ActivityResultLauncher<Intent> activityLauncher = registerForActivityResult(
+
+
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+
+                public void onActivityResult(ActivityResult result) {
+                    Log.d(TAG, "onActivityResult");
+                    System.out.println("wtf");
+                    if(result.getResultCode()==1){
+                        Intent intent = result.getData();
+                        if(intent!=null){
+                            //Data extracted here
+                            String data = intent.getStringExtra("result");
+                            System.out.println(data);
+                            //enterText.setText(data);
+                            intent.putExtra("result",data);
+                            setResult(1, intent);
+                            finish();
+                        }
+                    }
+
+                }
+            }
+    );
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,6 +64,8 @@ public class FileListActivity extends AppCompatActivity {
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
         TextView noFilesText = findViewById(R.id.noFiles);
         TextView pathText = findViewById(R.id.dataPath);
+        Button button = findViewById(R.id.backButton);
+
 
         //String path = getIntent().getStringExtra("path");  ||  extra data name must exactly match specified in the intent of previous activity
         //File root = new File(path); || specifies the path which in this case is /storage/emulated/0
@@ -47,7 +88,20 @@ public class FileListActivity extends AppCompatActivity {
 
         //filesAndFolders in this case is a list of data objects which need to be bound to ViewHolders.
         //Adapter is the thing used to bind the data to these Views.
-        recyclerView.setAdapter(new Adapter(getApplicationContext(),filesAndFolders));
+        //recyclerView.setAdapter(new Adapter(getApplicationContext(),filesAndFolders,activityLauncher));
+        recyclerView.setAdapter(new Adapter(this,filesAndFolders,activityLauncher));
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent();
+                String a = "TestInput";
+                intent.putExtra("result",a);
+                setResult(2, intent);
+                finish();
+                //SecondActivity.super.onBackPressed();
+            }
+        });
 
     }
 }
