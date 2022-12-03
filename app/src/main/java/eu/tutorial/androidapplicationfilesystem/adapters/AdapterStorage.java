@@ -1,15 +1,10 @@
-package eu.tutorial.androidapplicationfilesystem;
+package eu.tutorial.androidapplicationfilesystem.adapters;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
-import android.os.Environment;
-import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,18 +16,21 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import eu.tutorial.androidapplicationfilesystem.activities.FileListActivity;
+import eu.tutorial.androidapplicationfilesystem.R;
+
 
 //RecyclerView adapter binds data to ViewHolders. ViewHolder is a container of an item. ViewGroup is a group of these containers.
 //Point of a RecyclerView is to not load any data which is outside of view area. It recycles ViewGroups which go out of bounds and reuses them for other data
 //public class adapterClassName extends RecyclerView.Adapter <adapterClassName.ViewHolder>{}
-public class Adapter extends RecyclerView.Adapter <Adapter.ViewHolder> {
+public class AdapterStorage extends RecyclerView.Adapter <AdapterStorage.ViewHolder> {
 
     Context context;
     File[] filesAndFolders;
     ActivityResultLauncher<Intent> activityLauncher;
 
 
-    public Adapter(Context context, File[] filesAndFolders, ActivityResultLauncher <Intent> activityLauncher){
+    public AdapterStorage(Context context, File[] filesAndFolders, ActivityResultLauncher <Intent> activityLauncher){
         this.context = context;
         this.filesAndFolders = filesAndFolders;
         this.activityLauncher = activityLauncher;
@@ -56,9 +54,9 @@ public class Adapter extends RecyclerView.Adapter <Adapter.ViewHolder> {
 
 
     @NonNull
-    public Adapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public AdapterStorage.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         //This is where the layout gets inflated (Giving a look to all rows)
-        View view = LayoutInflater.from(context).inflate(R.layout.recycler_item, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.recycler_item_storage, parent, false);
         return new ViewHolder(view);
     }
 
@@ -74,7 +72,7 @@ public class Adapter extends RecyclerView.Adapter <Adapter.ViewHolder> {
 
 
 
-    public void onBindViewHolder(@NonNull Adapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull AdapterStorage.ViewHolder holder, int position) {
         //Here values get assigned to the views created in the recycler_item layout file
         //It's based on the position of the recycler view
 
