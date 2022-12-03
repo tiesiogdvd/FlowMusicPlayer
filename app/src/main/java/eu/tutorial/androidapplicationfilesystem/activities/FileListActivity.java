@@ -1,4 +1,4 @@
-package eu.tutorial.androidapplicationfilesystem;
+package eu.tutorial.androidapplicationfilesystem.activities;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -9,8 +9,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -18,18 +16,16 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.w3c.dom.Text;
-
 import java.io.File;
-import java.util.Arrays;
+
+import eu.tutorial.androidapplicationfilesystem.R;
+import eu.tutorial.androidapplicationfilesystem.adapters.AdapterStorage;
 
 public class FileListActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
 
     ActivityResultLauncher<Intent> activityLauncher = registerForActivityResult(
-
-
             new ActivityResultContracts.StartActivityForResult(),
             new ActivityResultCallback<ActivityResult>() {
 
@@ -48,12 +44,10 @@ public class FileListActivity extends AppCompatActivity {
                             finish();
                         }
                     }
-
                 }
+
             }
     );
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,16 +60,12 @@ public class FileListActivity extends AppCompatActivity {
         TextView pathText = findViewById(R.id.dataPath);
         Button button = findViewById(R.id.backButton);
 
-
-        //String path = getIntent().getStringExtra("path");  ||  extra data name must exactly match specified in the intent of previous activity
-        //File root = new File(path); || specifies the path which in this case is /storage/emulated/0
         //This path is essentially the starting path a device user can access without root
-        //File [] filesAndFolders = root.listFiles(); || Creates an array of all items in the specified path of root
-        String path = getIntent().getStringExtra("path");
+        String path = getIntent().getStringExtra("path");//  ||  extra data name must exactly match specified in the intent of previous activity
         pathText.setText(path);
-        File root = new File(path);
+        File root = new File(path);  //  || specifies the path which in this case is /storage/emulated/0
         Toast.makeText(this, path, Toast.LENGTH_SHORT).show();
-        File [] filesAndFolders = root.listFiles();
+        File [] filesAndFolders = root.listFiles(); //  || Creates an array of all items in the specified path of root
 
         //checks if there is any files in filesAndFolders File array
         if(filesAndFolders.equals(null) || filesAndFolders.length == 0){
@@ -89,7 +79,7 @@ public class FileListActivity extends AppCompatActivity {
         //filesAndFolders in this case is a list of data objects which need to be bound to ViewHolders.
         //Adapter is the thing used to bind the data to these Views.
         //recyclerView.setAdapter(new Adapter(getApplicationContext(),filesAndFolders,activityLauncher));
-        recyclerView.setAdapter(new Adapter(this,filesAndFolders,activityLauncher));
+        recyclerView.setAdapter(new AdapterStorage(this,filesAndFolders,activityLauncher));
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
