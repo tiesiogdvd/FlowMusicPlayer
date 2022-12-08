@@ -35,7 +35,7 @@ This is an application for my own learning purposes to learn native android java
   Creating fragments to display music items inside playlists, favorites and etc.
   ```
   
-##Planning on:
+## Planning on:
  
   ```
   Implementing notifications, equalizer, bluetooth responses;
