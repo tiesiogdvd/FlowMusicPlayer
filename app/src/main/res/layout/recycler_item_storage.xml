@@ -9,7 +9,8 @@
         android:id="@+id/iconView"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        tools:src="@drawable/ic_folder"/>
+        tools:src="@drawable/ic_folder"
+        android:layout_centerVertical="true"/>
 
     <TextView
         android:id="@+id/fileNameTextView"
