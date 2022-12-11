@@ -1,23 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#efefef"
-    tools:context=".activities.MainActivity">
+    tools:context=".activities.MainActivity"
+    android:backgroundTint="@null">
 
     <soup.neumorphism.NeumorphImageButton
         android:id="@+id/musicImage"
+        app:neumorph_shadowElevation="5dp"
+        app:neumorph_lightSource="leftTop"
         android:layout_width="300dp"
-        android:layout_height="300dp"
+        android:minHeight="300dp"
+        android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginHorizontal="20dp"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="200dp"
         android:backgroundTint="@android:color/holo_blue_dark"
+        android:background="@drawable/round"
         android:padding="25dp"
-        android:src="@drawable/ic_launcher_test_background" />
+        android:src="@drawable/ic_launcher_test_background"
+        android:scaleType="fitXY"
+        android:adjustViewBounds="true"
+
+        app:neumorph_shapeType="pressed"/>
 
 
     <soup.neumorphism.NeumorphImageButton
@@ -29,6 +39,8 @@
         android:layout_centerHorizontal="true"
         android:layout_toStartOf="@id/lastButton"
         android:src="@drawable/ic_action_playlist" />
+
+
 
     <soup.neumorphism.NeumorphImageButton
         android:id="@+id/lastButton"
@@ -50,7 +62,7 @@
         android:layout_centerHorizontal="true"
         android:scaleType="centerInside"
         android:src="@drawable/ic_action_play"
-        app:neumorph_shapeType="flat" />
+        app:neumorph_shapeType="flat"/>
 
 
     <soup.neumorphism.NeumorphImageButton
@@ -82,7 +94,7 @@
         android:layout_above="@+id/musicSongArtist"
         android:layout_marginStart="15dp"
         android:text="Song Name: "
-        android:textSize="15dp"
+        android:textSize="15sp"
 />
 
     <TextView
@@ -94,19 +106,19 @@
         android:layout_marginBottom="10dp"
         android:text="Artist: "/>
 
-    <soup.neumorphism.NeumorphTextView
+    <TextView
         android:id="@+id/musicRemainingText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/musicProgress"
         android:layout_alignParentLeft="true"
         android:layout_marginStart="15dp"
         android:layout_marginEnd="15dp"
         android:layout_marginBottom="0dp"
         android:layout_toLeftOf="@+id/musicTotalText"
-        android:layout_above="@+id/musicProgress"
         android:hint="0:00" />
 
-    <soup.neumorphism.NeumorphTextView
+    <TextView
         android:id="@+id/musicTotalText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -124,7 +136,7 @@
         android:layout_marginBottom="10dp"
         android:outlineAmbientShadowColor="@color/black"
         android:outlineSpotShadowColor="@color/black"
-        app:indicatorColor="@color/black"/>
+        app:indicatorColor="@color/black" />
 
 
     <soup.neumorphism.NeumorphButton
