@@ -65,14 +65,13 @@ public class AdapterStorage extends RecyclerView.Adapter <AdapterStorage.ViewHol
 
     public int getItemCount() {
         return filesAndFolders.length;
-
         //recycler view wants to know the number of items to be displayed in total
     }
 
 
 
 
-    public void onBindViewHolder(@NonNull AdapterStorage.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         //Here values get assigned to the views created in the recycler_item layout file
         //It's based on the position of the recycler view
 
@@ -99,17 +98,7 @@ public class AdapterStorage extends RecyclerView.Adapter <AdapterStorage.ViewHol
 
                 }else {
                     try {
-                        //opens selected file on click
-
-                        /*Intent intent = new Intent();
-                        //intent.setAction(Intent.ACTION_VIEW);
-                        String type = "image/*";
-                        intent.setDataAndType(Uri.parse(selectedFile.getAbsolutePath()),type);
-                        Toast.makeText(context, Uri.parse(selectedFile.getAbsolutePath()).toString(), Toast.LENGTH_SHORT).show();
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        context.startActivity(intent);
                         //opens selected file on click*/
-
                         Intent intent = new Intent();
                         ArrayList <String> audioFileTypes = new ArrayList<>();
                         Collections.addAll(audioFileTypes,".3gp",".mp4",".m4a",".aac",".ts",".amr",".flac",".mp4",".mid",".midi",".xmf",".mxmf",".rtttl",".rtx",".ota",".mp3",".mkv",".ogg",".wav");
