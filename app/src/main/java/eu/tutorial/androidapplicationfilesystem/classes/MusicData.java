@@ -4,7 +4,16 @@ package eu.tutorial.androidapplicationfilesystem.classes;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
+import android.util.Log;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+
 import java.io.File;
+import java.time.LocalDateTime;
+import java.util.Calendar;
+import java.util.Date;
 
 
 //This class implements storing music data and creates methods to retrieve Metadata from it
@@ -17,6 +26,7 @@ public class MusicData {
     Bitmap bmap;
     MediaMetadataRetriever mr;
     File file;
+    String date;
 
     public MusicData(){
     }
@@ -28,6 +38,46 @@ public class MusicData {
         this.artist = getArtist(file);
         this.album = getAlbum(file);
         this.bmap = getBitmap(file);
+        this.date = setInitialDate();
+    }
+
+    public MusicData(String path){
+        File file = new File(path);
+        this.file = file;
+        this.path = file.getAbsolutePath();
+        this.title = getTitle(file);
+        System.out.println(title);
+        this.artist = getArtist(file);
+        this.album = getAlbum(file);
+        this.bmap = getBitmap(file);
+        this.date = setInitialDate();
+    }
+
+    public MusicData(File file, String date){
+        this.file = file;
+        this.path = file.getAbsolutePath();
+        this.title = getTitle(file);
+        this.artist = getArtist(file);
+        this.album = getAlbum(file);
+        this.bmap = getBitmap(file);
+        this.date = date;
+    }
+
+    public MusicData(String path, String date){
+
+        File file = new File(path);
+        this.file = file;
+        this.path = file.getAbsolutePath();
+        this.title = getTitle(file);
+        System.out.println(title);
+        this.artist = getArtist(file);
+        this.album = getAlbum(file);
+        this.bmap = getBitmap(file);
+        this.date = date;
+    }
+
+    public String getPath() {
+        return path;
     }
 
     //This method required a file to be provided
@@ -49,7 +99,7 @@ public class MusicData {
 
     //This method is only used if MusicData(File file) constructor has been called
     public String getTitle(){
-        return this.title;
+        return title;
     }
 
     public String getArtist(File file){
@@ -66,7 +116,7 @@ public class MusicData {
         }
     }
     public String getArtist(){
-        return this.artist;
+        return artist;
     }
 
     public String getAlbum(File file){
@@ -84,7 +134,7 @@ public class MusicData {
     }
 
     public String getAlbum(){
-        return this.album;
+        return album;
     }
 
     public Bitmap getBitmap(File file){
@@ -103,7 +153,32 @@ public class MusicData {
     }
 
     public Bitmap getBitmap(){
-        return this.bmap;
+        return bmap;
+    }
+
+    public String getDate(){
+        return date;
+    }
+
+    private String setInitialDate(){
+        Date date = new Date();
+        String dateFormat = "dd/MM/Y hh:mm:ss a";
+        SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+        String formattedDate = sdf.format(date);
+        return formattedDate;
+    }
+
+    private Date setDateJavaUtil(String dateString){
+
+        String dateFormat = "dd/MM/Y hh:mm:ss a";
+        SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+        Date date = null;
+        try {
+            date = sdf.parse(dateString);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return date;
     }
 
 }
