@@ -4,57 +4,45 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.RecyclerView;
 
-import android.Manifest;
+
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.media.MediaMetadataRetriever;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.view.View;
-import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
+
 import eu.tutorial.androidapplicationfilesystem.R;
-import eu.tutorial.androidapplicationfilesystem.classes.MusicData;
+import eu.tutorial.androidapplicationfilesystem.classes.PermissionsRetriever;
 import eu.tutorial.androidapplicationfilesystem.classes.PlaylistDatabaseHelper;
-import eu.tutorial.androidapplicationfilesystem.classes.StorageScraper;
 import eu.tutorial.androidapplicationfilesystem.classes.DialogPlaylist;
 import eu.tutorial.androidapplicationfilesystem.classes.MediaControl;
 import eu.tutorial.androidapplicationfilesystem.classes.Playlist;
+import eu.tutorial.androidapplicationfilesystem.classes.StyleSetter;
 import soup.neumorphism.NeumorphButton;
 import soup.neumorphism.NeumorphImageButton;
 
 public class MainActivity extends AppCompatActivity {
 
     NeumorphButton btnStorage;
-    NeumorphImageButton btnPlay;
-    NeumorphImageButton btnPrevious;
-    NeumorphImageButton btnNext;
-    NeumorphImageButton btnPlaylist;
-    NeumorphImageButton btnFavorite;
-    NeumorphImageButton btnMusicImage;
+    NeumorphImageButton btnPlay, btnPrevious, btnNext;
+    NeumorphImageButton btnPlaylist, btnFavorite, btnMusicImage;
     String receivedPath;
-    MediaMetadataRetriever metadataRetriever;
-    SeekBar seekBar;
     File musicFile;
     String lastPlayed;
-    RecyclerView recyclerView;
     ArrayList<Playlist> playlists;
     Playlist allMusic;
-    Handler handler;
-    TextView remainingText;
-    TextView totalText;
+    TextView remainingText, totalText;
     MediaControl mc;
     PlaylistDatabaseHelper myDB;
+
 
     private void initiateMethods(){
         btnStorage = findViewById(R.id.btnStorage);
@@ -64,18 +52,14 @@ public class MainActivity extends AppCompatActivity {
         btnPlaylist = findViewById(R.id.playlistButton);
         btnFavorite = findViewById(R.id.favoriteButton);
         btnMusicImage = findViewById(R.id.musicImage);
-        metadataRetriever = new MediaMetadataRetriever();
-        seekBar = findViewById(R.id.musicProgress);
-        recyclerView = findViewById(R.id.playlistRecyclerView);
         playlists = new ArrayList<>();
         musicFile = new File("/storage/emulated/0/MuzikaTest/Rammstein - Rammstein (2019) [320]/08 DIAMANT.mp3");
         allMusic = new Playlist("All music");
         remainingText = findViewById(R.id.musicRemainingText);
         totalText = findViewById(R.id.musicTotalText);
-        handler = new Handler();
-        mc = new MediaControl(this);
         lastPlayed = null;
         myDB = new PlaylistDatabaseHelper(this);
+        mc = new MediaControl(this);
     }
 
     //ActivityResultLauncher waits for the FileListActivity to finish and retrieves the data provided from that activity
@@ -89,7 +73,10 @@ public class MainActivity extends AppCompatActivity {
                         if(intent!=null){ //confirms that there is actual music data provided in the result
                             receivedPath = intent.getStringExtra("result");
                             musicFile = new File(receivedPath);
+                            //mc.play(receivedPath);
                             mc.play(receivedPath);
+                            //stopService();
+                            //startService(receivedPath);
                         }
                     }
                 }
@@ -99,40 +86,97 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        System.out.println("onCreate called");
         super.onCreate(savedInstanceState);
         //requestWindowFeature(Window.FEATURE_NO_TITLE);
         //this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);  //to hide top navbar
         getSupportActionBar().hide(); //to hide top Application Bar
         setContentView(R.layout.activity_main);
-
-
         initiateMethods();
+
         setOnClickListeners();
-        lastPlayed = "/storage/emulated/0/MuzikaTest/Rammstein - Rammstein (2019) [320]/08 DIAMANT.mp3";
-        mc.play(lastPlayed);
-        mc.pause();
+        //lastPlayed = "/storage/emulated/0/MuzikaTest/Rammstein - Rammstein (2019) [320]/08 DIAMANTA.mp3";
+        //mc.play(lastPlayed);
+        //mc.pause();
 
-        if(checkPermissionRecordAudio()){
-        }else{
-            requestPermissionRecordAudio();
-        }
+        StyleSetter.setInitBackground(this);
+
+        //String path = Environment.getExternalStorageDirectory().getPath();
+        //StorageScraper.searchStorage(path,allMusic);
 
 
-         Runnable runnable = new Runnable() {
+        Runnable runnable1 = new Runnable() {
             @Override
             public void run() {
-                String path = Environment.getExternalStorageDirectory().getPath();
-                StorageScraper.searchStorage(path,allMusic);
-                allMusic.printSongsArray();
+                playlists = myDB.getPlaylists();
             }
         };
-        Thread thread = new Thread(runnable);
+        Thread thread = new Thread(runnable1);
+        System.out.println(thread.getName());
         thread.start();
+        thread.interrupt();
+        //savePlaylistData(playlists);
 
-        playlists = myDB.getPlaylists();
-        savePlaylistData(playlists);
-
+        //BroadcastReceiverMediaPlayer.receiveBroadcast(this);
     }
+
+
+
+    @Override
+    protected void onDestroy() {
+        mc.handlerRemoveCallbacks(); //!IMPORTANT TO NOT CAUSE RUNNABLE MEMORY LEAK
+        mc.unbindService();
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onStop() { //Called after leaving activity, after onPause method then calls onRetart
+        //mc.handlerRemoveCallbacks();//!IMPORTANT TO NOT CAUSE RUNNABLE MEMORY LEAK
+        mc.handlerRemoveCallbacks();
+        mc.unbindService();
+        super.onStop();
+    }
+
+    @Override
+    protected void onRestart() { //Called after onStop then calls onStart
+       // mc.startService();
+        mc.bindService(); //Service needs to be rebinded after activity changes and etc.
+        mc.handlerRemoveCallbacks();//!IMPORTANT TO NOT CAUSE RUNNABLE MEMORY LEAK || On screen rotation || On notification clicked || and etc
+        super.onRestart();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        //mc.setMetadata();
+        super.onConfigurationChanged(newConfig);
+    }
+
+    /*@Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            setContentView(R.layout.activity_main);
+            if(mc.isPlaying()){
+                for(int i=0; i<=5; i++){
+                    System.out.println("IS PLAYING MADAFAKAAAAAA");
+                }
+            }
+        } else {
+            setContentView(R.layout.activity_main);
+
+        }
+    }*/
 
 
     private void savePlaylistData(ArrayList<Playlist> playlist){
@@ -150,61 +194,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setOnClickListeners(){
-
-        btnPlay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view){
-                //savePlaylistData();
-                if(mc!=null){
-                    if(!mc.isPlaying()) {
-                        Toast.makeText(MainActivity.this, "Music should start playing", Toast.LENGTH_SHORT).show();
-                        mc.start();
-                    } else {
-                        mc.pause();
-                    }
-                } else{
-                    Toast.makeText(MainActivity.this, "No music resource loaded", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-
-        btnMusicImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
-
         btnStorage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (checkPermissionStorage()){
+                if (PermissionsRetriever.checkPermissions(MainActivity.this) == 1 || PermissionsRetriever.checkPermissions(MainActivity.this)==2){
                     // permission allowed
                     Intent intent = new Intent(MainActivity.this, FileListActivity.class); //Creates an intent from the current Activity to FileListActivity's class
                     String path = Environment.getExternalStorageDirectory().getPath();
                     intent.putExtra("path", path); //Includes data which FileListActivity will use, in this case it will be given storage path
                     //startActivity(intent);
                     activityLauncher.launch(intent);
-                }else{
-                    //permission not allowed
-                    requestPermissionStorage();
                 }
-            }
-        });
-
-        btnNext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mc.play(R.raw.music1);
-            }
-        });
-
-        btnPrevious.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String path = Environment.getExternalStorageDirectory().getPath()+"/MuzikaTest/Complicated.mp3";
-                mc.play(path);
             }
         });
 
@@ -221,34 +221,5 @@ public class MainActivity extends AppCompatActivity {
         dialogPlaylist.createDialog(MainActivity.this,playlists,musicFile);
     }
 
-    private boolean checkPermissionStorage(){
-        int result = ContextCompat.checkSelfPermission(MainActivity.this,Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        if (result == PackageManager.PERMISSION_GRANTED){
-            return true;
-        }else
-            return false;
-    }
-
-    private void requestPermissionStorage(){
-        if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,Manifest.permission.WRITE_EXTERNAL_STORAGE)){ //if permission for storage is not given, it will make a Toast popup
-            Toast.makeText(this, "Storage permission required", Toast.LENGTH_SHORT).show();
-        } else
-        ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},111); //Request for storage permission, has to also be added in AndroidManifest.xml
-    }
-
-    private boolean checkPermissionRecordAudio(){
-        int result = ContextCompat.checkSelfPermission(MainActivity.this,Manifest.permission.RECORD_AUDIO);
-        if (result == PackageManager.PERMISSION_GRANTED){
-            return true;
-        }else
-            return false;
-    }
-
-    private void requestPermissionRecordAudio(){
-        if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,Manifest.permission.RECORD_AUDIO)){ //if permission for storage is not given, it will make a Toast popup
-            Toast.makeText(this, "Storage permission required", Toast.LENGTH_SHORT).show();
-        } else
-            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.RECORD_AUDIO},112); //Request for storage permission, has to also be added in AndroidManifest.xml
-    }
 
 }
