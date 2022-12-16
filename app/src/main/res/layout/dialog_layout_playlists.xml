@@ -28,7 +28,8 @@
         android:id="@+id/playlistRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#efefef"/>
+        android:background="@null"
+        android:alpha="1"/>
 
 
 </LinearLayout>
