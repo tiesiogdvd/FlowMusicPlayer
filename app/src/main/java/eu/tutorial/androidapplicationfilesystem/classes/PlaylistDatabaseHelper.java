@@ -33,6 +33,7 @@ public class PlaylistDatabaseHelper extends SQLiteOpenHelper {
         this.context = context;
     }
 
+
     @Override
     public void onCreate(SQLiteDatabase db) {
         String createTablePlaylist = "CREATE TABLE " + TABLE_NAME_PLAYLISTS +
@@ -72,6 +73,10 @@ public class PlaylistDatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+
+
+    //
+
     public void addSong(String path, String playlistName, String date){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
@@ -92,6 +97,9 @@ public class PlaylistDatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(deleteQuery);
     }
 
+
+
+
     public ArrayList<Playlist> getPlaylists (){
         ArrayList<Playlist> playlists = new ArrayList<>();
         String selectQuery = "SELECT * FROM " + TABLE_NAME_PLAYLISTS;
@@ -109,7 +117,10 @@ public class PlaylistDatabaseHelper extends SQLiteOpenHelper {
                 playlist.setSongsArray(songs);
                 playlists.add(playlist);
             }while(cursor.moveToNext());
+            //cursor.close();
         }
+        cursor.close();
+        db.close();
         return playlists;
     }
 
@@ -130,10 +141,10 @@ public class PlaylistDatabaseHelper extends SQLiteOpenHelper {
                 );
                 songs.add(song);
             } while (cursor.moveToNext());
+            //cursor.close();
         }
+        cursor.close();
+        db.close();
         return songs;
     }
-
-
-
 }
