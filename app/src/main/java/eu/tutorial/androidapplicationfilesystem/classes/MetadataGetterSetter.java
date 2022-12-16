@@ -6,13 +6,18 @@ package eu.tutorial.androidapplicationfilesystem.classes;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.drawable.BitmapDrawable;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.File;
 
 import eu.tutorial.androidapplicationfilesystem.R;
 import eu.tutorial.androidapplicationfilesystem.activities.MainActivity;
+import soup.neumorphism.NeumorphButton;
 import soup.neumorphism.NeumorphImageButton;
 
 public class MetadataGetterSetter {
@@ -23,6 +28,7 @@ public class MetadataGetterSetter {
         NeumorphImageButton btnMusicImage = ((MainActivity)context).findViewById(R.id.musicImage);
         File musicFile = new File(path);
         MusicData musicData = new MusicData(); //Created new object of class MusicData to retrieve metadata info from selected audio
+        ImageView imageView  = ((MainActivity)context).findViewById(R.id.layoutBackground);
 
         String title = musicData.getTitle(musicFile);
         String album = musicData.getAlbum(musicFile);
@@ -40,9 +46,12 @@ public class MetadataGetterSetter {
         }
         if (bitmap != null) {
             btnMusicImage.setImageBitmap(bitmap);
+            StyleSetter.setStyles(context,bitmap);
+
         } else {
-            btnMusicImage.setImageResource(R.drawable.ic_launcher_test_background);
+            btnMusicImage.setImageResource(R.drawable.ic_action_note);
+            StyleSetter.setStyles(context,bitmap);
+            //
         }
     }
-
 }
