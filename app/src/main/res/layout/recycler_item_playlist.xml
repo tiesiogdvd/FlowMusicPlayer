@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="horizontal"
     android:layout_height="wrap_content"
-    android:background="#efefef">
+    android:background="@null">
 
     <ImageView
         android:id="@+id/iconPlaylist"

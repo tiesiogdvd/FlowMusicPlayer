@@ -56,7 +56,7 @@
         android:layout_centerHorizontal="true"
         android:scaleType="centerInside"
         android:src="@drawable/ic_action_play"
-        app:neumorph_shapeType="flat"/>
+        app:neumorph_shapeType="flat" />
 
 
     <soup.neumorphism.NeumorphImageButton
