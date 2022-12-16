@@ -76,7 +76,7 @@ public class Playlist {
     public boolean inPlaylist(String path) {
         boolean matches = false;
         for(MusicData s: songs){
-            System.out.println(s.getPath()+" "+path);
+            //System.out.println(s.getPath()+" "+path);
             if (path.equals(s.getPath())) {
                 matches = true;
                 break;
