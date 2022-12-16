@@ -31,14 +31,11 @@ public class FileListActivity extends AppCompatActivity {
 
                 public void onActivityResult(ActivityResult result) {
                     Log.d(TAG, "onActivityResult");
-                    System.out.println("wtf");
                     if(result.getResultCode()==1){
                         Intent intent = result.getData();
                         if(intent!=null){
                             //Data extracted here
                             String data = intent.getStringExtra("result");
-                            System.out.println(data);
-                            //enterText.setText(data);
                             intent.putExtra("result",data);
                             setResult(1, intent);
                             finish();
