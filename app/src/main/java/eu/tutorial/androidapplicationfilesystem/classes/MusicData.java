@@ -4,15 +4,11 @@ package eu.tutorial.androidapplicationfilesystem.classes;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
-import android.util.Log;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 
 import java.io.File;
-import java.time.LocalDateTime;
-import java.util.Calendar;
 import java.util.Date;
 
 
@@ -46,7 +42,7 @@ public class MusicData {
         this.file = file;
         this.path = file.getAbsolutePath();
         this.title = getTitle(file);
-        System.out.println(title);
+        //System.out.println(title);
         this.artist = getArtist(file);
         this.album = getAlbum(file);
         this.bmap = getBitmap(file);
@@ -69,7 +65,7 @@ public class MusicData {
         this.file = file;
         this.path = file.getAbsolutePath();
         this.title = getTitle(file);
-        System.out.println(title);
+        //System.out.println(title);
         this.artist = getArtist(file);
         this.album = getAlbum(file);
         this.bmap = getBitmap(file);
