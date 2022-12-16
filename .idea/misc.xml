@@ -6,8 +6,10 @@
         <entry key="..\:/Users/deivu/Desktop/AndroidApplicationFileSystem/app/src/main/res/drawable-anydpi/ic_action_checkbox_blank.xml" value="0.428" />
         <entry key="..\:/Users/deivu/Desktop/AndroidApplicationFileSystem/app/src/main/res/drawable-anydpi/ic_action_checkbox_checked.xml" value="0.428" />
         <entry key="..\:/Users/deivu/Desktop/AndroidApplicationFileSystem/app/src/main/res/drawable-anydpi/ic_action_favorite.xml" value="0.428" />
+        <entry key="..\:/Users/deivu/Desktop/AndroidApplicationFileSystem/app/src/main/res/drawable-anydpi/ic_action_folder.xml" value="0.3485" />
         <entry key="..\:/Users/deivu/Desktop/AndroidApplicationFileSystem/app/src/main/res/drawable-anydpi/ic_action_next.xml" value="0.428" />
         <entry key="..\:/Users/deivu/Desktop/AndroidApplicationFileSystem/app/src/main/res/drawable-anydpi/ic_action_note.xml" value="0.428" />
+        <entry key="..\:/Users/deivu/Desktop/AndroidApplicationFileSystem/app/src/main/res/drawable-anydpi/ic_action_pause.xml" value="0.3485" />
         <entry key="..\:/Users/deivu/Desktop/AndroidApplicationFileSystem/app/src/main/res/drawable-anydpi/ic_action_play.xml" value="0.2995" />
         <entry key="..\:/Users/deivu/Desktop/AndroidApplicationFileSystem/app/src/main/res/drawable-anydpi/ic_action_playlist.xml" value="0.277" />
         <entry key="..\:/Users/deivu/Desktop/AndroidApplicationFileSystem/app/src/main/res/drawable-anydpi/ic_action_previous.xml" value="0.428" />
@@ -23,8 +25,11 @@
         <entry key="..\:/Users/deivu/Desktop/AndroidApplicationFileSystem/app/src/main/res/drawable/ic_launcher_test_background.xml" value="0.5005" />
         <entry key="..\:/Users/deivu/Desktop/AndroidApplicationFileSystem/app/src/main/res/drawable/ic_launcher_test_foreground.xml" value="0.5005" />
         <entry key="..\:/Users/deivu/Desktop/AndroidApplicationFileSystem/app/src/main/res/drawable/round.xml" value="0.2995" />
+        <entry key="..\:/Users/deivu/Desktop/AndroidApplicationFileSystem/app/src/main/res/layout-land/activity_main.xml" value="0.14" />
+        <entry key="..\:/Users/deivu/Desktop/AndroidApplicationFileSystem/app/src/main/res/layout-sw600dp/activity_main.xml" value="0.27708333333333335" />
         <entry key="..\:/Users/deivu/Desktop/AndroidApplicationFileSystem/app/src/main/res/layout/activity_file_list.xml" value="0.2851851851851852" />
-        <entry key="..\:/Users/deivu/Desktop/AndroidApplicationFileSystem/app/src/main/res/layout/activity_main.xml" value="0.22" />
+        <entry key="..\:/Users/deivu/Desktop/AndroidApplicationFileSystem/app/src/main/res/layout/activity_main.xml" value="0.2" />
+        <entry key="..\:/Users/deivu/Desktop/AndroidApplicationFileSystem/app/src/main/res/layout/activity_main_test.xml" value="0.16927083333333334" />
         <entry key="..\:/Users/deivu/Desktop/AndroidApplicationFileSystem/app/src/main/res/layout/bottom_overlay_layout.xml" value="0.45384615384615384" />
         <entry key="..\:/Users/deivu/Desktop/AndroidApplicationFileSystem/app/src/main/res/layout/dialog_layout_new_playlist.xml" value="0.27708333333333335" />
         <entry key="..\:/Users/deivu/Desktop/AndroidApplicationFileSystem/app/src/main/res/layout/dialog_layout_playlists.xml" value="0.22" />
