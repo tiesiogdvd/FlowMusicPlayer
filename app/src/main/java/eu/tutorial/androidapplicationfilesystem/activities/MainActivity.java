@@ -6,6 +6,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.LinearLayoutCompat;
 
 
 import android.content.Intent;
@@ -13,7 +14,10 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.io.File;
@@ -26,12 +30,13 @@ import eu.tutorial.androidapplicationfilesystem.classes.DialogPlaylist;
 import eu.tutorial.androidapplicationfilesystem.classes.MediaControl;
 import eu.tutorial.androidapplicationfilesystem.classes.Playlist;
 import eu.tutorial.androidapplicationfilesystem.classes.StyleSetter;
+import eu.tutorial.androidapplicationfilesystem.classes.SwipeListener;
 import soup.neumorphism.NeumorphButton;
 import soup.neumorphism.NeumorphImageButton;
 
 public class MainActivity extends AppCompatActivity {
 
-    NeumorphButton btnStorage;
+    NeumorphImageButton btnStorage;
     NeumorphImageButton btnPlay, btnPrevious, btnNext;
     NeumorphImageButton btnPlaylist, btnFavorite, btnMusicImage;
     String receivedPath;
@@ -42,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     TextView remainingText, totalText;
     MediaControl mc;
     PlaylistDatabaseHelper myDB;
+    SwipeListener swipeListener;
 
 
     private void initiateMethods(){
@@ -60,6 +66,8 @@ public class MainActivity extends AppCompatActivity {
         lastPlayed = null;
         myDB = new PlaylistDatabaseHelper(this);
         mc = new MediaControl(this);
+        LinearLayout linearLayout = findViewById(R.id.linearLayout);
+        swipeListener = new SwipeListener(linearLayout, this);
     }
 
     //ActivityResultLauncher waits for the FileListActivity to finish and retrieves the data provided from that activity
@@ -220,6 +228,10 @@ public class MainActivity extends AppCompatActivity {
         DialogPlaylist dialogPlaylist = new DialogPlaylist();
         dialogPlaylist.createDialog(MainActivity.this,playlists,musicFile);
     }
+
+
+
+
 
 
 }
