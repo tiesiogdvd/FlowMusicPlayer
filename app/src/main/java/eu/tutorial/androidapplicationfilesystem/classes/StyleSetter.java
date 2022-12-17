@@ -23,7 +23,7 @@ public class StyleSetter {
     static NeumorphImageButton btnNext;
     static NeumorphImageButton btnPlaylist;
     static NeumorphImageButton btnFav;
-    static NeumorphButton btnStorage;
+    static NeumorphImageButton btnStorage;
     static Bitmap m_bitmap;
     static Bitmap m_drawableBitmap;
 
@@ -86,7 +86,7 @@ public class StyleSetter {
         btnNext.setColorFilter(color);
         btnPlaylist.setColorFilter(color);
         btnFav.setColorFilter(color);
-        btnStorage.setTextColor(color);
+        btnStorage.setColorFilter(color);
         title.setTextColor(color);
         artist.setTextColor(color);
         remainingText.setTextColor(color);
