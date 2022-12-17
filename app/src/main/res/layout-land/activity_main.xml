@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -10,7 +10,8 @@
     android:backgroundTint="@null"
     android:id="@+id/layoutID"
     android:orientation="vertical"
-    style="@style/light">
+    style="@style/light"
+    android:animateLayoutChanges="true">
 
     <ImageView
         android:id="@+id/layoutBackground"
@@ -44,6 +45,7 @@
             app:neumorph_shapeType="pressed" />
 
         <LinearLayout
+            android:id="@+id/linearLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
@@ -169,16 +171,62 @@
                 android:text="Song Name: "
                 android:textSize="15sp" />
 
-            <soup.neumorphism.NeumorphButton
-                android:id="@+id/btnStorage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:alpha="0.85"
-                android:padding="20dp"
-                android:text="Storage"
-                android:textColor="#fefefe" />
-
         </LinearLayout>
     </LinearLayout>
 
-</FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/bottomNavbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:gravity="center"
+        app:layout_constraintBottom_toBottomOf="@+id/layoutBackground"
+        android:background="@drawable/dialog_bg_create_playlist_button"
+        android:visibility="gone">
+
+
+
+
+        <soup.neumorphism.NeumorphImageButton
+            android:id="@+id/btnStorage"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:padding="20dp"
+            android:src="@drawable/ic_action_folder"
+            app:neumorph_shadowElevation="2dp"/>
+
+
+        <soup.neumorphism.NeumorphImageButton
+            style="@style/Widget.Neumorph.ImageButton"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_action_previous"
+            app:neumorph_shadowElevation="2dp" />
+
+
+
+
+        <soup.neumorphism.NeumorphImageButton
+            style="@style/Widget.Neumorph.ImageButton"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_action_settings"
+            app:neumorph_shadowColorLight="#FFFFFF"
+            app:neumorph_shadowElevation="2dp" />
+
+
+
+        <soup.neumorphism.NeumorphImageButton
+            style="@style/Widget.Neumorph.ImageButton"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+
+            android:src="@drawable/ic_action_favorite"
+            app:neumorph_shadowElevation="2dp" />
+
+
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
