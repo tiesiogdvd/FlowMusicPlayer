@@ -8,8 +8,15 @@ import android.graphics.drawable.BitmapDrawable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.material.imageview.ShapeableImageView;
+
+import org.w3c.dom.Text;
+
+import java.io.File;
+
 import eu.tutorial.androidapplicationfilesystem.R;
 import eu.tutorial.androidapplicationfilesystem.activities.MainActivity;
+import eu.tutorial.androidapplicationfilesystem.activities.fragments.FragmentMusicPlayer;
 import soup.neumorphism.NeumorphButton;
 import soup.neumorphism.NeumorphImageButton;
 
@@ -26,7 +33,8 @@ public class StyleSetter {
     static NeumorphImageButton btnStorage;
     static Bitmap m_bitmap;
     static Bitmap m_drawableBitmap;
-
+    static TextView barText;
+    static ShapeableImageView barImage;
 
 
     public static void setStyles(Context context, Bitmap bitmap){
@@ -35,10 +43,16 @@ public class StyleSetter {
         setBackground(context);
     }
 
+    public static void setStyles(Context context){
+        initViews(context);
+        setBackground(context);
+    }
+
+
     private static void initViews(Context context){
         btnMusicImage = ((MainActivity)context).findViewById(R.id.musicImage);
         imageView  = ((MainActivity)context).findViewById(R.id.layoutBackground);
-        btnPlay = ((MainActivity) context).findViewById(R.id.playButton);
+        btnPlay = ((MainActivity)context).findViewById(R.id.playButton);
         btnPrev = ((MainActivity) context).findViewById(R.id.lastButton);
         btnNext = ((MainActivity) context).findViewById(R.id.nextButton);
         btnPlaylist = ((MainActivity) context).findViewById(R.id.playlistButton);
@@ -48,10 +62,12 @@ public class StyleSetter {
         artist = ((MainActivity) context).findViewById(R.id.musicSongArtist);
         remainingText = ((MainActivity) context).findViewById(R.id.musicRemainingText);
         totalText = ((MainActivity) context).findViewById(R.id.musicTotalText);
+
+        barText = ((MainActivity) context).findViewById(R.id.musicSongNameBar);
+        barImage = ((MainActivity) context).findViewById(R.id.musicImageBar);
     }
 
     private static void setBackground(Context context){
-
         if(m_bitmap!=null){
             BitmapDrawable drawable;
             Bitmap blurredBitmap = BlurBuilder.blur(context,m_bitmap);
@@ -94,13 +110,29 @@ public class StyleSetter {
     }
 
     public static void setInitBackground(Context context){
-
-        initViews(context);
+        imageView = ((MainActivity)context).findViewById(R.id.layoutBackground);
         Bitmap drawableBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.img_bg_3);
         m_drawableBitmap = drawableBitmap;
         Bitmap blurredBitmap = BlurBuilder.blur(context,drawableBitmap);
         BitmapDrawable drawable = new BitmapDrawable(context.getResources(), blurredBitmap);
         imageView.setBackground(drawable);
-        setFill(false);
+        //setFill(false);
+    }
+
+
+    public static void setInitBackground(Context context, String path){
+        imageView = ((MainActivity)context).findViewById(R.id.layoutBackground);
+        Bitmap drawableBitmap = MusicDataMetadata.getBitmap(path);
+        if (drawableBitmap != null && imageView!= null){
+            Bitmap blurredBitmap = BlurBuilder.blur(context,drawableBitmap);
+            BitmapDrawable drawable = new BitmapDrawable(context.getResources(), blurredBitmap);
+            imageView.setBackground(drawable);
+        }else{
+            m_drawableBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.img_bg_3);
+            Bitmap blurredBitmap = BlurBuilder.blur(context,m_drawableBitmap);
+            BitmapDrawable drawable = new BitmapDrawable(context.getResources(), blurredBitmap);
+            imageView.setBackground(drawable);
+        }
+        //setFill(false);
     }
 }
