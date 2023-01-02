@@ -8,20 +8,21 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelStoreOwner;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import java.io.File;
 import java.util.ArrayList;
 import eu.tutorial.androidapplicationfilesystem.R;
-import eu.tutorial.androidapplicationfilesystem.adapters.AdapterPlaylists;
+import eu.tutorial.androidapplicationfilesystem.adapters.AdapterPlaylistsDialog;
 
 public class DialogPlaylist {
-
+    private ViewModelMain viewModelMain;
 
     public void createDialog(Context context, ArrayList <Playlist> playlist, File musicFile) {
         final Dialog dialog = new Dialog(context);
@@ -29,6 +30,10 @@ public class DialogPlaylist {
         dialog.setContentView(R.layout.dialog_layout_playlists);
         AppCompatButton newPlaylistButton = dialog.findViewById(R.id.layoutEdit);
         PlaylistDatabaseHelper myDB = new PlaylistDatabaseHelper(context);
+
+
+        viewModelMain = new ViewModelProvider((ViewModelStoreOwner) context).get(ViewModelMain.class);
+
 
         newPlaylistButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -43,24 +48,33 @@ public class DialogPlaylist {
                 addPlaylistButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+
+
                         String newPlaylistName = addPlaylistName.getText().toString();
                         if(!newPlaylistName.equals("")){
                             if(!playlistExists(newPlaylistName,playlist)){
-                            playlist.add(new Playlist(addPlaylistName.getText().toString()));
-                            String lastPlaylistName = playlist.get(playlist.size()-1).getPlaylistName();
-                            String lastPlaylistDate = playlist.get(playlist.size()-1).getDate();
-                            myDB.addPlaylist(lastPlaylistName,lastPlaylistDate);
-                            playlist.get(playlist.size()-1).addSong(musicFile);
-                            String songDate = playlist.get(playlist.size()-1).getSongDate(musicFile.getAbsolutePath());
-                            myDB.addSong(musicFile.getAbsolutePath(),lastPlaylistName,lastPlaylistDate);
+                            //playlist.add(new Playlist(addPlaylistName.getText().toString()));
+                            //String lastPlaylistName = playlist.get(playlist.size()-1).getPlaylistName();
+                            //String lastPlaylistDate = playlist.get(playlist.size()-1).getDate();
+                            //myDB.addPlaylist(lastPlaylistName,lastPlaylistDate);
+                            Playlist pl = new Playlist(addPlaylistName.getText().toString());
+                            viewModelMain.addPlaylist(pl);
+
+                            //playlist.get(playlist.size()-1).addSong(musicFile);
+                            //String songDate = playlist.get(playlist.size()-1).getSongDate(musicFile.getAbsolutePath());
+                            // myDB.addSong(musicFile.getAbsolutePath(),lastPlaylistName,lastPlaylistDate);
                             //playlist.get(playlist.size()-1).printSongsArray();
+
+                            viewModelMain.addSong(musicFile.getAbsolutePath(),pl.getPlaylistName(),pl.getDate());
+
                             dialogInner.cancel();
                             }else {Toast.makeText(context, "Playlist already exists", Toast.LENGTH_SHORT).show();}
                         }else {
                             Toast.makeText(context, "Please enter the name of playlist", Toast.LENGTH_SHORT).show();
                         }
-
                     }
+
+
                 });
                 dialogInner.show();
                 dialogInner.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -79,7 +93,7 @@ public class DialogPlaylist {
         RecyclerView recyclerView = dialog.findViewById(R.id.playlistRecyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
-        recyclerView.setAdapter(new AdapterPlaylists(context, playlist, musicFile));
+        recyclerView.setAdapter(new AdapterPlaylistsDialog(context, playlist, musicFile));
 
 
     }

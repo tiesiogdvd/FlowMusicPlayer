@@ -9,6 +9,8 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelStoreOwner;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
@@ -16,18 +18,22 @@ import java.util.ArrayList;
 import eu.tutorial.androidapplicationfilesystem.R;
 import eu.tutorial.androidapplicationfilesystem.classes.Playlist;
 import eu.tutorial.androidapplicationfilesystem.classes.PlaylistDatabaseHelper;
+import eu.tutorial.androidapplicationfilesystem.classes.ViewModelMain;
 
 
-public class AdapterPlaylists extends RecyclerView.Adapter <AdapterPlaylists.ViewHolder>{
+public class AdapterPlaylistsDialog extends RecyclerView.Adapter <AdapterPlaylistsDialog.ViewHolder>{
 
     Context context;
     ArrayList<Playlist> musicPlaylists;
     File musicFile;
+    ViewModelMain viewModelMain;
 
-    public AdapterPlaylists(Context context, ArrayList<Playlist> musicPlaylists, File musicFile) {
+
+    public AdapterPlaylistsDialog(Context context, ArrayList<Playlist> musicPlaylists, File musicFile) {
         this.context = context;
-        this.musicPlaylists = musicPlaylists;
         this.musicFile = musicFile;
+        viewModelMain = new ViewModelProvider((ViewModelStoreOwner) context).get(ViewModelMain.class);
+        this.musicPlaylists = viewModelMain.getPlaylists().getValue();
     }
 
 
@@ -45,7 +51,7 @@ public class AdapterPlaylists extends RecyclerView.Adapter <AdapterPlaylists.Vie
     }
 
     @NonNull
-    public AdapterPlaylists.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public AdapterPlaylistsDialog.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.recycler_item_playlist, parent, false);
         return new ViewHolder(view);
     }
@@ -67,7 +73,6 @@ public class AdapterPlaylists extends RecyclerView.Adapter <AdapterPlaylists.Vie
         }
 
         holder.checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            PlaylistDatabaseHelper db = new PlaylistDatabaseHelper(context);
             String playlistName = selectedPlaylist.getPlaylistName();
             String filePath = musicFile.getAbsolutePath();
             String date;
@@ -75,14 +80,10 @@ public class AdapterPlaylists extends RecyclerView.Adapter <AdapterPlaylists.Vie
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if(b){
                     System.out.println("Checked");
-                    selectedPlaylist.addSong(musicFile);
-                    date = selectedPlaylist.getSongDate(musicFile.getAbsolutePath());
-                    db.addSong(filePath, selectedPlaylist.getPlaylistName(), date);
-
+                    viewModelMain.addSong(filePath, playlistName);
                 }else{
                     System.out.println("Unchecked");
-                    System.out.println(selectedPlaylist.removeSong(musicFile));
-                    db.removeSong(musicFile.getAbsolutePath(), selectedPlaylist.getPlaylistName());
+                    viewModelMain.removeSong(filePath,playlistName);
                 }
             }
         });
