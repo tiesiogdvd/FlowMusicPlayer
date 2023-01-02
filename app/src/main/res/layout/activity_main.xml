@@ -3,253 +3,134 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layoutID"
+    style="@style/light"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#efefef"
-    tools:context=".activities.MainActivity"
-    android:backgroundTint="@null"
-    android:id="@+id/layoutID"
+    android:animateLayoutChanges="true"
     android:orientation="vertical"
-    style="@style/light"
-    android:animateLayoutChanges="true">
+    android:theme="@style/AppTheme"
+    tools:context=".activities.MainActivity">
 
     <ImageView
-        android:id="@+id/layoutBackground"
+
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
         android:adjustViewBounds="true"
         android:scaleType="fitXY" />
 
-    <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/bottomNavbar"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <!--<androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:fitsSystemWindows="true"
-            />-->
-
-        <soup.neumorphism.NeumorphImageButton
-            android:id="@+id/musicImage"
-            android:layout_width="300dp"
-            android:layout_height="300dp"
-            android:layout_gravity="center"
-            android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="100dp"
-            android:adjustViewBounds="true"
-            android:background="@drawable/round"
-            android:backgroundTint="@android:color/holo_blue_dark"
-            android:minHeight="300dp"
-            android:padding="25dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/ic_action_note"
-            app:neumorph_lightSource="leftTop"
-            app:neumorph_shadowElevation="3dp"
-            app:neumorph_shapeType="pressed" />
-
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/musicRemainingText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:layout_marginEnd="15dp"
-                android:layout_marginBottom="0dp"
-                android:hint="0:00" />
-
-            <TextView
-                android:id="@+id/musicTotalText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_marginStart="15dp"
-                android:layout_marginEnd="15dp"
-                android:hint="0:00" />
-
-        </RelativeLayout>
-
-        <SeekBar
-            android:id="@+id/musicProgress"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/musicImage"
-            android:outlineAmbientShadowColor="@color/black"
-            android:outlineSpotShadowColor="@color/black"
-            app:indicatorColor="@color/black" />
-
-        <TextView
-            android:id="@+id/musicSongName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:text="Song Name: "
-            android:textSize="15sp" />
-
-        <TextView
-            android:id="@+id/musicSongArtist"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:layout_marginBottom="10dp"
-            android:text="Artist: " />
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginBottom="20dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                android:layout_marginTop="30dp"
-                android:gravity="center"
-                android:orientation="horizontal"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <soup.neumorphism.NeumorphImageButton
-                    android:id="@+id/playlistButton"
-                    style="@style/Widget.Neumorph.ImageButton"
-                    android:layout_width="70dp"
-                    android:layout_height="70dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:src="@drawable/ic_action_playlist"
-                    app:neumorph_shadowElevation="2dp" />
-
-
-                <soup.neumorphism.NeumorphImageButton
-                    android:id="@+id/lastButton"
-                    style="@style/Widget.Neumorph.ImageButton"
-                    android:layout_width="70dp"
-                    android:layout_height="70dp"
-                    android:src="@drawable/ic_action_previous"
-                    app:neumorph_shadowElevation="2dp" />
-
-
-                <soup.neumorphism.NeumorphImageButton
-                    android:id="@+id/playButton"
-                    style="@style/Widget.Neumorph.ImageButton"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:src="@drawable/ic_action_play"
-                    app:neumorph_shadowElevation="2dp"
-                    app:neumorph_shapeType="flat" />
-
-                <soup.neumorphism.NeumorphImageButton
-                    android:id="@+id/nextButton"
-                    style="@style/Widget.Neumorph.ImageButton"
-                    android:layout_width="70dp"
-                    android:layout_height="70dp"
-                    android:src="@drawable/ic_action_next"
-                    app:neumorph_shadowColorLight="#FFFFFF"
-                    app:neumorph_shadowElevation="2dp" />
-
-                <soup.neumorphism.NeumorphImageButton
-                    android:id="@+id/favoriteButton"
-                    style="@style/Widget.Neumorph.ImageButton"
-                    android:layout_width="70dp"
-                    android:layout_height="70dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:src="@drawable/ic_action_favorite"
-
-                    app:neumorph_shadowElevation="2dp" />
-
-            </LinearLayout>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </LinearLayout>
-
-
-    <LinearLayout
-        android:id="@+id/bottomNavbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:gravity="center"
-        app:layout_constraintBottom_toBottomOf="@+id/layoutBackground"
-        android:background="@drawable/dialog_bg_create_playlist_button"
-        android:visibility="gone">
-
-
-
-
-        <soup.neumorphism.NeumorphImageButton
-            android:id="@+id/btnStorage"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:padding="20dp"
-            android:src="@drawable/ic_action_folder"
-            app:neumorph_shadowElevation="2dp"/>
-
-        <Space
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"/>
-
-
-        <soup.neumorphism.NeumorphImageButton
-            style="@style/Widget.Neumorph.ImageButton"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_action_previous"
-            app:neumorph_shadowElevation="2dp" />
-
-        <Space
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"/>
-
-
-        <soup.neumorphism.NeumorphImageButton
-
-            android:id="@+id/openFragment"
-            style="@style/Widget.Neumorph.ImageButton"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_action_settings"
-            app:neumorph_shadowColorLight="#FFFFFF"
-            app:neumorph_shadowElevation="2dp" />
-
-        <Space
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"/>
-
-        <soup.neumorphism.NeumorphImageButton
-            style="@style/Widget.Neumorph.ImageButton"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_action_favorite"
-            app:neumorph_shadowElevation="2dp" />
-
-
-    </LinearLayout>
-
     <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/fragmentContainerView2"
-        android:name="eu.tutorial.androidapplicationfilesystem.activities.fragments.FragmentMusicPlayer"
-        android:layout_width="wrap_content"
+        android:id="@+id/fragmentContainerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toTopOf="@+id/navbars"/>
+
+
+    <LinearLayout
+        android:id="@+id/navbars"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:layout_editor_absoluteX="5dp"
-        tools:layout_editor_absoluteY="731dp" />
+        android:animateLayoutChanges="true"
+        android:background="@drawable/main_activity_bar"
+        android:orientation="vertical"
+        android:layout_margin="5dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <LinearLayout
+            android:id="@+id/musicBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="15dp"
+            android:layout_marginVertical="5dp"
+            android:gravity="center_vertical"
+            android:visibility="visible">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/musicImageBar"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/img_bg_5"
+                android:scaleType="centerCrop"
+                app:shapeAppearanceOverlay="@style/round"
+                android:transitionName="toMusicPlayer"
+                />
+
+            <TextView
+                android:id="@+id/musicSongNameBar"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="Title:"
+                android:textSize="15dp" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <soup.neumorphism.NeumorphImageButton
+                android:id="@+id/playButtonBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="15dp"
+                android:src="@drawable/ic_action_play"
+                app:neumorph_shadowElevation="2dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/bottomNavbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="10dp"
+            android:gravity="center"
+            android:visibility="visible">
+
+
+            <soup.neumorphism.NeumorphImageButton
+                android:id="@+id/btnStorage"
+                style="@style/AppTheme"
+                android:theme="@style/Base.Theme.Neumorph"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:padding="10dp"
+                android:src="@drawable/ic_action_folder"/>
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5" />
+
+
+            <soup.neumorphism.NeumorphImageButton
+                android:id="@+id/openFragment2"
+                style="@style/AppTheme"
+                android:theme="@style/Base.Theme.Neumorph"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:padding="10dp"
+                android:src="@drawable/ic_action_previous"/>
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5" />
+
+
+            <soup.neumorphism.NeumorphImageButton
+
+                android:id="@+id/openFragment1"
+                style="@style/AppTheme"
+                android:theme="@style/Base.Theme.Neumorph"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:padding="10dp"
+                android:src="@drawable/ic_action_settings"/>
+
+
+        </LinearLayout>
+    </LinearLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
