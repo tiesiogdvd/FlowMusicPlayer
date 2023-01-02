@@ -25,6 +25,16 @@ This is an application for my own purposes to learn both java and android native
   
   ### -Support for config changes such as screen rotation
   
+  ### -Fragments 
+  
+  ### -App themes for light and dark mode
+  
+  ### -ViewModel and LiveData implementation for optimizing changes
+  
+  ### -Activity lifecycle implementations to keep positions between changes and new instances
+  
+  
+  
   ![image](https://user-images.githubusercontent.com/116734709/208097075-4a8b9634-7488-4c2e-9f4a-2e4f2db94723.png)
   
   ### -Dynamic background dependent on music bitmap and icons dependent on bitmap average brightness
