@@ -8,12 +8,12 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="background">#E8E7E7</color>
-    <color name="backgroundSecondary">#808A8A8A</color>
-    <color name="neumorphLight">#FAFAFA</color>
-    <color name="neumorphDark">#D5D5D5</color>
-    <color name="text">#000000</color>
-    <color name="button">#CACACA</color>
-    <color name="drawable">#FDFDFD</color>
+    <color name="background">#1E1E1E</color>
+    <color name="backgroundSecondary">#80434343</color>
+    <color name="neumorphLight">#323232</color>
+    <color name="neumorphDark">#919191</color>
+    <color name="text">#FFFFFF</color>
+    <color name="button">#434343</color>
+    <color name="drawable">#FFFFFF</color>
 
 </resources>
