@@ -98,34 +98,20 @@ public class MediaControlService extends Service{
     }
 
     public int mediaDuration(){
-        if(mp.isPlaying()) {
+        if(mpAvailable) {
+            System.out.println(mp.getDuration());
             return mp.getDuration();
         }
         return 0;
     }
 
     public int mediaRemaining(){
-        if(mp.isPlaying()) {
+        if(mpAvailable) {
             //System.out.println(mp.getCurrentPosition());
         return mp.getCurrentPosition();
         }
         return 0;
     }
-
-    public int mediaLastPosition(){
-        if(mpLastPosition!=null){
-            return mpLastPosition;
-        }
-        return 0;
-    }
-
-    public int mediaLastDuration(){
-        if(mpDuration!=null){
-            return mpDuration;
-        }
-        return 0;
-    }
-
 
     private void actionPlay(String path){
         //finished = false;
