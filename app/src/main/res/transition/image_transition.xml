@@ -1,0 +1,6 @@
+<transitionSet xmlns:android="http://schemas.android.com/apk/res/android"
+    android:transitionOrdering="together">
+    <changeImageTransform />
+    <changeBounds />
+    <fade android:fadingMode="fade_in" />
+</transitionSet>
