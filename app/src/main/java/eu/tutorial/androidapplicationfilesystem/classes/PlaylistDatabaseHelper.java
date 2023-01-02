@@ -100,7 +100,7 @@ public class PlaylistDatabaseHelper extends SQLiteOpenHelper {
 
 
 
-    public ArrayList<Playlist> getPlaylists (){
+    public ArrayList<Playlist> getFullPlaylistsData(){
         ArrayList<Playlist> playlists = new ArrayList<>();
         String selectQuery = "SELECT * FROM " + TABLE_NAME_PLAYLISTS;
         SQLiteDatabase db = this.getWritableDatabase();
@@ -123,6 +123,30 @@ public class PlaylistDatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return playlists;
     }
+
+    public ArrayList<Playlist> getPlaylistsNames(){
+        ArrayList<Playlist> playlists = new ArrayList<>();
+
+        String selectQuery = "SELECT * FROM " + TABLE_NAME_PLAYLISTS;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                int nameColumnIndex = cursor.getColumnIndex(COLUMN_PLAYLIST_NAME);
+                int dateColumnIndex = cursor.getColumnIndex(COLUMN_DATE_PLAYLIST_CREATED);
+                String name = cursor.getString(nameColumnIndex);
+                String date = cursor.getString(dateColumnIndex);
+                Playlist playlist = new Playlist(name, date);
+                playlists.add(playlist);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+
+        return playlists;
+    }
+
+
 
 
     public ArrayList<MusicData> getSongs (String playlistName){ //Given playlist name to find songs for that specific playlsit
