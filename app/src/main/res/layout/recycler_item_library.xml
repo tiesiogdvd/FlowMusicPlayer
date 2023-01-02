@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/library_playlist"
+    android:layout_margin="10dp"
+    android:padding="5dp"
+    style="@style/AppTheme">
+
+    <ImageView
+        android:id="@+id/imageLibraryPlaylist"
+        android:background="@drawable/img_bg_6"
+        android:layout_width="130dp"
+        android:layout_height="130dp"
+        android:scaleType="centerCrop"
+        android:layout_margin="2dp"
+        />
+    <TextView
+        android:id="@+id/textLibraryPlaylist"
+        android:layout_marginBottom="-3dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text"
+        android:layout_marginLeft="2dp"
+        android:text="Playlist name"
+        android:textSize="13dp"
+        />
+
+
+</LinearLayout>
