@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.MainActivity"
+    android:backgroundTint="@null"
+    android:id="@+id/layoutID"
+    android:orientation="vertical"
+    style="@style/light"
+    android:animateLayoutChanges="true"
+    android:theme="@style/AppTheme">
+
+
+
+    <ImageView
+        android:id="@+id/layoutBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:adjustViewBounds="true"
+        android:scaleType="fitXY"
+        android:layout_gravity="center"
+        />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <soup.neumorphism.NeumorphImageButton
+            android:id="@+id/musicImage"
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            android:layout_gravity="center"
+            android:layout_marginHorizontal="20dp"
+            android:adjustViewBounds="true"
+            android:background="@drawable/round"
+            android:backgroundTint="@android:color/holo_blue_dark"
+            android:padding="25dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_action_note"
+            app:neumorph_lightSource="leftTop"
+            app:neumorph_shadowElevation="3dp"
+            app:neumorph_shapeType="pressed"
+            android:transitionName="toMusicPlayer"/>
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_vertical">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="20dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <soup.neumorphism.NeumorphImageButton
+                        android:id="@+id/playlistButton"
+                        style="@style/Widget.Neumorph.ImageButton"
+                        android:theme="@style/AppTheme"
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
+                        android:layout_marginEnd="20dp"
+                        android:src="@drawable/ic_action_playlist"
+
+                        app:neumorph_shadowElevation="2dp" />
+
+
+                    <soup.neumorphism.NeumorphImageButton
+                        android:id="@+id/lastButton"
+                        style="@style/Widget.Neumorph.ImageButton"
+                        android:theme="@style/AppTheme"
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
+                        android:src="@drawable/ic_action_previous"
+
+                        app:neumorph_shadowElevation="2dp" />
+
+
+                    <soup.neumorphism.NeumorphImageButton
+                        android:id="@+id/playButton"
+                        style="@style/Widget.Neumorph.ImageButton"
+                        android:theme="@style/AppTheme"
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
+                        android:src="@drawable/ic_action_play"
+                        app:neumorph_shadowElevation="2dp"
+
+                        app:neumorph_shapeType="flat" />
+
+                    <soup.neumorphism.NeumorphImageButton
+                        android:id="@+id/nextButton"
+                        style="@style/Widget.Neumorph.ImageButton"
+                        android:theme="@style/AppTheme"
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
+                        android:src="@drawable/ic_action_next"
+                        app:neumorph_shadowColorLight="#FFFFFF"
+                        app:neumorph_shadowElevation="2dp" />
+
+                    <soup.neumorphism.NeumorphImageButton
+                        android:id="@+id/favoriteButton"
+                        style="@style/Widget.Neumorph.ImageButton"
+                        android:theme="@style/AppTheme"
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
+                        android:layout_marginStart="20dp"
+                        android:src="@drawable/ic_action_favorite"
+                        app:neumorph_shadowElevation="2dp" />
+
+                </LinearLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <SeekBar
+                android:id="@+id/musicProgress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/musicImage"
+                android:outlineAmbientShadowColor="@color/black"
+                android:outlineSpotShadowColor="@color/black"
+                app:indicatorColor="@color/black" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/musicRemainingText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginBottom="0dp"
+                    android:text="0:00" />
+
+                <TextView
+                    android:id="@+id/musicTotalText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginEnd="15dp"
+                    android:text="0:00" />
+
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/musicSongArtist"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginBottom="10dp"
+                android:text="Artist: " />
+
+            <TextView
+                android:id="@+id/musicSongName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:text="Song Name: "
+                android:textSize="15sp" />
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
