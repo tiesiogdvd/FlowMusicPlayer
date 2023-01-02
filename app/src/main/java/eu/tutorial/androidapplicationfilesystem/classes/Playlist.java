@@ -1,22 +1,31 @@
 package eu.tutorial.androidapplicationfilesystem.classes;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.io.File;
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
-public class Playlist {
+public class Playlist implements Parcelable{
     String playlistName;
     ArrayList <MusicData> songs;
     String date;
+    Bitmap bitmap;
 
     public Playlist(String playlistName, ArrayList<MusicData> songs) {
         songs = new ArrayList<>();
         this.playlistName = playlistName;
         this.songs = songs;
         this.date = setInitialDate();
+        setPlaylistBitmap();
     }
     public Playlist (String playlistName) {
         songs = new ArrayList<>();
@@ -27,6 +36,50 @@ public class Playlist {
         songs = new ArrayList<>();
         this.playlistName = playlistName;
         this.date = date;
+    }
+
+    protected Playlist(Parcel in) {
+        playlistName = in.readString();
+        date = in.readString();
+        bitmap = in.readParcelable(Bitmap.class.getClassLoader());
+    }
+
+    public static final Creator<Playlist> CREATOR = new Creator<Playlist>() {
+        @Override
+        public Playlist createFromParcel(Parcel in) {
+            return new Playlist(in);
+        }
+
+        @Override
+        public Playlist[] newArray(int size) {
+            return new Playlist[size];
+        }
+    };
+
+    public void resetPlaylistBitmap(){
+        bitmap = null;
+        for (MusicData s : songs) {
+            bitmap = s.getBitmap();
+            if (bitmap != null) {
+                break;
+            }
+        }
+    }
+
+    public void setPlaylistBitmap(){
+        if(bitmap == null) {
+            for (MusicData s : songs) {
+                bitmap = s.getBitmap();
+                if (bitmap != null) {
+                    break;
+                }
+            }
+        }
+    }
+
+    public Bitmap getPlaylistBitmap(){
+        setPlaylistBitmap();
+        return bitmap;
     }
 
 
@@ -99,16 +152,20 @@ public class Playlist {
 
     public void addSong(File file){
         songs.add(new MusicData(file));
+        setPlaylistBitmap();
     }
 
     public void addSong(File file, String date){
         songs.add(new MusicData(file, date));
+        setPlaylistBitmap();
     }
     public void addSong(String path, String date){
         songs.add(new MusicData(path, date));
+        setPlaylistBitmap();
     }
     public void addSong(String path){
         songs.add(new MusicData(path));
+        setPlaylistBitmap();
     }
 
     public boolean removeSong(String path) {
@@ -120,6 +177,7 @@ public class Playlist {
                 break;
             }
         }
+        resetPlaylistBitmap();
         return deleted;
     }
 
@@ -134,6 +192,7 @@ public class Playlist {
                 break;
             }
         }
+        resetPlaylistBitmap();
         return deleted;
     }
 
@@ -159,4 +218,15 @@ public class Playlist {
         return date;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(playlistName);
+        dest.writeString(date);
+        dest.writeParcelable(bitmap, flags);
+    }
 }
