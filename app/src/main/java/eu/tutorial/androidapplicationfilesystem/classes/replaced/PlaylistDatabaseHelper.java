@@ -1,4 +1,4 @@
-package eu.tutorial.androidapplicationfilesystem.classes;
+package eu.tutorial.androidapplicationfilesystem.classes.replaced;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -11,6 +11,9 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 
+import eu.tutorial.androidapplicationfilesystem.classes.MusicData;
+import eu.tutorial.androidapplicationfilesystem.classes.Playlist;
+
 public class PlaylistDatabaseHelper extends SQLiteOpenHelper {
 
     private Context context;
@@ -20,16 +23,22 @@ public class PlaylistDatabaseHelper extends SQLiteOpenHelper {
     private static final String TABLE_NAME_PLAYLISTS = "playlists_table";
     private static final String COLUMN_ID_PLAYLIST = "id";
     private static final String COLUMN_PLAYLIST_NAME = "playlist_name";
+    private static final String COLUMN_PLAYLIST_IMAGE_CACHE = "playlist_image_location"; //
     private static final String COLUMN_DATE_PLAYLIST_CREATED = "playlist_created";
+
 
     private static final String TABLE_NAME_SONGS = "songs_table";
     private static final String COLUMN_ID_SONG = "id";
     private static final String COLUMN_PATH = "file_path";
-    private static final String COLUMN_SONG_PLAYLIST = "playlist_name";
+    private static final String COLUMN_SONG_IMAGE_CACHE = "song_image_location"; //
+    private static final String COLUMN_SONG_TITLE = "song_title"; //
+    private static final String COLUMN_SONG_ARTIST = "song_artist"; //
+    private static final String COLUMN_SONG_LENGTH = "song_length"; //
+    private static final String COLUMN_SONG_PLAYLIST = "playlist_name"; //
     private static final String COLUMN_DATE_SONG_ADDED = "file_added";
 
     public PlaylistDatabaseHelper(@Nullable Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        super(context, DATABASE_NAME, null, DATABASE_VERSION); //onCreate called only if database does not exist
         this.context = context;
     }
 
@@ -39,15 +48,19 @@ public class PlaylistDatabaseHelper extends SQLiteOpenHelper {
         String createTablePlaylist = "CREATE TABLE " + TABLE_NAME_PLAYLISTS +
               " ("+COLUMN_ID_PLAYLIST+" INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 COLUMN_PLAYLIST_NAME + " TEXT UNIQUE, " +
+                COLUMN_PLAYLIST_IMAGE_CACHE + " TEXT, " + //FIX
                 COLUMN_DATE_PLAYLIST_CREATED + " TEXT);";
 
         String createTableSong = "CREATE TABLE " + TABLE_NAME_SONGS +
                 "("+COLUMN_ID_SONG +" INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 COLUMN_SONG_PLAYLIST + " TEXT, " +
                 COLUMN_PATH + " TEXT, " +
+                COLUMN_SONG_IMAGE_CACHE + " TEXT, " +//
+                COLUMN_SONG_TITLE + " TEXT, " + //
+                COLUMN_SONG_ARTIST + " TEXT, " + //
+                COLUMN_SONG_LENGTH + " INT, " + //
                 COLUMN_DATE_SONG_ADDED + " TEXT, " +
                 " FOREIGN KEY " + "("+COLUMN_SONG_PLAYLIST+") REFERENCES " + TABLE_NAME_PLAYLISTS + "("+COLUMN_PLAYLIST_NAME+")ON DELETE CASCADE ON UPDATE CASCADE);";
-
         db.execSQL(createTableSong);
         db.execSQL(createTablePlaylist);
     }
