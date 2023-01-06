@@ -1,5 +1,6 @@
 package eu.tutorial.androidapplicationfilesystem.classes;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -15,34 +16,6 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class Playlist implements Parcelable{
-    String playlistName;
-    ArrayList <MusicData> songs;
-    String date;
-    Bitmap bitmap;
-
-    public Playlist(String playlistName, ArrayList<MusicData> songs) {
-        songs = new ArrayList<>();
-        this.playlistName = playlistName;
-        this.songs = songs;
-        this.date = setInitialDate();
-        setPlaylistBitmap();
-    }
-    public Playlist (String playlistName) {
-        songs = new ArrayList<>();
-        this.playlistName = playlistName;
-        this.date = setInitialDate();
-    }
-    public Playlist (String playlistName, String date) {
-        songs = new ArrayList<>();
-        this.playlistName = playlistName;
-        this.date = date;
-    }
-
-    protected Playlist(Parcel in) {
-        playlistName = in.readString();
-        date = in.readString();
-        bitmap = in.readParcelable(Bitmap.class.getClassLoader());
-    }
 
     public static final Creator<Playlist> CREATOR = new Creator<Playlist>() {
         @Override
@@ -56,30 +29,67 @@ public class Playlist implements Parcelable{
         }
     };
 
-    public void resetPlaylistBitmap(){
+    String playlistName;
+    ArrayList <MusicData> songs;
+    String date;
+    Bitmap bitmap;
+
+    public Playlist(String playlistName, ArrayList<MusicData> songs, Context context) {
+        songs = new ArrayList<>();
+        this.playlistName = playlistName;
+        this.songs = songs;
+        this.date = setInitialDate();
+        setPlaylistBitmap(context);
+    }
+    public Playlist (String playlistName) {
+        songs = new ArrayList<>();
+        this.playlistName = playlistName;
+        this.date = setInitialDate();
+    }
+
+    public Playlist (String playlistName, String date) {
+        songs = new ArrayList<>();
+        this.playlistName = playlistName;
+        this.date = date;
+    }
+
+    protected Playlist(Parcel in) {
+        playlistName = in.readString();
+        date = in.readString();
+        bitmap = in.readParcelable(Bitmap.class.getClassLoader());
+    }
+
+    public void setSong (int index){
+        if(songs.get(index)==null){
+            songs.add(index,null);
+        }
+    }
+
+    public void resetPlaylistBitmap(Context context){
         bitmap = null;
+        retrieveBitmap(context);
+    }
+
+    public void setPlaylistBitmap(Context context){
+        if(bitmap == null) {
+            retrieveBitmap(context);
+        }
+    }
+
+
+
+    public Bitmap getPlaylistBitmap(Context context){
+        setPlaylistBitmap(context);
+        return bitmap;
+    }
+
+    public void retrieveBitmap(Context context){
         for (MusicData s : songs) {
-            bitmap = s.getBitmap();
+            bitmap = s.loadBmap(context);
             if (bitmap != null) {
                 break;
             }
         }
-    }
-
-    public void setPlaylistBitmap(){
-        if(bitmap == null) {
-            for (MusicData s : songs) {
-                bitmap = s.getBitmap();
-                if (bitmap != null) {
-                    break;
-                }
-            }
-        }
-    }
-
-    public Bitmap getPlaylistBitmap(){
-        setPlaylistBitmap();
-        return bitmap;
     }
 
 
@@ -108,14 +118,14 @@ public class Playlist implements Parcelable{
         return songs;
     }
 
+    public void setSongsArray(ArrayList <MusicData> songs){
+        this.songs = songs;
+    }
+
     public void printSongsArray(){
         for(MusicData s: songs){
             System.out.println(s.getPath());
         }
-    }
-
-    public void setSongsArray(ArrayList <MusicData> songs){
-        this.songs = songs;
     }
 
     public String getSongPath(int position){
@@ -123,8 +133,24 @@ public class Playlist implements Parcelable{
     }
 
     public int getLength(){
-        return songs.size();
+        if(songs!=null){return songs.size();}
+        else{return 0;}
     }
+
+    public MusicData getSong(int index){
+            return songs.get(index);
+    }
+
+    public MusicData getSong(String path){
+        for(MusicData s: songs){
+            //System.out.println(s.getPath()+" "+path);
+            if (path.equals(s.getPath())) {
+                return s;
+            }
+        }
+        return null;
+    }
+
 
     public boolean inPlaylist(String path) {
         boolean matches = false;
@@ -150,25 +176,25 @@ public class Playlist implements Parcelable{
         return matches;
     }
 
-    public void addSong(File file){
-        songs.add(new MusicData(file));
-        setPlaylistBitmap();
+    public void addSong(File file, Context context){
+        songs.add(new MusicData(file, context));
+        setPlaylistBitmap(context);
     }
 
-    public void addSong(File file, String date){
+    public void addSong(File file, String date, Context context){
         songs.add(new MusicData(file, date));
-        setPlaylistBitmap();
+        setPlaylistBitmap(context);
     }
-    public void addSong(String path, String date){
+    public void addSong(String path, String date, Context context){
         songs.add(new MusicData(path, date));
-        setPlaylistBitmap();
+        setPlaylistBitmap(context);
     }
-    public void addSong(String path){
-        songs.add(new MusicData(path));
-        setPlaylistBitmap();
+    public void addSong(String path, Context context){
+        songs.add(new MusicData(path, context));
+        setPlaylistBitmap(context);
     }
 
-    public boolean removeSong(String path) {
+    public boolean removeSong(String path, Context context) {
         boolean deleted = false;
         for(MusicData s: songs){
             if (path.equals(s.getPath())) {
@@ -177,11 +203,11 @@ public class Playlist implements Parcelable{
                 break;
             }
         }
-        resetPlaylistBitmap();
+        resetPlaylistBitmap(context);
         return deleted;
     }
 
-    public boolean removeSong(File file) {
+    public boolean removeSong(File file, Context context) {
         String path = file.getAbsolutePath();
         boolean deleted = false;
         for(MusicData s: songs){
@@ -192,7 +218,7 @@ public class Playlist implements Parcelable{
                 break;
             }
         }
-        resetPlaylistBitmap();
+        resetPlaylistBitmap(context);
         return deleted;
     }
 
