@@ -75,6 +75,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginRight="15dp"
+                android:tint="@color/drawable_bar"
                 android:src="@drawable/ic_action_play"
                 app:neumorph_shadowElevation="2dp" />
         </LinearLayout>
@@ -91,6 +92,7 @@
             <soup.neumorphism.NeumorphImageButton
                 android:id="@+id/btnStorage"
                 style="@style/AppTheme"
+                android:tint="@color/drawable_bar"
                 android:theme="@style/Base.Theme.Neumorph"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
@@ -106,6 +108,7 @@
             <soup.neumorphism.NeumorphImageButton
                 android:id="@+id/openFragment2"
                 style="@style/AppTheme"
+                android:tint="@color/drawable_bar"
                 android:theme="@style/Base.Theme.Neumorph"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
@@ -122,6 +125,7 @@
 
                 android:id="@+id/openFragment1"
                 style="@style/AppTheme"
+                android:tint="@color/drawable_bar"
                 android:theme="@style/Base.Theme.Neumorph"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
