@@ -30,6 +30,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:gravity="center_vertical"
+        android:weightSum="20"
         app:layout_constraintTop_toTopOf="parent"
         android:clipChildren="false"
         android:clipToPadding="false">
@@ -41,25 +42,44 @@
             android:fitsSystemWindows="true"
             />-->
 
-        <soup.neumorphism.NeumorphImageButton
-            android:id="@+id/musicImage"
-            android:layout_width="300dp"
-            android:layout_height="300dp"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
             android:layout_gravity="center"
-            android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="100dp"
-            android:adjustViewBounds="true"
-            android:background="@drawable/round"
-            android:backgroundTint="@android:color/holo_blue_dark"
-            android:minHeight="300dp"
-            android:padding="25dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/ic_action_note"
-            app:neumorph_lightSource="leftTop"
-            app:neumorph_shadowElevation="3dp"
-            app:neumorph_shapeType="pressed"
-            android:transitionName="toMusicPlayer"/>
+            app:layout_constraintDimensionRatio="1:1"
+            android:layout_weight="10">
+
+            <soup.neumorphism.NeumorphImageButton
+                android:id="@+id/musicImage"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                android:adjustViewBounds="true"
+                android:background="@drawable/round"
+                android:backgroundTint="@android:color/holo_blue_dark"
+                android:padding="25dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_action_note"
+                app:neumorph_lightSource="leftTop"
+                app:neumorph_shadowElevation="3dp"
+                app:neumorph_shapeType="pressed"
+                android:transitionName="toMusicPlayer"/>
+
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="2"
+            />
 
 
         <RelativeLayout
@@ -73,7 +93,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="15dp"
                 android:layout_marginEnd="15dp"
-                android:layout_marginBottom="0dp"
                 android:text="0:00" />
 
             <TextView
@@ -109,14 +128,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="15dp"
-            android:layout_marginBottom="10dp"
             android:text="Artist: " />
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="2"
+            />
+
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginBottom="20dp"
             android:layout_margin="10dp"
             android:clipChildren="false"
             android:clipToPadding="false">
@@ -124,8 +148,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                android:layout_marginTop="30dp"
+
                 android:gravity="center"
                 android:orientation="horizontal"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -193,11 +216,12 @@
 
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
-
         <Space
             android:layout_width="wrap_content"
-            android:layout_height="30dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             />
+
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
