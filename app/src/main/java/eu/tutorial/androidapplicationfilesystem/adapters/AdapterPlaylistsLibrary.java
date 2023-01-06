@@ -25,7 +25,6 @@ public class AdapterPlaylistsLibrary extends RecyclerView.Adapter <AdapterPlayli
 
     Context context;
     ArrayList<Playlist> musicPlaylists;
-    ViewModelMain viewModelMain;
 
     public AdapterPlaylistsLibrary(Context context, ArrayList<Playlist> musicPlaylists){
     this.context = context;
@@ -56,7 +55,7 @@ public class AdapterPlaylistsLibrary extends RecyclerView.Adapter <AdapterPlayli
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Playlist selectedPlaylist = musicPlaylists.get(position);
         holder.playlistName.setText(selectedPlaylist.getPlaylistName());
-        holder.bitmap.setImageBitmap(selectedPlaylist.getPlaylistBitmap());
+        holder.bitmap.setImageBitmap(selectedPlaylist.getPlaylistBitmap(context));
     }
 
     @Override
