@@ -29,8 +29,6 @@ public class DialogPlaylist {
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.dialog_layout_playlists);
         AppCompatButton newPlaylistButton = dialog.findViewById(R.id.layoutEdit);
-        PlaylistDatabaseHelper myDB = new PlaylistDatabaseHelper(context);
-
 
         viewModelMain = new ViewModelProvider((ViewModelStoreOwner) context).get(ViewModelMain.class);
 
@@ -48,33 +46,18 @@ public class DialogPlaylist {
                 addPlaylistButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-
-
                         String newPlaylistName = addPlaylistName.getText().toString();
                         if(!newPlaylistName.equals("")){
                             if(!playlistExists(newPlaylistName,playlist)){
-                            //playlist.add(new Playlist(addPlaylistName.getText().toString()));
-                            //String lastPlaylistName = playlist.get(playlist.size()-1).getPlaylistName();
-                            //String lastPlaylistDate = playlist.get(playlist.size()-1).getDate();
-                            //myDB.addPlaylist(lastPlaylistName,lastPlaylistDate);
                             Playlist pl = new Playlist(addPlaylistName.getText().toString());
                             viewModelMain.addPlaylist(pl);
-
-                            //playlist.get(playlist.size()-1).addSong(musicFile);
-                            //String songDate = playlist.get(playlist.size()-1).getSongDate(musicFile.getAbsolutePath());
-                            // myDB.addSong(musicFile.getAbsolutePath(),lastPlaylistName,lastPlaylistDate);
-                            //playlist.get(playlist.size()-1).printSongsArray();
-
                             viewModelMain.addSong(musicFile.getAbsolutePath(),pl.getPlaylistName(),pl.getDate());
-
                             dialogInner.cancel();
                             }else {Toast.makeText(context, "Playlist already exists", Toast.LENGTH_SHORT).show();}
                         }else {
                             Toast.makeText(context, "Please enter the name of playlist", Toast.LENGTH_SHORT).show();
                         }
                     }
-
-
                 });
                 dialogInner.show();
                 dialogInner.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
