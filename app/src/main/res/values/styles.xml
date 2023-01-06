@@ -5,7 +5,7 @@
 <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
     <item name="android:windowBackground">#CD0000</item>
     <item name="android:textColor">@color/text</item>
-    <item name="drawableTint">@color/drawable</item>
+    <item name="drawableTint">@color/drawable_menu</item>
     <item name="neumorph_shadowColorDark">@color/neumorphDark</item>
     <item name="neumorph_shadowColorLight">@color/neumorphLight</item>
     <item name="neumorph_shadowElevation">2dp</item>

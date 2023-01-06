@@ -11,6 +11,7 @@
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:layout_centerVertical="true"
+        android:backgroundTint="@color/drawable_menu"
         tools:src="@drawable/ic_action_note" />
 
     <TextView
@@ -21,11 +22,12 @@
         android:layout_toEndOf="@+id/iconPlaylist"
         android:padding="5dp"
         android:text="@string/playlist"
-        android:textColor="@color/black"
+        android:textColor="@color/text"
         android:textSize="20sp" />
 
     <CheckBox
         android:id="@+id/iconPlaylistCheckmark"
+        android:backgroundTint="@color/drawable_bar"
         android:layout_width="25dp"
         android:layout_height="25dp"
         android:layout_alignParentEnd="true"
