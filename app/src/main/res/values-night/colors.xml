@@ -13,7 +13,8 @@
     <color name="neumorphLight">#323232</color>
     <color name="neumorphDark">#919191</color>
     <color name="text">#FFFFFF</color>
-    <color name="button">#434343</color>
-    <color name="drawable">#FFFFFF</color>
+    <color name="button">#333333</color>
+    <color name="drawable_menu">#000000</color>
+    <color name="drawable_bar">#FFFFFF</color>
 
 </resources>
