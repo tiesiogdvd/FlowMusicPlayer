@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/btnLibraryItem"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:layout_marginLeft="25dp"
+    android:layout_marginVertical="5dp">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/imageLibraryItem"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_gravity="center_vertical"
+        android:background="@drawable/img_bg_6"
+        app:shapeAppearanceOverlay="@style/round"
+        android:layout_marginRight="30dp"
+        android:scaleType="centerCrop"
+        />
+
+
+    <LinearLayout
+        android:id="@+id/backgroundLibraryItem"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:background="@drawable/library_item"
+        android:layout_marginRight="50dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginLeft="10dp"
+            android:layout_gravity="center_vertical"
+>
+
+            <TextView
+                android:id="@+id/nameLibraryItem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:text="Song Name"/>
+
+            <TextView
+                android:id="@+id/artistLibraryItem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Artist"
+                android:textSize="11dp"/>
+        </LinearLayout>
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginRight="15dp"
+            android:layout_gravity="center_vertical">
+
+
+
+            <TextView
+                android:id="@+id/lengthLibraryItem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0:00"
+                android:textSize="11dp"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>
