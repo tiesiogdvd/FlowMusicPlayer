@@ -6,14 +6,19 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelStoreOwner;
+
 import eu.tutorial.androidapplicationfilesystem.R;
 import eu.tutorial.androidapplicationfilesystem.activities.MainActivity;
 
 public class SwipeListener implements View.OnTouchListener {
     GestureDetector gestureDetector;
     LinearLayout linearLayout;
+    ViewModelMain viewModelMain;
     public SwipeListener(View view, Context context){
         linearLayout = ((MainActivity)context).findViewById(R.id.bottomNavbar);
+        viewModelMain = new ViewModelProvider((ViewModelStoreOwner) context).get(ViewModelMain.class);
         int threshold = 300;
         int velocity_threshold = 200;
         GestureDetector.SimpleOnGestureListener listener = new GestureDetector.SimpleOnGestureListener(){
@@ -44,10 +49,12 @@ public class SwipeListener implements View.OnTouchListener {
                             if(yDifference>0){
                                 System.out.println("Swiped down");
                                 linearLayout.setVisibility(View.GONE);
+                                viewModelMain.setBarStatus(false);
                             }else {
 
                                 System.out.println("Swiped up");
                                 linearLayout.setVisibility(View.VISIBLE);
+                                viewModelMain.setBarStatus(true);
                             }
                             return true;
                         }
