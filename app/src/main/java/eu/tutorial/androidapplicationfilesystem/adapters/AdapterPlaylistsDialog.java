@@ -17,15 +17,14 @@ import java.io.File;
 import java.util.ArrayList;
 import eu.tutorial.androidapplicationfilesystem.R;
 import eu.tutorial.androidapplicationfilesystem.classes.Playlist;
-import eu.tutorial.androidapplicationfilesystem.classes.PlaylistDatabaseHelper;
 import eu.tutorial.androidapplicationfilesystem.classes.ViewModelMain;
 
 
 public class AdapterPlaylistsDialog extends RecyclerView.Adapter <AdapterPlaylistsDialog.ViewHolder>{
 
     Context context;
-    ArrayList<Playlist> musicPlaylists;
-    File musicFile;
+    ArrayList<Playlist> musicPlaylists; //All playlists with song data
+    File musicFile; //Currently playing music file
     ViewModelMain viewModelMain;
 
 
@@ -33,7 +32,7 @@ public class AdapterPlaylistsDialog extends RecyclerView.Adapter <AdapterPlaylis
         this.context = context;
         this.musicFile = musicFile;
         viewModelMain = new ViewModelProvider((ViewModelStoreOwner) context).get(ViewModelMain.class);
-        this.musicPlaylists = viewModelMain.getPlaylists().getValue();
+        this.musicPlaylists = viewModelMain.getPlaylists().getValue(); //playlists retrieved from viewModel livedata
     }
 
 
@@ -58,14 +57,11 @@ public class AdapterPlaylistsDialog extends RecyclerView.Adapter <AdapterPlaylis
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        //Retrieves playlist and sets ViewHolder with it's name
         Playlist selectedPlaylist = musicPlaylists.get(position);
         holder.playlistName.setText(selectedPlaylist.getPlaylistName());
         holder.icon.setImageResource(R.drawable.ic_action_note);
-        /*if (selectedPlaylist.inPlaylist(path)){
-            holder.checkboxImage.setChecked(true);
-        }else{
-            holder.checkboxImage.setChecked(false);
-        }*/
+        //Checks if playlist contains song and accordingly sets the checkbox
         if (musicPlaylists.get(position).inPlaylist(musicFile)){
             holder.checkbox.setChecked(true);
         }else{
@@ -73,17 +69,22 @@ public class AdapterPlaylistsDialog extends RecyclerView.Adapter <AdapterPlaylis
         }
 
         holder.checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            String playlistName = selectedPlaylist.getPlaylistName();
-            String filePath = musicFile.getAbsolutePath();
+            final String playlistName = selectedPlaylist.getPlaylistName();
+            final String filePath = musicFile.getAbsolutePath();
             String date;
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if(b){
                     System.out.println("Checked");
-                    viewModelMain.addSong(filePath, playlistName);
+                    if(musicFile.exists()){
+                        //checks is musicFile exists due to avoid crashing if file is deleted
+                        viewModelMain.addSong(filePath, playlistName,context);
+                    }
                 }else{
                     System.out.println("Unchecked");
-                    viewModelMain.removeSong(filePath,playlistName);
+                    if(musicFile.exists()) {
+                        viewModelMain.removeSong(filePath, playlistName);
+                    }
                 }
             }
         });
@@ -91,7 +92,10 @@ public class AdapterPlaylistsDialog extends RecyclerView.Adapter <AdapterPlaylis
 
     @Override
     public int getItemCount() {
-        return musicPlaylists.size();
+        if(musicPlaylists!=null) {
+            return musicPlaylists.size();
+        }
+        return 0;
     }
 
 
