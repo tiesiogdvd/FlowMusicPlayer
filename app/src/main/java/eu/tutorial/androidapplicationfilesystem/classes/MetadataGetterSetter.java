@@ -1,7 +1,7 @@
 package eu.tutorial.androidapplicationfilesystem.classes;
 
 
-//Used to set metadata to the main activity views
+//Used to set metadata to music player fragment views
 //Makes use of MusicData class to get the Metadata
 
 import android.content.Context;
@@ -30,52 +30,65 @@ public class MetadataGetterSetter {
     MusicData musicData;
 
     public static void retrieveMetadata(String path, Context context) {  //Song path and mainactivity context
-        TextView songName = ((MainActivity)context).findViewById(R.id.musicSongName);
-        TextView artistName = ((MainActivity)context).findViewById(R.id.musicSongArtist);
-        NeumorphImageButton btnMusicImage = ((MainActivity)context).findViewById(R.id.musicImage);
+        TextView songName = ((MainActivity) context).findViewById(R.id.musicSongName);
+        TextView artistName = ((MainActivity) context).findViewById(R.id.musicSongArtist);
+        NeumorphImageButton btnMusicImage = ((MainActivity) context).findViewById(R.id.musicImage);
         File musicFile = new File(path);
 
         TextView barText = ((MainActivity) context).findViewById(R.id.musicSongNameBar);
         ShapeableImageView barImage = ((MainActivity) context).findViewById(R.id.musicImageBar);
 
-        String title = MusicDataMetadata.getTitle(musicFile);
-        String album = MusicDataMetadata.getAlbum(musicFile);
-        String artist = MusicDataMetadata.getArtist(musicFile);
-        Bitmap bitmap = MusicDataMetadata.getBitmap(musicFile);
+        if (musicFile.exists()) {
+            String title = MusicDataMetadata.getTitle(musicFile);
+            String album = MusicDataMetadata.getAlbum(musicFile);
+            String artist = MusicDataMetadata.getArtist(musicFile);
+            Bitmap bitmap = MusicDataMetadata.getBitmap(musicFile);
+            //Implementing the changing of views in MainActivity
+            songName.setText("Title: " + title);
+            barText.setText(title);
+            if (artist != null) {
+                artistName.setVisibility(View.VISIBLE);
+                artistName.setText("Artist: " + artist);
+            } else {
+                artistName.setVisibility(View.GONE);
+            }
+            if (bitmap != null) {
+                btnMusicImage.setImageBitmap(bitmap);
+                barImage.setImageBitmap(bitmap);
+                StyleSetter.setStyles(context, bitmap);
 
-
-        //Implementing the changing of views in MainActivity
-        songName.setText("Title: " + title);
-        barText.setText(title);
-        if (artist != null) {
-            artistName.setVisibility(View.VISIBLE);
-            artistName.setText("Artist: " + artist);
-        } else {
-            artistName.setVisibility(View.GONE);
-        }
-        if (bitmap != null) {
-            btnMusicImage.setImageBitmap(bitmap);
-            barImage.setImageBitmap(bitmap);
-            StyleSetter.setStyles(context,bitmap);
-
-        } else {
+            } else {
+                barImage.setImageResource(R.drawable.img_bg_2);
+                btnMusicImage.setImageResource(R.drawable.ic_action_note);
+                StyleSetter.setStyles(context, bitmap);
+                //
+            }
+        }else{
             barImage.setImageResource(R.drawable.img_bg_2);
             btnMusicImage.setImageResource(R.drawable.ic_action_note);
-            StyleSetter.setStyles(context,bitmap);
-            //
+            songName.setText("File no longer found");
+            artistName.setVisibility(View.GONE);
+            StyleSetter.setInitBackground(context);
+            //StyleSetter.setStyles(context, bitmap);
         }
     }
 
-    public static void setBarMetadata (Context context, String path){
+    public static void setBarMetadata (Context context, String path) {
         TextView barText = ((MainActivity) context).findViewById(R.id.musicSongNameBar);
         ShapeableImageView barImage = ((MainActivity) context).findViewById(R.id.musicImageBar);
         File musicFile = new File(path);
-        String title = MusicDataMetadata.getTitle(musicFile);
-        Bitmap bitmap = MusicDataMetadata.getBitmap(musicFile);
-        barText.setText(title);
-        if(bitmap!=null){
-            barImage.setImageBitmap(bitmap);
+
+        if (musicFile.exists()) {
+            String title = MusicDataMetadata.getTitle(musicFile);
+            Bitmap bitmap = MusicDataMetadata.getBitmap(musicFile);
+            barText.setText(title);
+            if (bitmap != null) {
+                barImage.setImageBitmap(bitmap);
+            } else {
+                barImage.setImageResource(R.drawable.img_bg_2);
+            }
         }else{
+            barText.setText("File no longer found");
             barImage.setImageResource(R.drawable.img_bg_2);
         }
     }

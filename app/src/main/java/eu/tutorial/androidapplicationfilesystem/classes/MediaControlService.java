@@ -17,6 +17,8 @@ import android.os.IBinder;
 
 import androidx.annotation.Nullable;
 
+import java.io.File;
+
 import eu.tutorial.androidapplicationfilesystem.R;
 import eu.tutorial.androidapplicationfilesystem.activities.MainActivity;
 
@@ -113,23 +115,25 @@ public class MediaControlService extends Service{
         return 0;
     }
 
-    private void actionPlay(String path){
+    private void actionPlay(String path) {
         //finished = false;
-        mp.release();
-        mp = MediaPlayer.create(this, Uri.parse(path));
-        mp.start();
-        mpDuration = mp.getDuration();
-        mpAvailable = true;
-        musicPath=path;
-        Intent notificationIntent = new Intent(this, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
-        Notification notification = new Notification.Builder(this, CHANNEL_ID_1)
-                .setContentTitle("Song playing")
-                .setContentText(path)
-                .setSmallIcon(R.drawable.ic_action_folder)
-                .setContentIntent(pendingIntent)
-                .build(); //this will start the service
-        startForeground(9,notification);//but this is important to keep in running in the foreground
+        if (new File(path).exists()) {
+            mp.release();
+            mp = MediaPlayer.create(this, Uri.parse(path));
+            mp.start();
+            mpDuration = mp.getDuration();
+            mpAvailable = true;
+            musicPath = path;
+            Intent notificationIntent = new Intent(this, MainActivity.class);
+            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
+            Notification notification = new Notification.Builder(this, CHANNEL_ID_1)
+                    .setContentTitle("Song playing")
+                    .setContentText(path)
+                    .setSmallIcon(R.drawable.ic_action_folder)
+                    .setContentIntent(pendingIntent)
+                    .build(); //this will start the service
+            startForeground(9, notification);//but this is important to keep in running in the foreground
+        }
     }
 
     private void actionNullNotification(){

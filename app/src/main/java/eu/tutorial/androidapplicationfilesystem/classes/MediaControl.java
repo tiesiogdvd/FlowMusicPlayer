@@ -19,6 +19,9 @@ import android.view.View;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+
+import java.io.File;
+
 import eu.tutorial.androidapplicationfilesystem.R;
 import eu.tutorial.androidapplicationfilesystem.activities.MainActivity;
 import soup.neumorphism.NeumorphImageButton;
@@ -64,46 +67,47 @@ public class MediaControl extends AppCompatActivity {
 
 
 
-    public void bindService(){
-        serviceIntent.setAction("create");
-        ContextCompat.startForegroundService(context, serviceIntent);
+    public void bindService() {
+            serviceIntent.setAction("create");
+            ContextCompat.startForegroundService(context, serviceIntent);
 
-        if(serviceConnection==null){
-            serviceConnection = new ServiceConnection() {
-                @Override
-                public void onServiceConnected(ComponentName name, IBinder iBinder) {
-                    MediaControlService.MyServiceBinder myServiceBinder = (MediaControlService.MyServiceBinder)iBinder;
-                    mediaControlService = myServiceBinder.getService();
-                    isServiceBound = true;
-                    //bindService method is not instant
-                    //For that reason code for runnable is activated only after the service is binded
-                    //Otherwise methods might be called before the bind and cause crashes
+            if (serviceConnection == null) {
+                serviceConnection = new ServiceConnection() {
+                    @Override
+                    public void onServiceConnected(ComponentName name, IBinder iBinder) {
+                        MediaControlService.MyServiceBinder myServiceBinder = (MediaControlService.MyServiceBinder) iBinder;
+                        mediaControlService = myServiceBinder.getService();
+                        isServiceBound = true;
+                        //bindService method is not instant
+                        //For that reason code for runnable is activated only after the service is binded
+                        //Otherwise methods might be called before the bind and cause crashes
 
-                    if(!mediaControlService.musicPath.equals("none")){ //checks if there was music played before
-                        String path = mediaControlService.musicPath; //important on activity changes like rotation
-                        MetadataGetterSetter.setBarMetadata(context,path);
-                        if(mediaControlService.isMediaPlaying()){
-                            btnPlay.setImageResource(R.drawable.ic_action_pause);
-                        }else{
-                            //StyleSetter.setInitBackground(context);
-                        }
-                    }else{
-                        if(lastSong!="" && lastPosition != -1 && lastSong != null){
-                            mediaControlService.playMedia(lastSong);
-                            mediaControlService.mediaSeekTo(lastPosition);
-                            mediaControlService.pauseMedia();
-                            btnPlay.setImageResource(R.drawable.ic_action_play);
-                            MetadataGetterSetter.setBarMetadata(context,lastSong);
+                        if (!mediaControlService.musicPath.equals("none")) { //checks if there was music played before
+                            String path = mediaControlService.musicPath; //important on activity changes like rotation
+                            MetadataGetterSetter.setBarMetadata(context, path);
+                            if (mediaControlService.isMediaPlaying()) {
+                                btnPlay.setImageResource(R.drawable.ic_action_pause);
+                            } else {
+                                //StyleSetter.setInitBackground(context);
+                            }
+                        } else {
+                            if (lastSong != "" && lastPosition != -1 && lastSong != null && new File(lastSong).exists()) {
+                                    mediaControlService.playMedia(lastSong);
+                                    mediaControlService.mediaSeekTo(lastPosition);
+                                    mediaControlService.pauseMedia();
+                                    btnPlay.setImageResource(R.drawable.ic_action_play);
+                                    MetadataGetterSetter.setBarMetadata(context, lastSong);
+                            }
                         }
                     }
-                }
-                @Override
-                public void onServiceDisconnected(ComponentName name) {
-                    isServiceBound=false;
-                }
-            };
-        }
-        context.bindService(serviceIntent,serviceConnection,BIND_AUTO_CREATE);
+
+                    @Override
+                    public void onServiceDisconnected(ComponentName name) {
+                        isServiceBound = false;
+                    }
+                };
+            }
+            context.bindService(serviceIntent, serviceConnection, BIND_AUTO_CREATE);
     }
 
 
