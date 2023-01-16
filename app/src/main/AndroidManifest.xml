@@ -5,8 +5,9 @@
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/><!--gives access to all media in the device, but should be removed if app is to be published in play store-->
-    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" /> <!-- gives access to all media in the device, but should be removed if app is to be published in play store -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
@@ -22,20 +23,34 @@
         android:theme="@style/Theme.AndroidApplicationFileSystem"
         tools:targetApi="31">
         <activity
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:name=".activities.SettingsActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.FileListActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:exported="false" />
         <activity
             android:name=".activities.MainActivity"
-            android:launchMode="singleTask"
-            android:exported="true">
+            android:exported="true"
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:name=".classes.MediaControlService" android:enabled="true"/>
+
+        <service
+            android:name=".classes.MediaControlService"
+            android:enabled="true" />
+        <receiver android:name=".classes.NotificationReceiver" android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="PREVIOUS"/>
+                <action android:name="PLAY"/>
+                <action android:name="NEXT"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
