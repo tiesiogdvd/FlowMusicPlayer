@@ -156,7 +156,7 @@ public class PlaylistRepository extends SQLiteOpenHelper {
         }
         cursor.close();
         db.close();
-        playlists.postValue(playlistArray);
+        playlists.setValue(playlistArray);
         return playlists;
     }
 
@@ -177,7 +177,8 @@ public class PlaylistRepository extends SQLiteOpenHelper {
                             cursor.getString(4), //collumn 4 song_artist
                             cursor.getString(5), //collumn 4 song_album
                             cursor.getInt(6), //collumn 4 song_length
-                            cursor.getString(7) //collumn 4 date_song_added
+                            cursor.getString(7), //collumn 4 date_song_added
+                            context
                     );
                     songs.add(song);
                 }else{
