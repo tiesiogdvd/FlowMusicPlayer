@@ -5,9 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    tools:context=".activities.fragments.FragmentLibrary"
+    tools:context=".activities.fragmentsMainActivity.FragmentLibrary"
     android:theme="@style/AppTheme"
-    android:background="@color/background"
+
     >
 
     <LinearLayout
@@ -78,6 +78,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/btnLibraryPlaylists"
             android:layout_width="match_parent"
             android:layout_height="35dp"
             android:layout_marginBottom="15dp"
@@ -107,6 +108,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/btnLibraryFavorites"
             android:layout_width="match_parent"
             android:layout_height="35dp"
             android:background="@drawable/library_buttons"
@@ -136,6 +138,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/btnLibraryFolders"
             android:layout_width="match_parent"
             android:layout_height="35dp"
             android:background="@drawable/library_buttons"
@@ -165,6 +168,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/btnLibraryStorage"
             android:layout_width="match_parent"
             android:layout_height="35dp"
             android:background="@drawable/library_buttons"
