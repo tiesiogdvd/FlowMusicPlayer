@@ -4,11 +4,15 @@ This is an application for my own purposes to learn both java and android native
 
 ![Group 267](https://user-images.githubusercontent.com/116734709/212676371-f4e822a9-ecf2-4238-b7bf-ccf86a8015d1.png)
 
-![Group 268](https://user-images.githubusercontent.com/116734709/212676791-84d4e1dc-6203-4d84-a469-86cd6f95576c.png)
+![Group 269](https://user-images.githubusercontent.com/116734709/212678739-3882f35f-693a-4d5c-9a8b-c4c5033d9d34.png)
 
 
 
-![Screen_Recording_20230116_103636_Flow_Music_Player_AdobeExpress (1)](https://user-images.githubusercontent.com/116734709/212674035-30ba6f35-4ea9-4915-9410-b0387273c44c.gif)
+
+![77c025530fc85e708a7f5b2b23378218ad2206a6](https://user-images.githubusercontent.com/116734709/212679883-0ee54db2-2073-44da-a9d9-06faac8a9c29.gif)
+
+
+![2e838470a213f1dc59a0381c56d0c977d7f84ddc](https://user-images.githubusercontent.com/116734709/212679500-09b51f87-0971-4070-b1f5-5602654e5514.gif)
 
 
 
