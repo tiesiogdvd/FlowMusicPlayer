@@ -10,10 +10,12 @@
     android:animateLayoutChanges="true"
     android:orientation="vertical"
     android:theme="@style/AppTheme"
-    tools:context=".activities.MainActivity">
+    tools:context=".activities.MainActivity"
+    android:background="@drawable/background_list"
+    android:fitsSystemWindows="false"
+    >
 
     <ImageView
-
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
@@ -27,6 +29,7 @@
         app:layout_constraintBottom_toTopOf="@+id/navbars"/>
 
 
+
     <LinearLayout
         android:id="@+id/navbars"
         android:layout_width="match_parent"
@@ -37,6 +40,9 @@
         android:layout_margin="5dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
+
+
+
         <LinearLayout
             android:id="@+id/musicBar"
             android:layout_width="match_parent"
@@ -44,13 +50,14 @@
             android:layout_marginHorizontal="15dp"
             android:layout_marginVertical="5dp"
             android:gravity="center_vertical"
-            android:visibility="visible">
+            android:visibility="visible"
+            android:weightSum="10">
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/musicImageBar"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:background="@drawable/img_bg_5"
+                android:background="@color/button"
                 android:scaleType="centerCrop"
                 app:shapeAppearanceOverlay="@style/round"
                 android:transitionName="toMusicPlayer"
@@ -58,26 +65,26 @@
 
             <TextView
                 android:id="@+id/musicSongNameBar"
-                android:layout_width="250dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:text="Title:"
-                android:textSize="15dp" />
+                android:textColor="@color/drawable_bar"
+                android:textSize="13dp"
+                android:layout_weight="9"/>
 
-            <Space
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
 
-            <soup.neumorphism.NeumorphImageButton
+            <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/playButtonBar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:layout_gravity="center_vertical"
-                android:layout_marginRight="15dp"
                 android:tint="@color/drawable_bar"
                 android:src="@drawable/ic_action_play"
-                app:neumorph_shadowElevation="2dp" />
+                app:neumorph_shadowElevation="2dp"
+                android:layout_weight="1"
+                />
+
         </LinearLayout>
 
         <LinearLayout
@@ -85,19 +92,20 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="10dp"
+            android:layout_marginBottom="-8dp"
             android:gravity="center"
             android:visibility="visible">
 
 
-            <soup.neumorphism.NeumorphImageButton
-                android:id="@+id/btnStorage"
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/openLibrary"
                 style="@style/AppTheme"
-                android:tint="@color/drawable_bar"
-                android:theme="@style/Base.Theme.Neumorph"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:padding="10dp"
-                android:src="@drawable/ic_action_folder"/>
+                android:padding="12dp"
+                android:src="@drawable/ic_action_navbar_library2"
+                />
+
 
             <Space
                 android:layout_width="wrap_content"
@@ -105,15 +113,15 @@
                 android:layout_weight="0.5" />
 
 
-            <soup.neumorphism.NeumorphImageButton
-                android:id="@+id/openFragment2"
+            <com.google.android.material.imageview.ShapeableImageView
+
                 style="@style/AppTheme"
                 android:tint="@color/drawable_bar"
-                android:theme="@style/Base.Theme.Neumorph"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:padding="10dp"
-                android:src="@drawable/ic_action_previous"/>
+                android:padding="14dp"
+                android:src="@drawable/ic_action_navbar_equalizer1"
+                />
 
             <Space
                 android:layout_width="wrap_content"
@@ -121,19 +129,27 @@
                 android:layout_weight="0.5" />
 
 
-            <soup.neumorphism.NeumorphImageButton
-
-                android:id="@+id/openFragment1"
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/openSettings"
                 style="@style/AppTheme"
                 android:tint="@color/drawable_bar"
-                android:theme="@style/Base.Theme.Neumorph"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:padding="10dp"
-                android:src="@drawable/ic_action_settings"/>
+                android:padding="15dp"
+                android:src="@drawable/ic_action_navbar_settings"
+                />
 
 
         </LinearLayout>
+        <View
+            android:layout_width="200dp"
+            android:layout_height="4dp"
+            style="@style/round"
+            android:layout_marginHorizontal="50dp"
+            android:background="#56000000"
+            android:layout_gravity="center_horizontal"/>
+
+
     </LinearLayout>
 
 
