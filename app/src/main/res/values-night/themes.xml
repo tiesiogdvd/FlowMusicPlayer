@@ -10,10 +10,19 @@
         <item name="colorSecondaryVariant">@color/teal_200</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
-
+        <item name="android:windowTranslucentStatus">true</item>
 
 
         <!-- Customize your theme here. -->
         <item name="android:windowBackground">@color/background</item>
+
+
     </style>
+
+    <style name="DialogAnimation">
+        <item  name="android:windowEnterAnimation">@anim/slide_in_bottom</item>
+        <item  name="android:windowExitAnimation">@anim/slide_out_bottom</item>
+    </style>
+
+
 </resources>
