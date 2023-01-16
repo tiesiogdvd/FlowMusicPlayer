@@ -10,6 +10,7 @@
     <item name="neumorph_shadowColorLight">@color/neumorphLight</item>
     <item name="neumorph_shadowElevation">2dp</item>
     <item name="android:windowContentTransitions">true</item>
+    <item name="android:windowIsFloating">false</item>
 </style>
 
 
