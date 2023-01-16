@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    tools:context=".activities.fragmentsMainActivity.FragmentLibrary"
+    android:theme="@style/AppTheme">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:weightSum="10">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_vertical"
+            android:layout_weight="9.7">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="25dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:text="Library"
+                android:textSize="30dp"
+                />
+
+
+            <LinearLayout
+                android:id="@+id/btnLibraryAllSongs"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/library_buttons"
+                android:layout_marginHorizontal="25dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="All Songs"
+                    android:textSize="18dp"
+                    android:layout_marginLeft="5dp"/>
+
+                <Space
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"/>
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@drawable/ic_action_note"
+                    android:layout_gravity="center"
+                    android:layout_marginRight="10dp"
+                    />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/btnLibraryPlaylists"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/library_buttons"
+                android:layout_marginHorizontal="25dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Playlists"
+                    android:textSize="18dp"
+                    android:layout_marginLeft="5dp"/>
+
+                <Space
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"/>
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@drawable/ic_action_playlist"
+                    android:layout_gravity="center"
+
+                    android:layout_marginRight="10dp"
+                    />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/btnLibraryFavorites"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:background="@drawable/library_buttons"
+                android:layout_marginHorizontal="25dp"
+                android:layout_marginBottom="10dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Favorites"
+                    android:textSize="18dp"
+                    android:layout_marginLeft="5dp"/>
+
+                <Space
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"/>
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@drawable/ic_action_favorite"
+                    android:layout_gravity="center"
+
+                    android:layout_marginRight="10dp"
+                    />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/btnLibraryFolders"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:background="@drawable/library_buttons"
+                android:layout_marginHorizontal="25dp"
+                android:layout_marginBottom="10dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Folders"
+                    android:textSize="18dp"
+                    android:layout_marginLeft="5dp"/>
+
+                <Space
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"/>
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@drawable/ic_action_folder"
+                    android:layout_gravity="center"
+
+                    android:layout_marginRight="10dp"
+                    />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/btnLibraryStorage"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:background="@drawable/library_buttons"
+                android:layout_marginHorizontal="25dp"
+                android:layout_marginBottom="10dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Storage"
+                    android:textSize="18dp"
+                    android:layout_marginLeft="5dp"/>
+
+                <Space
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"/>
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@drawable/ic_action_note"
+                    android:layout_gravity="center"
+
+                    android:layout_marginRight="10dp"
+                    />
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="10dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Recent playlists"
+                android:textSize="20dp"
+                android:layout_marginLeft="25dp"
+                android:layout_marginBottom="5dp"
+                />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/libraryRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="25dp"
+                android:orientation="vertical"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:itemCount="10"
+                tools:listitem="@layout/recycler_item_library"
+                android:layout_marginBottom="30dp"/>
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
