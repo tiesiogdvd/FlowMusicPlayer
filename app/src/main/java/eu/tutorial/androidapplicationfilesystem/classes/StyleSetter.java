@@ -1,23 +1,22 @@
 package eu.tutorial.androidapplicationfilesystem.classes;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.TransitionDrawable;
+import android.view.animation.Animation;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.material.imageview.ShapeableImageView;
 
-import org.w3c.dom.Text;
-
-import java.io.File;
-
 import eu.tutorial.androidapplicationfilesystem.R;
 import eu.tutorial.androidapplicationfilesystem.activities.MainActivity;
-import eu.tutorial.androidapplicationfilesystem.activities.fragments.FragmentMusicPlayer;
-import soup.neumorphism.NeumorphButton;
 import soup.neumorphism.NeumorphImageButton;
 
 public class StyleSetter {
@@ -25,12 +24,12 @@ public class StyleSetter {
     static TextView title, artist, remainingText, totalText;
     static NeumorphImageButton btnMusicImage;
     static ImageView imageView;
-    static NeumorphImageButton btnPlay;
-    static NeumorphImageButton btnPrev;
-    static NeumorphImageButton btnNext;
-    static NeumorphImageButton btnPlaylist;
-    static NeumorphImageButton btnFav;
-    static NeumorphImageButton btnStorage;
+    static ImageButton btnPlay;
+    static ImageButton btnPrev;
+    static ImageButton btnNext;
+    static ImageButton btnPlaylist;
+    static ImageButton btnFav;
+    //static ShapeableImageView btnStorage;
     static Bitmap m_bitmap;
     static Bitmap m_drawableBitmap;
     static TextView barText;
@@ -57,7 +56,7 @@ public class StyleSetter {
         btnNext = ((MainActivity) context).findViewById(R.id.nextButton);
         btnPlaylist = ((MainActivity) context).findViewById(R.id.playlistButton);
         btnFav = ((MainActivity) context).findViewById(R.id.favoriteButton);
-        btnStorage = ((MainActivity) context).findViewById(R.id.btnStorage);
+        //btnStorage = ((MainActivity) context).findViewById(R.id.btnStorage);
         title = ((MainActivity) context).findViewById(R.id.musicSongName);
         artist = ((MainActivity) context).findViewById(R.id.musicSongArtist);
         remainingText = ((MainActivity) context).findViewById(R.id.musicRemainingText);
@@ -72,13 +71,43 @@ public class StyleSetter {
             BitmapDrawable drawable;
             Bitmap blurredBitmap = BlurBuilder.blur(context,m_bitmap);
             drawable = new BitmapDrawable(context.getResources(), blurredBitmap);
-            imageView.setBackground(drawable);
+            setImageDrawableWithAnimation(imageView, drawable, 200);
+            //imageView.setBackground(drawable);
+            //imageView.animate().setStartDelay(100).setDuration(200);
             setFill(true);
         }else {
-            m_drawableBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.img_bg_3);
-            Bitmap blurredBitmap = BlurBuilder.blur(context,m_drawableBitmap);
-            BitmapDrawable drawable = new BitmapDrawable(context.getResources(), blurredBitmap);
-            imageView.setBackground(drawable);
+            int UIMode = context.getResources().getConfiguration().uiMode;
+            System.out.println(UIMode);
+
+            if(UIMode == 33){ //33 is the night mode
+                m_drawableBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.img_bg_9);
+                Bitmap blurredBitmap = BlurBuilder.blur(context,m_drawableBitmap);
+                BitmapDrawable drawable = new BitmapDrawable(context.getResources(), blurredBitmap);
+                setImageDrawableWithAnimation(imageView, drawable, 200);
+                //imageView.setBackground(drawable);
+                //imageView.animate().setStartDelay(100).setDuration(200);
+                //imageView.getBackground().setAlpha(40);
+                //imageView.getDrawable().setAlpha(0);
+                //imageView.setImageAlpha(0);
+                imageView.getDrawable().mutate().setAlpha(0);
+
+            }
+            if(UIMode == 17){ //17 for the light mode
+                m_drawableBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.img_bg_7);
+                Bitmap blurredBitmap = BlurBuilder.blur(context,m_drawableBitmap);
+                BitmapDrawable drawable = new BitmapDrawable(context.getResources(), blurredBitmap);
+                //drawable.setAlpha(0);
+                setImageDrawableWithAnimation(imageView, drawable, 400);
+                //imageView.setBackground(drawable);
+                //imageView.animate().setStartDelay(100).setDuration(200);
+                //imageView.getBackground().setAlpha(20);
+                //imageView.getDrawable().setAlpha(20);
+                imageView.getDrawable().mutate().setAlpha(0);
+                //imageView.setImageAlpha(0);
+            }
+
+            //imageView.setBackground(drawable);
+            //imageView.getBackground().setAlpha(80);
             setFill(false);
         }
 
@@ -102,7 +131,7 @@ public class StyleSetter {
         btnNext.setColorFilter(color);
         btnPlaylist.setColorFilter(color);
         btnFav.setColorFilter(color);
-        btnStorage.setColorFilter(color);
+        //btnStorage.setColorFilter(color);
         title.setTextColor(color);
         artist.setTextColor(color);
         remainingText.setTextColor(color);
@@ -111,11 +140,16 @@ public class StyleSetter {
 
     public static void setInitBackground(Context context){
         imageView = ((MainActivity)context).findViewById(R.id.layoutBackground);
+
         Bitmap drawableBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.img_bg_3);
         m_drawableBitmap = drawableBitmap;
         Bitmap blurredBitmap = BlurBuilder.blur(context,drawableBitmap);
         BitmapDrawable drawable = new BitmapDrawable(context.getResources(), blurredBitmap);
-        imageView.setBackground(drawable);
+
+        //imageView.setBackground(drawable);
+        setImageDrawableWithAnimation(imageView, drawable, 200);
+
+        imageView.getBackground().setAlpha(0);
         //setFill(false);
     }
 
@@ -134,5 +168,17 @@ public class StyleSetter {
             imageView.setBackground(drawable);
         }
         //setFill(false);
+    }
+
+    public static void setImageDrawableWithAnimation(ImageView imageView, Drawable drawable, int duration) {
+        Drawable currentDrawable = imageView.getDrawable();
+        if (currentDrawable == null) {
+            imageView.setImageDrawable(drawable);
+            return;
+        }
+        TransitionDrawable transitionDrawable = new TransitionDrawable(new Drawable[] {currentDrawable, drawable});
+        transitionDrawable.setCrossFadeEnabled(true);
+        imageView.setImageDrawable(transitionDrawable);
+        transitionDrawable.startTransition(duration);
     }
 }
