@@ -39,10 +39,14 @@ public class MetadataGetterSetter {
         ShapeableImageView barImage = ((MainActivity) context).findViewById(R.id.musicImageBar);
 
         if (musicFile.exists()) {
-            String title = MusicDataMetadata.getTitle(musicFile);
-            String album = MusicDataMetadata.getAlbum(musicFile);
-            String artist = MusicDataMetadata.getArtist(musicFile);
-            Bitmap bitmap = MusicDataMetadata.getBitmap(musicFile);
+            MusicDataMetadata musicDataMetadata = new MusicDataMetadata();
+            musicDataMetadata.setAllData(musicFile.getAbsolutePath());//TODO: replace static metadata methods
+
+            String title = musicDataMetadata.title;
+            System.out.println(title + " SONG NAME REQUEST");
+            String album = musicDataMetadata.album;
+            String artist = musicDataMetadata.artist;
+            Bitmap bitmap = musicDataMetadata.bitmap;
             //Implementing the changing of views in MainActivity
             songName.setText("Title: " + title);
             barText.setText(title);
