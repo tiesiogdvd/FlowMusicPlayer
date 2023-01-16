@@ -62,7 +62,7 @@ public class AdapterPlaylistsDialog extends RecyclerView.Adapter <AdapterPlaylis
         holder.playlistName.setText(selectedPlaylist.getPlaylistName());
         holder.icon.setImageResource(R.drawable.ic_action_note);
         //Checks if playlist contains song and accordingly sets the checkbox
-        if (musicPlaylists.get(position).inPlaylist(musicFile)){
+        if (musicPlaylists.get(position).inPlaylist(musicFile.getAbsolutePath())){
             holder.checkbox.setChecked(true);
         }else{
             holder.checkbox.setChecked(false);
