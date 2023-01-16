@@ -1,7 +1,10 @@
 package eu.tutorial.androidapplicationfilesystem.classes;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
@@ -11,6 +14,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Set;
 
 
 public class ViewModelMain extends AndroidViewModel{
@@ -24,8 +28,12 @@ public class ViewModelMain extends AndroidViewModel{
     private String lastFragment;
     private Boolean barStatus;
     private Boolean isLoaded;
+    private boolean firstLoad = true;
     String allSongPlaylistTag;
     PlaylistRepository myDB;
+
+    MutableLiveData <Playlist> currentSource;
+    MutableLiveData <Integer> currentIndex;
 
     public ViewModelMain(@NonNull Application application) {
         super(application);
@@ -36,16 +44,31 @@ public class ViewModelMain extends AndroidViewModel{
         isLoaded = false;
         lastFragment = "";
         barStatus = true;
-
+        currentSource = new MutableLiveData<>();
+        currentIndex = new MutableLiveData<>();
+        SharedPreferences sh = application.getSharedPreferences("lastMusic",MODE_PRIVATE);
     }
 
     public void setPlaylists1(){
         playlists = myDB.getFullPlaylistsData();
+        playlists.setValue(playlists.getValue());
         isLoaded = true;
+
+        String lastSongSource = Settings.getLastSongSource();
+        Integer lastSongIndex = Settings.getLastSongIndex();
+        Playlist playlist = getPlaylist(lastSongSource);
+
+        currentSource.setValue(playlist);
+        currentIndex.setValue(lastSongIndex);
+
     }
 
     public boolean isLoaded(){
         return isLoaded;
+    }
+
+    public void getSources(){
+
     }
 
     public void addPlaylist(String playlistName, String date){
@@ -91,6 +114,22 @@ public class ViewModelMain extends AndroidViewModel{
         playlists.postValue(playlistsAddSong);
     }
 
+
+
+    public void addSong(SongDataTest song, String playlistName){
+        ArrayList <Playlist> playlistsAddSong = playlists.getValue();
+        for(Playlist playlist: playlistsAddSong){
+            if(playlist.getPlaylistName().equals(playlistName)){
+                playlist.addSong(song.getPath(),song.getSongTitle(),song.getSongArtist(),song.getAlbum(),song.getDuration(),getApplication().getBaseContext());
+                myDB.addSong(playlistName,song.getPath(),song.getSongTitle(),song.getSongArtist(),song.getAlbum(),song.getDuration(),new Date().toString());
+                break;
+            }
+        }
+        playlists.postValue(playlistsAddSong);
+    }
+
+
+
     public void removeSong(String path, String playlistName){
         myDB.removeSong(path, playlistName);
         ArrayList <Playlist> playlistsRemoveSong = playlists.getValue();
@@ -103,20 +142,6 @@ public class ViewModelMain extends AndroidViewModel{
         playlists.postValue(playlistsRemoveSong);
     }
 
-    private void initThread(){
-        Runnable runnable1 = new Runnable() {
-            @Override
-            public void run() {
-                setPlaylists();
-
-                //setAllSongsMetadata(getApplication().getBaseContext());
-            }
-        };
-        Thread thread = new Thread(runnable1);
-        System.out.println(thread.getName());
-        thread.start();
-        thread.interrupt();
-    }
 
     private void setPlaylists(){
         Runnable runnable1 = new Runnable() {
@@ -143,7 +168,6 @@ public class ViewModelMain extends AndroidViewModel{
 
     private void setAllSongsMetadata(Context context){
         setAllSongsPaths();
-
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -155,6 +179,7 @@ public class ViewModelMain extends AndroidViewModel{
                 ArrayList<Playlist>tempPlaylist = playlists.getValue();
                 tempPlaylist.add(allSongs);
                 playlists.postValue(tempPlaylist);
+                Settings.setLastLoadingFinished(true);
             }
         };
         Thread thread = new Thread(runnable);
@@ -162,20 +187,20 @@ public class ViewModelMain extends AndroidViewModel{
         thread.start();
         thread.interrupt();
 
-
-
-
     }
 
     public Playlist getAllSongsMetadata(){
         return allSongs;
     }
 
-    public Playlist getPlaylist(String requestedPlaylist){
-        for (Playlist playlist:playlists.getValue()) {
-            //System.out.println(playlist.getSong(0));
-            if (playlist.getPlaylistName().equals(requestedPlaylist)){
-                return playlist;
+    public Playlist getPlaylist(String requestedPlaylist) {
+        ArrayList<Playlist> tempPlaylists = playlists.getValue();
+        if (tempPlaylists != null) {
+            for (Playlist playlist : tempPlaylists) {
+                if (playlist.getPlaylistName().equals(requestedPlaylist)) {
+                    playlist.getSongsArray().sort(MusicData.titleComparator);
+                    return playlist;
+                }
             }
         }
         return null;
@@ -202,8 +227,63 @@ public class ViewModelMain extends AndroidViewModel{
     }
 
     public void loadDataAndCache() {
+        Settings.setLastLoadingFinished(false);
         Date date = new Date();
         addPlaylist(allSongPlaylistTag, date.toString());
         setAllSongsMetadata(getApplication().getBaseContext());
     }
+
+    public void loadDataInit(){
+
+        Settings.setLastLoadingFinished(false);
+        addPlaylist(allSongPlaylistTag, new Date().toString());
+        ArrayList<SongDataTest> musicInfo = SongDataGetMusicInfo.getMusicInfo(getApplication().getBaseContext());
+
+        for (SongDataTest song: musicInfo) {
+           addSong(song, allSongPlaylistTag);
+        }
+
+        Settings.setLastLoadingFinished(true);
+    }
+
+    public Boolean getFirstLoad() {
+        return firstLoad;
+    }
+
+    public void setFirstLoad(Boolean firstLoad) {
+        this.firstLoad = firstLoad;
+    }
+
+
+
+
+    public MutableLiveData<Playlist> getCurrentSource() {
+        return currentSource;
+    }
+
+    public MutableLiveData<Integer> getCurrentIndex() {
+        return currentIndex;
+    }
+
+
+    public void setCurrentSource(Playlist currentSource, Integer index) {
+        this.currentSource.setValue(currentSource);
+        this.currentIndex.setValue(index);
+        Settings.setLastSongIndex(index);
+        Settings.setLastSongSource(currentSource.getPlaylistName());
+    }
+
+    public void setCurrentSourcePlaylist(Playlist currentSource) {
+        this.currentSource.setValue(currentSource);
+        Settings.setLastSongSource(currentSource.getPlaylistName());
+    }
+
+    public void setCurrentSourceInteger(Integer index) {
+        if (index != null) {
+            System.out.println("YEAAA");
+            this.currentIndex.setValue(index);
+            Settings.setLastSongIndex(index);
+        }
+    }
+
 }
