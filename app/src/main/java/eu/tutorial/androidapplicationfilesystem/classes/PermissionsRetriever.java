@@ -17,6 +17,7 @@ public class PermissionsRetriever {
     public static int checkPermissions(Context context){
         Boolean resultStorageGranted = ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
         Boolean resultRecordAudioGranted = ContextCompat.checkSelfPermission(context,Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED;
+        Boolean resultInternetAccessGranted = ContextCompat.checkSelfPermission(context,Manifest.permission.INTERNET) == PackageManager.PERMISSION_GRANTED;
 
         List<String> permissionRequest = new ArrayList<String>();
 
@@ -26,12 +27,18 @@ public class PermissionsRetriever {
         if(!resultRecordAudioGranted){
             permissionRequest.add(Manifest.permission.RECORD_AUDIO);
         }
+        if(!resultInternetAccessGranted){
+            permissionRequest.add(Manifest.permission.INTERNET);
+        }
+
         if(!permissionRequest.isEmpty()){
             ActivityCompat.requestPermissions((Activity) context, (String[]) permissionRequest.toArray(new String[permissionRequest.size()]),111);
         }
         if(resultStorageGranted && resultRecordAudioGranted){return 1;}
         if(resultStorageGranted){return 2;}
         if(resultRecordAudioGranted){return 3;}
+
+
         return 0;
     }
 }
