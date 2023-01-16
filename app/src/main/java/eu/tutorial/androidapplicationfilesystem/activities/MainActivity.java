@@ -6,6 +6,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.FragmentContainerView;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
@@ -15,127 +16,152 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.io.File;
-import java.util.ArrayList;
+import com.google.android.material.imageview.ShapeableImageView;
 
+import java.io.File;
 import eu.tutorial.androidapplicationfilesystem.R;
-import eu.tutorial.androidapplicationfilesystem.activities.fragments.FragmentLibrary;
-import eu.tutorial.androidapplicationfilesystem.activities.fragments.FragmentLibrarySongs;
-import eu.tutorial.androidapplicationfilesystem.activities.fragments.FragmentMusicPlayer;
+import eu.tutorial.androidapplicationfilesystem.activities.fragmentsMainActivity.FragmentLibrary;
+import eu.tutorial.androidapplicationfilesystem.activities.fragmentsMainActivity.FragmentLibrarySongs;
+import eu.tutorial.androidapplicationfilesystem.activities.fragmentsMainActivity.FragmentMusicPlayer;
 import eu.tutorial.androidapplicationfilesystem.classes.PermissionsRetriever;
 import eu.tutorial.androidapplicationfilesystem.classes.MediaControl;
 import eu.tutorial.androidapplicationfilesystem.classes.Playlist;
+import eu.tutorial.androidapplicationfilesystem.classes.Settings;
 import eu.tutorial.androidapplicationfilesystem.classes.SwipeListener;
 import eu.tutorial.androidapplicationfilesystem.classes.ViewModelMain;
-import eu.tutorial.androidapplicationfilesystem.classes.SongDataGetMusicInfo;
 import eu.tutorial.androidapplicationfilesystem.interfaces.PassMusicStatus;
+import eu.tutorial.androidapplicationfilesystem.interfaces.PassSelectionStatus;
 import soup.neumorphism.NeumorphImageButton;
 
 public class MainActivity extends AppCompatActivity implements PassMusicStatus {
 
-    NeumorphImageButton btnStorage;
-    NeumorphImageButton btnPlay;
-    NeumorphImageButton openFragment1,openFragment2;
+    ShapeableImageView btnPlay, openSettings, openLibrary;
     String receivedPath;
     File musicFile;
-    String lastPlayed;
-    Playlist allMusic;
-    TextView remainingText, totalText;
+
     MediaControl mc;
     SwipeListener swipeListener;
     FragmentManager fragmentManager;
-    LinearLayout musicBar, navBar;
+    LinearLayout musicBar, navBar, fullBar;
     FragmentMusicPlayer fragmentMusicPlayer;
     String mpFragmentTag = "mp";
     FragmentLibrary fragmentLibrary;
     String libraryFragmentTag = "library";
     FragmentLibrarySongs fragmentLibrarySongs;
     String libraryFragmentSongsTag = "songs";
-    String lastFragment;
-
     private ViewModelMain viewModelMain;
+    ConstraintLayout background;
+
+    Boolean selectEnabled;
+    PassSelectionStatus passSelectionStatus;
 
 
-    private void initiateMethods(Bundle savedInstanceState){
-        System.out.println("WTWFWFWFF");
-        btnStorage = findViewById(R.id.btnStorage);
-        btnPlay = findViewById(R.id.playButtonBar);
-        //playlists = new ArrayList<>();
-        //musicFile = new File("/storage/emulated/0/MuzikaTest/Rammstein - Rammstein (2019) [320]/08 DIAMANT.mp3");
-        allMusic = new Playlist("All music");
-        remainingText = findViewById(R.id.musicRemainingText);
-        totalText = findViewById(R.id.musicTotalText);
-        lastPlayed = null;
+    private void initiateMethods() {
+
         mc = new MediaControl(this);
-        lastFragment=null;
+        viewModelMain = new ViewModelProvider(this).get(ViewModelMain.class);
+        btnPlay = findViewById(R.id.playButtonBar);
+        openSettings = findViewById(R.id.openSettings);
+        openLibrary = findViewById(R.id.openLibrary);
+        musicBar = findViewById(R.id.musicBar);
         navBar = findViewById(R.id.bottomNavbar);
-        fragmentManager = getSupportFragmentManager();
+        background = findViewById(R.id.layoutID);
+        fullBar = findViewById(R.id.navbars);
+
+        selectEnabled = false;
+
+
         FragmentContainerView fragmentContainerView = findViewById(R.id.fragmentContainerView);
         swipeListener = new SwipeListener(fragmentContainerView, this);
-        viewModelMain = new ViewModelProvider(this).get(ViewModelMain.class);
+    }
 
-        openFragment1 = findViewById(R.id.openFragment1);
-        openFragment2 = findViewById(R.id.openFragment2);
-        musicBar = findViewById(R.id.musicBar);
 
-        //Prevents recreation of fragment during changes
-        if(savedInstanceState!=null){
-            fragmentMusicPlayer = (FragmentMusicPlayer) fragmentManager.findFragmentByTag(mpFragmentTag);
-            fragmentLibrary = (FragmentLibrary) fragmentManager.findFragmentByTag(libraryFragmentTag);
-            fragmentLibrarySongs = (FragmentLibrarySongs) fragmentManager.findFragmentByTag(libraryFragmentSongsTag);
-            if(fragmentMusicPlayer==null){fragmentMusicPlayer = new FragmentMusicPlayer();}
-            if(fragmentLibrary==null){fragmentLibrary = new FragmentLibrary();}
-            if(fragmentLibrarySongs==null){fragmentLibrarySongs = new FragmentLibrarySongs();}
-        }else{
-            fragmentMusicPlayer = new FragmentMusicPlayer();
-            fragmentLibrary = new FragmentLibrary();
-            fragmentLibrarySongs = new FragmentLibrarySongs();
-            //openFragmentMusicPlayer();
+    public void initFragments(){
+        if (fragmentManager == null) {
+            fragmentManager = getSupportFragmentManager();
         }
+        //Prevents recreation of fragment during changes
+        fragmentMusicPlayer = (FragmentMusicPlayer) fragmentManager.findFragmentByTag(mpFragmentTag);
+        fragmentLibrary = (FragmentLibrary) fragmentManager.findFragmentByTag(libraryFragmentTag);
+       // fragmentLibrarySongs = (FragmentLibrarySongs) fragmentManager.findFragmentByTag(libraryFragmentSongsTag);
+        if (fragmentMusicPlayer == null) {
+            fragmentMusicPlayer = new FragmentMusicPlayer();
+        }
+        if (fragmentLibrary == null) {
+            fragmentLibrary = new FragmentLibrary();
+        }
+        /*if (fragmentLibrarySongs == null) {
+            fragmentLibrarySongs = new FragmentLibrarySongs();
+        }*/
+        passSelectionStatus = fragmentLibrarySongs;
+    }
 
 
 
-        SharedPreferences sh = getSharedPreferences("lastMusic",MODE_PRIVATE);
 
-        boolean appRunFirstTime = sh.getBoolean("firstRun",true);
-        if(appRunFirstTime){
-            System.out.println("First time");
-            this.deleteDatabase("PlaylistLibrary.db");
-            sh.edit().putBoolean("firstRun", false).apply();
-            viewModelMain.loadDataAndCache();
-        }else{
-            if(!viewModelMain.isLoaded()) {
+    public void setSettings(){
+        SharedPreferences sh = getSharedPreferences("lastMusic", MODE_PRIVATE);
+        Settings.setSettings(sh);
+
+        //Settings.setUseMediastore(true);
+        //Settings.setSaveImageCache(true);
+        //Settings.setGetImageCacheOnLoad(true);
+        //Settings.loadOnlyFromCache();
+
+        if (Settings.isFirstRun() || !Settings.getLastLoadingFinished()) {
+            if (Settings.isFirstRun()) {
+                System.out.println("First time");
+                Playlist playlist = new Playlist();
+                playlist.setPlaylistName("Favorites");
+                viewModelMain.addPlaylist(playlist);
+            }
+            if (Settings.getUseMediastore()) {
+                viewModelMain.loadDataInit();
+            } else {
+                viewModelMain.loadDataAndCache();
+            }
+        } else {
+            if (!viewModelMain.isLoaded()) {
                 System.out.println("Not first time");
                 viewModelMain.setPlaylists1();
             }
-            //viewModelMain.setPlaylists1();
         }
-
     }
 
+    public void setAnimation(){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                AnimationDrawable animationDrawable = (AnimationDrawable) background.getBackground();
+                animationDrawable.setEnterFadeDuration(2500);
+                animationDrawable.setExitFadeDuration(5000);
+                animationDrawable.start();
+            }
+        });
+    }
+
+
+
     //ActivityResultLauncher waits for the FileListActivity to finish and retrieves the data provided from that activity
-    ActivityResultLauncher <Intent> activityLauncher = registerForActivityResult(
+    ActivityResultLauncher<Intent> activityLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             new ActivityResultCallback<ActivityResult>() {
                 public void onActivityResult(ActivityResult result) {
-                    if(result.getResultCode()==1){
+                    if (result.getResultCode() == 1) {
                         //ResultCode 1 means that music data has been received amd executes this part of code
                         Intent intent = result.getData();
-                        if(intent!=null){ //confirms that there is actual music data provided in the result
+                        if (intent != null) { //confirms that there is actual music data provided in the result
                             receivedPath = intent.getStringExtra("result");
-                            musicFile = new File(receivedPath);
-                            mc.play(receivedPath);
-                            fragmentMusicPlayer.lastPlayed(musicFile);
-                            openFragmentMusicPlayer();
+                            playMusic(receivedPath);
                         }
                     }
                 }
@@ -146,15 +172,20 @@ public class MainActivity extends AppCompatActivity implements PassMusicStatus {
     @SuppressLint("WrongThread")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,WindowManager.LayoutParams.FLAG_FULLSCREEN);  //to hide top navbar
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);  //to hide top navbar
+        //        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_FULLSCREEN);  //to hide top navbar TODO:fix edge black
         getSupportActionBar().hide(); //to hide top Application Bar
         setContentView(R.layout.activity_main);
 
-        if (PermissionsRetriever.checkPermissions(MainActivity.this) == 1 || PermissionsRetriever.checkPermissions(MainActivity.this)==2) {
 
-            initiateMethods(savedInstanceState);
+        if (PermissionsRetriever.checkPermissions(MainActivity.this) == 1 || PermissionsRetriever.checkPermissions(MainActivity.this) == 2) {
+
+            initiateMethods();
+            initFragments();
+            setSettings();
             setOnClickListeners();
 
             if (viewModelMain.getLastFragment().equals(mpFragmentTag)) {
@@ -168,9 +199,6 @@ public class MainActivity extends AppCompatActivity implements PassMusicStatus {
                 navBar.setVisibility(View.GONE);
             }
         }
-        SongDataGetMusicInfo.getMusicInfos(this);
-        //openFragmentMusicPlayer();
-
     }
 
 
@@ -178,7 +206,6 @@ public class MainActivity extends AppCompatActivity implements PassMusicStatus {
     protected void onDestroy() {
         mc.handlerRemoveCallbacks();
         mc.unbindService();
-
         super.onDestroy();
     }
 
@@ -199,72 +226,86 @@ public class MainActivity extends AppCompatActivity implements PassMusicStatus {
     }
 
     @Override
-    protected void onStart() {
-        SharedPreferences sh = getSharedPreferences("lastMusic",MODE_PRIVATE);
-
-
-
-
-        if(sh!=null) {
-            String lastSongPath = sh.getString("lastSongPath", "");
-            int lastSongPosition = sh.getInt("lastSongRemaining", -1);
-            lastFragment = sh.getString("lastFragment","");
-            musicFile = new File(lastSongPath);
-            fragmentMusicPlayer.lastPlayed(musicFile);
-            if (!lastSongPath.equals("") && lastSongPosition != -1) {
-                mc.setLastSong(lastSongPath);
-                mc.setLastPosition(lastSongPosition);
-                //mc.bindService();
-                //openFragmentMusicPlayer();
-            }
-        }
-        super.onStart();
+    protected void onResume() {
+        super.onResume();
+        setAnimation();
     }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        //setAnimation();
+        SharedPreferences sh = getSharedPreferences("lastMusic", MODE_PRIVATE);
+        Settings.setSettings(sh);
+        String lastSongPath = Settings.getLastSongPath();
+        int lastSongPosition = Settings.getLastSongRemaining();
+        String lastSongSource = Settings.getLastSongSource();
+
+        Playlist sourcePlaylist;
+        Integer index;
+
+        if (!mc.isServiceBound() && lastSongPath != null && new File(lastSongPath).exists()) {
+            mc.setLastSong(lastSongPath);
+            if (lastSongPosition != -1) {
+                mc.setLastPosition(lastSongPosition);
+            }
+
+            if (lastSongSource != null) {
+                sourcePlaylist = viewModelMain.getCurrentSource().getValue();
+                System.out.println(sourcePlaylist.getPlaylistName());
+                viewModelMain.getCurrentSource().observe(this, source -> {
+                    if (source != null) {
+                        mc.setSource(sourcePlaylist,viewModelMain.getCurrentIndex().getValue());
+                    }
+                });
+
+                index = viewModelMain.getCurrentIndex().getValue();
+                mc.setSource(sourcePlaylist,index);
+                fragmentMusicPlayer.lastPlayed(new File(lastSongPath), sourcePlaylist, index);
+            } else {
+                fragmentMusicPlayer.lastPlayed(new File(lastSongPath));
+            }
+            mc.bindService();
+        }
+
+
+    }
+
 
     @Override
     protected void onPause() {
-
-        SharedPreferences sh = getSharedPreferences("lastMusic", MODE_PRIVATE);
-        SharedPreferences.Editor myPreferences = sh.edit();
-        myPreferences.putString("lastSongPath", mc.getPath());
-        myPreferences.putInt("lastSongRemaining", mc.getRemaining());
-        myPreferences.putString("lastFragment", lastFragment);
-        myPreferences.apply();
-
+        if (mc != null) {
+            //Settings.setLastSongPath(mc.getPath());
+            Settings.setLastSongRemaining(mc.getRemaining());
+            //Settings.setLastSongSource(viewModelMain.getCurrentSource().getValue().getPlaylistName());
+            //Settings.setLastSongIndex(viewModelMain.getCurrentIndex().getValue());
+            //myPreferences.putString("lastFragment", lastFragment);
+            //myPreferences.apply();
+        }
         super.onPause();
     }
 
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
-        //mc.setMetadata();
-        //MetadataGetterSetter.setBarMetadata(this,musicFile.getAbsolutePath());
         super.onConfigurationChanged(newConfig);
         System.out.println("configChange CALLED");
     }
 
-    private void savePlaylistData(ArrayList<Playlist> playlist){
-        File internalPath = this.getFilesDir();
-        System.out.println(internalPath.getAbsolutePath());
-        if(!playlist.equals(null)){
-            for (Playlist pl : playlist) {
-                System.out.println(pl.getPlaylistName());
-                for(int i=0; i<pl.getLength();i++){
-                    System.out.println(pl.getSongPath(i));
-                }
-            }
-        }
-    }
-
-
-    private void setOnClickListeners(){
-       openFragment1.setOnClickListener(new View.OnClickListener() {
+    private void setOnClickListeners() {
+        openSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openFragmentMusicPlayer();
+                //openFragmentMusicPlayer();
+
+
+                Intent intent = new Intent(MainActivity.this, SettingsActivity.class); //Creates an intent from the current Activity to FileListActivity's class
+                startActivity(intent);
+
             }
         });
 
-        openFragment2.setOnClickListener(new View.OnClickListener() {
+        openLibrary.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //v.animate().setDuration(300);
@@ -281,53 +322,118 @@ public class MainActivity extends AppCompatActivity implements PassMusicStatus {
             }
         });
 
+    }
 
-        btnStorage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (PermissionsRetriever.checkPermissions(MainActivity.this) == 1 || PermissionsRetriever.checkPermissions(MainActivity.this)==2){
-                    // permission allowed
-                    Intent intent = new Intent(MainActivity.this, FileListActivity.class); //Creates an intent from the current Activity to FileListActivity's class
-                    String path = Environment.getExternalStorageDirectory().getPath();
-                    intent.putExtra("path", path); //Includes data which FileListActivity will use, in this case it will be given storage path
-                    //startActivity(intent);
-                    activityLauncher.launch(intent);
-                }
-            }
-        });
+    public void openLibrary(){
+        if (PermissionsRetriever.checkPermissions(MainActivity.this) == 1 || PermissionsRetriever.checkPermissions(MainActivity.this) == 2) {
+            // permission allowed
+            Intent intent = new Intent(MainActivity.this, FileListActivity.class); //Creates an intent from the current Activity to FileListActivity's class
+            String path = Environment.getExternalStorageDirectory().getPath();
+            intent.putExtra("path", path); //Includes data which FileListActivity will use, in this case it will be given storage path
+            //startActivity(intent);
+
+            activityLauncher.launch(intent);
+            overridePendingTransition(R.anim.pop_in,R.anim.pop_out);
+        }
     }
 
 
-
-    private void openFragmentMusicPlayer(){
-    fragmentManager.beginTransaction()
-            .setCustomAnimations(R.anim.pop_in, R.anim.fade_out)
-            .replace(R.id.fragmentContainerView, fragmentMusicPlayer, mpFragmentTag)
-            .commit();
-    //fragmentManager.popBackStack();
+    private void openFragmentMusicPlayer() {
         musicBar.setVisibility(View.GONE);
         viewModelMain.setLastFragment(mpFragmentTag);
+        fragmentManager.popBackStackImmediate();
+        fragmentManager.beginTransaction()
+                .setCustomAnimations(R.anim.pop_in, R.anim.fade_out, R.anim.pop_in, R.anim.fade_out)
+                //.detach(fragmentLibrary)
+                .replace(R.id.fragmentContainerView, fragmentMusicPlayer, mpFragmentTag)
+                .commitNowAllowingStateLoss();
+    }
+
+    private void openFragmentLibrary() {
+        viewModelMain.setLastFragment(libraryFragmentTag);
+        //final ImageView imageView = (ImageView) this.findViewById(R.id.musicImageBar);
+        fragmentManager.beginTransaction()
+                .setCustomAnimations(R.anim.pop_in, R.anim.fade_out, R.anim.pop_in, R.anim.fade_out)
+                .replace(R.id.fragmentContainerView, fragmentLibrary, libraryFragmentTag)
+                .addToBackStack(libraryFragmentTag)
+                //.addSharedElement(imageView ,"toMusicPlayer")
+                .commit();
 
     }
 
+    private void playMusic(String songPath) {
+        musicFile = new File(songPath);
+        mc.play(songPath);
+        fragmentMusicPlayer.lastPlayed(musicFile);
+        openFragmentMusicPlayer();
+    }
 
+    private void playMusic(String songPath, Playlist playlist, int index) {
+        musicFile = new File(songPath);
+        //mc.play(songPath);
+        mc.play(songPath,playlist,index);
+        fragmentMusicPlayer.lastPlayed(musicFile);
+        //fragmentMusicPlayer.lastPlayed(musicFile, playlist, index);
+        openFragmentMusicPlayer();
 
-    private void openFragmentLibrary(){
-        viewModelMain.setLastFragment(libraryFragmentTag);
-        final ImageView imageView = (ImageView) this.findViewById(R.id.musicImageBar);
-        fragmentManager.beginTransaction()
-                .setCustomAnimations(R.anim.pop_in, R.anim.fade_out)
-                .replace(R.id.fragmentContainerView, fragmentLibrary, libraryFragmentTag)
-                .addSharedElement(imageView ,"toMusicPlayer")
-                .commit();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(!selectEnabled) {
+            super.onBackPressed();
+            if (fragmentMusicPlayer != null) {
+                if (fragmentMusicPlayer.isVisible()) {
+                    musicBar.setVisibility(View.GONE);
+                }
+            }
+        }else{
+            selectEnabled = false;
+            fragmentLibrarySongs.backPressed();
+            fullBar.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
     public void onDataReceived(Boolean isPlaying) {
-        if(isPlaying){
+        if (isPlaying) {
             btnPlay.setImageResource(R.drawable.ic_action_pause);
-        }else{
+        } else {
             btnPlay.setImageResource(R.drawable.ic_action_play);
         }
     }
+
+    @Override
+    public void onSongRequest(String songPath, Playlist playlist, int index) {
+        fullBar.setVisibility(View.VISIBLE);
+        fragmentManager.popBackStackImmediate();
+        viewModelMain.setCurrentSource(playlist, index);
+        playMusic(songPath, playlist, index);
+    }
+
+    @Override
+    public void onMediaReady(Boolean isReady) {
+        if (viewModelMain.getFirstLoad()) {
+            openFragmentMusicPlayer();
+            viewModelMain.setFirstLoad(false);
+        }
+    }
+
+    @Override
+    public void onLibraryStoragePressed() {
+        openLibrary();
+    }
+
+    @Override
+    public void onRequestNavbar(Boolean request, FragmentLibrarySongs fragmentLibrarySongs) {
+        this.fragmentLibrarySongs = fragmentLibrarySongs;
+        selectEnabled = !request;
+        if(request){
+            fullBar.setVisibility(View.VISIBLE);
+        }
+        else{
+            fullBar.setVisibility(View.GONE);
+        }
+    }
+
 }
