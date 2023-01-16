@@ -17,17 +17,19 @@ import java.util.concurrent.TimeUnit;
 //This class implements storing music data and creates methods to retrieve Metadata from it
 
 public class MusicDataMetadata {
-    public static String title;
-    public static String artist;
-    public static String album;
-    public static Bitmap bitmap;
-    public static int length;
-    public static String lengthString;
-    public static MediaMetadataRetriever mr = new MediaMetadataRetriever();
+    public String title;
+    public String artist;
+    public String album;
+    public Bitmap bitmap;
+    public int length;
+    public String lengthString;
+    public MediaMetadataRetriever mr;
 
+    public MusicDataMetadata(){
+        mr = new MediaMetadataRetriever();
+    }
 
-
-    public static void setAllData(String path){
+    public void setAllData(String path){
         //MediaMetadataRetriever mr = new MediaMetadataRetriever();
         mr = new MediaMetadataRetriever();
         mr.setDataSource(path);
@@ -64,7 +66,6 @@ public class MusicDataMetadata {
         }catch(Exception e){
 
         }
-
         mr.release();
     }
 
