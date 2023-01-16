@@ -20,15 +20,19 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import com.google.android.material.imageview.ShapeableImageView;
+
 import java.io.File;
+import java.util.Objects;
 
 import eu.tutorial.androidapplicationfilesystem.R;
 import eu.tutorial.androidapplicationfilesystem.activities.MainActivity;
+import eu.tutorial.androidapplicationfilesystem.interfaces.PassMusicStatus;
 import soup.neumorphism.NeumorphImageButton;
 
-public class MediaControl extends AppCompatActivity {
+public class MediaControl extends AppCompatActivity{
 
-    NeumorphImageButton btnPlay;
+    ShapeableImageView btnPlay;
     Context context;
     MediaControlService mediaControlService;
     boolean isServiceBound;
@@ -37,6 +41,10 @@ public class MediaControl extends AppCompatActivity {
     Intent intentBroadcast;
     int lastPosition;
     String lastSong;
+    PassMusicStatus passToActivity;
+
+    Playlist musicSource;
+    Integer musicIndex;
 
 
     public MediaControl(Context context) {
@@ -45,6 +53,12 @@ public class MediaControl extends AppCompatActivity {
         this.btnPlay = ((MainActivity)context).findViewById(R.id.playButtonBar);
         this.context = context;
         serviceIntent = new Intent(context, MediaControlService.class);
+        passToActivity = (PassMusicStatus) context;
+
+        musicSource = null;
+        musicIndex = null;
+
+
         bindService();
         setListeners();
     }
@@ -66,6 +80,28 @@ public class MediaControl extends AppCompatActivity {
     }
 
 
+    public void play(String path, Playlist playlist, Integer index) {
+        try{
+            if(path.equals(null)){
+                throw new Exception();
+            }else{
+                mediaControlService.playMedia(path, playlist, index);
+                btnPlay.setImageResource(R.drawable.ic_action_pause);
+                //isFinished();
+            }
+        }catch(Exception e){
+            Toast.makeText(context, "Path is nulll", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void setSource(Playlist playlist, Integer index){
+        musicSource = playlist;
+        musicIndex = index;
+        if(isServiceBound){
+            mediaControlService.setSources(playlist,index);
+        }
+    }
+
 
     public void bindService() {
             serviceIntent.setAction("create");
@@ -85,18 +121,35 @@ public class MediaControl extends AppCompatActivity {
                         if (!mediaControlService.musicPath.equals("none")) { //checks if there was music played before
                             String path = mediaControlService.musicPath; //important on activity changes like rotation
                             MetadataGetterSetter.setBarMetadata(context, path);
+                            passToActivity.onMediaReady(true);
+                            System.out.println("ready");
                             if (mediaControlService.isMediaPlaying()) {
                                 btnPlay.setImageResource(R.drawable.ic_action_pause);
                             } else {
                                 //StyleSetter.setInitBackground(context);
                             }
                         } else {
-                            if (lastSong != "" && lastPosition != -1 && lastSong != null && new File(lastSong).exists()) {
+                            if (!Objects.equals(lastSong, "") && lastPosition != -1 && lastSong != null && new File(lastSong).exists()) {
+
+                                if(Settings.getLastSongIndex()!=-1 && Settings.getLastSongSource()!=null){
+                                    mediaControlService.sourcePlaylist  = musicSource;
+                                    mediaControlService.sourceIndex = musicIndex;
+                                    mediaControlService.playMedia(lastSong,musicSource,musicIndex);
+
+                                }else{
                                     mediaControlService.playMedia(lastSong);
-                                    mediaControlService.mediaSeekTo(lastPosition);
-                                    mediaControlService.pauseMedia();
-                                    btnPlay.setImageResource(R.drawable.ic_action_play);
-                                    MetadataGetterSetter.setBarMetadata(context, lastSong);
+                                    System.out.println("huhuhuhuuh");
+                                }
+
+
+                                mediaControlService.mediaSeekTo(lastPosition);
+                                mediaControlService.pauseMedia();
+
+
+                                btnPlay.setImageResource(R.drawable.ic_action_play);
+                                MetadataGetterSetter.setBarMetadata(context, lastSong);
+                                passToActivity.onMediaReady(true);
+                                System.out.println("ready");
                             }
                         }
                     }
@@ -116,6 +169,10 @@ public class MediaControl extends AppCompatActivity {
             context.unbindService(serviceConnection);
             isServiceBound=false;
         }
+    }
+
+    public Boolean isServiceBound(){
+        return isServiceBound;
     }
 
 
@@ -144,10 +201,6 @@ public class MediaControl extends AppCompatActivity {
         stopService(serviceIntent);
     }
 
-    public void play(int resid) { //Play music from app resource
-        mediaControlService.playMedia(resid);
-        btnPlay.setImageResource(R.drawable.ic_action_pause);
-    }
 
     public boolean isPlaying(){
         return mediaControlService.isMediaPlaying();
@@ -163,11 +216,19 @@ public class MediaControl extends AppCompatActivity {
 
 
     public String getPath(){
-        return mediaControlService.musicPath;
+        if(mediaControlService!=null) {
+            return mediaControlService.musicPath;
+        }else{
+            return "";
+        }
     }
 
     public int getRemaining(){
-        return mediaControlService.mediaRemaining();
+        if(mediaControlService!=null) {
+            return mediaControlService.mediaRemaining();
+        }else{
+            return -1;
+        }
     }
 
     public void seekTo(int position){

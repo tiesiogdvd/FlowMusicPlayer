@@ -18,6 +18,7 @@ import android.content.ServiceConnection;
 import android.os.Handler;
 import android.os.IBinder;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,22 +30,28 @@ import java.util.concurrent.TimeUnit;
 
 import eu.tutorial.androidapplicationfilesystem.R;
 import eu.tutorial.androidapplicationfilesystem.activities.MainActivity;
+import eu.tutorial.androidapplicationfilesystem.activities.fragmentsMainActivity.FragmentMusicPlayer;
 import eu.tutorial.androidapplicationfilesystem.interfaces.PassMusicStatus;
 import soup.neumorphism.NeumorphImageButton;
 
 public class MediaControlFragment extends AppCompatActivity {
 
-    NeumorphImageButton btnPlay;
-    NeumorphImageButton btnPrevious;
-    NeumorphImageButton btnNext;
+    ImageButton btnPlay;
+    ImageButton btnPrevious;
+    ImageButton btnNext;
     //NeumorphImageButton btnBottomBar;
     final Handler handler;
     SeekBar seekBar;
     TextView totalText,remainingText;
+
     Context context;
+    FragmentMusicPlayer fragmentMusicPlayer;
+
     Runnable runnable;
 
-    BroadcastReceiver receiver;
+    BroadcastReceiver receiverFinished;
+    BroadcastReceiver receiverChange;
+
     MediaControlService mediaControlService;
     boolean isServiceBound;
     ServiceConnection serviceConnection;
@@ -52,24 +59,48 @@ public class MediaControlFragment extends AppCompatActivity {
 
     PassMusicStatus passToActivity;
 
+    Playlist source;
+    Integer index;
 
-    public MediaControlFragment(Context context) {
+    ViewModelMain viewModelMain;
+
+    public MediaControlFragment(FragmentMusicPlayer fragmentMusicPlayer) {
+
+
+       /* if(context instanceof PassMusicStatus){ //Checks if there is an implementation of PassMusicStatus in the context of parent activity
+            passToActivity = (PassMusicStatus) context;
+        } else {
+            throw new RuntimeException(context.toString() + " must implement PassData");
+        }*/
+
         this.isServiceBound = false;
         this.handler =  new Handler();
         this.seekBar = null;
-        this.btnPrevious = ((MainActivity)context).findViewById(R.id.lastButton);
-        this.btnNext = ((MainActivity)context).findViewById(R.id.nextButton);
-        this.btnPlay = ((MainActivity)context).findViewById(R.id.playButton);
-        this.seekBar = ((MainActivity)context).findViewById(R.id.musicProgress);
-        this.totalText = ((MainActivity)context).findViewById(R.id.musicTotalText);
-        this.remainingText = ((MainActivity)context).findViewById(R.id.musicRemainingText);
+
+        this.context = fragmentMusicPlayer.getContext();
+        this.fragmentMusicPlayer = fragmentMusicPlayer;
+
+        this.btnPrevious = fragmentMusicPlayer.requireView().findViewById(R.id.lastButton);
+        this.btnNext = fragmentMusicPlayer.requireView().findViewById(R.id.nextButton);
+        this.btnPlay =  fragmentMusicPlayer.requireView().findViewById(R.id.playButton);
+        this.seekBar = fragmentMusicPlayer.requireView().findViewById(R.id.musicProgress);
+        this.totalText =  fragmentMusicPlayer.requireView().findViewById(R.id.musicTotalText);
+        this.remainingText = fragmentMusicPlayer.requireView().findViewById(R.id.musicRemainingText);
         //this.btnBottomBar = ((MainActivity) context).findViewById(R.id.bottomNavbar);
         //btnPlay1.setImageResource(R.drawable.ic_action_pause);
-        this.context = context;
+
+
         serviceIntent = new Intent(context, MediaControlService.class);
         //startService();
+        //viewModelMain = new ViewModelMain(((MainActivity) context).getApplication());
+        //viewModelMain =  new ViewModelProvider(((MainActivity) context).owne).get(ViewModelMain.class);
         bindService();
         setListeners();
+
+    }
+
+    public void setViewModel(ViewModelMain viewModelMain){
+        this.viewModelMain = viewModelMain;
     }
 
     public void setRunnable(){//This runnable moves seekbar at a selected interval
@@ -95,10 +126,7 @@ public class MediaControlFragment extends AppCompatActivity {
         }
     }
 
-    public void startService(){
 
-        //startService(serviceIntent);
-    }
 
     public void play(String path) {
         try{
@@ -112,7 +140,25 @@ public class MediaControlFragment extends AppCompatActivity {
                 //isFinished();
             }
         }catch(Exception e){
-            Toast.makeText(context, "Path is null", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Path is nulll", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void play(String path, Playlist playlist, Integer index) {
+        path = playlist.getSong(index).getPath();
+        System.out.println(playlist.getSong(index).getPath());
+        try{
+            if(path.equals(null)){
+                throw new Exception();
+            }else{
+                setMetadata(path);
+                mediaControlService.playMedia(path, playlist, index);
+                btnPlay.setImageResource(R.drawable.ic_action_pause);
+                setRunnable();
+                //isFinished();
+            }
+        }catch(Exception e){
+            Toast.makeText(context, "Path is nulll", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -128,7 +174,7 @@ public class MediaControlFragment extends AppCompatActivity {
 
 
     public void bindService(){
-
+        receiverBroadcast();
         serviceIntent.setAction("create");
         ContextCompat.startForegroundService(context, serviceIntent);
 
@@ -139,7 +185,8 @@ public class MediaControlFragment extends AppCompatActivity {
                     MediaControlService.MyServiceBinder myServiceBinder = (MediaControlService.MyServiceBinder)iBinder;
                     mediaControlService = myServiceBinder.getService();
                     isServiceBound = true;
-
+                    //receiverBroadcast();
+                    //Sets a receiver to listen for receiving of the end of song
                     //bindService method is not instant
                     //For that reason code for runnable is activated only after the service is binded
                     //Otherwise methods might be called before the bind and cause crashes
@@ -201,13 +248,6 @@ public class MediaControlFragment extends AppCompatActivity {
     }
 
 
-
-    public void play(int resid) { //Play music from app resource
-        handler.postDelayed(runnable, 0);
-        mediaControlService.playMedia(resid);
-        btnPlay.setImageResource(R.drawable.ic_action_pause);
-    }
-
     public boolean isPlaying(){
         return mediaControlService.isMediaPlaying();
     }
@@ -230,17 +270,48 @@ public class MediaControlFragment extends AppCompatActivity {
     }
 
 
-    public void isFinished(){
-        unregisterReceiver(receiver);
-        receiver = new BroadcastReceiver() {
+    public void receiverBroadcast(){
+        receiverFinished = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 Boolean isFinished = intent.getExtras().getBoolean("isFinished");
-                System.out.println(isFinished);
+                mediaControlService.pauseMedia();
+                handler.removeCallbacks(runnable);
+                btnPlay.setImageResource(R.drawable.ic_action_play);
+                if(passToActivity!=null){
+                    passToActivity.onDataReceived(false);//TODO: fix crash on media finish after rotation
+                }
             }
         };
-        IntentFilter filt = new IntentFilter("ANSWER");
-        context.registerReceiver(receiver,filt);
+        context.registerReceiver(receiverFinished,new IntentFilter("STATE"));
+
+
+
+        receiverChange = new BroadcastReceiver(){
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Boolean isPlaying =intent.getExtras().getBoolean("isPlaying");
+                viewModelMain.setCurrentSourceInteger(mediaControlService.sourceIndex);
+
+                if(isPlaying){
+                    btnPlay.setImageResource(R.drawable.ic_action_pause);
+                }else{
+                    btnPlay.setImageResource(R.drawable.ic_action_play);
+                    //handler.removeCallbacks(runnable);
+                }
+                //btnPlay.setImageResource(R.drawable.ic_action_pause);
+                //setMetadata(mediaControlService.musicPath);
+
+               /* if (!isPlaying){
+                    pause();
+                }else{
+                    play();
+                }*/
+
+            }
+        };
+        context.registerReceiver(receiverChange, new IntentFilter("SOURCECHANGED"));
+
     }
 
 
@@ -286,7 +357,6 @@ public class MediaControlFragment extends AppCompatActivity {
                 //savePlaylistData();
 
                 System.out.println(mediaControlService.isMediaPlaying());
-
                 if(mediaControlService!=null){
                     if(!mediaControlService.isMediaPlaying()) {
                         passToActivity.onDataReceived(true);
@@ -304,21 +374,65 @@ public class MediaControlFragment extends AppCompatActivity {
         btnPrevious.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(isServiceBound) {
-                    System.out.println(mediaControlService.isMediaPlaying());
-                    mediaControlService.playMedia();
-                }
-
+                //playPrevious();
+                playPreviousFromMp();
+                setMetadata(mediaControlService.musicPath);
+                setRunnable();
             }
         });
 
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-
+                //playNext();
+                playNextFromMp();
+                setMetadata(mediaControlService.musicPath);
+                setRunnable();
             }
         });
+    }
+
+    public void playPreviousFromMp(){
+        mediaControlService.playPrev();
+        viewModelMain.setCurrentSourceInteger(mediaControlService.sourceIndex);
+        setMetadata(mediaControlService.musicPath);
+
+    }
+
+    public void playNextFromMp(){
+        mediaControlService.playNext();
+        viewModelMain.setCurrentSourceInteger(mediaControlService.sourceIndex);
+        setMetadata(mediaControlService.musicPath);
+    }
+
+
+    public void playPrevious(){
+        if(isServiceBound) {
+            Playlist tempPlaylist = viewModelMain.getCurrentSource().getValue();
+            Integer index = viewModelMain.getCurrentIndex().getValue();
+            if(tempPlaylist!=null && tempPlaylist.getLength()!=0 && index!=null && index!=-1 && index!=0){
+                String tempPath = tempPlaylist.getSong(index-1).getPath();
+                play(tempPath);
+                passToActivity.onDataReceived(true);
+                viewModelMain.setCurrentSourceInteger(index-1);
+            }else{
+                System.out.println("Problem with source");
+            }
+        }
+    }
+
+    public void playNext(){
+        if(isServiceBound) {
+            Playlist tempPlaylist = viewModelMain.getCurrentSource().getValue();
+            Integer index = viewModelMain.getCurrentIndex().getValue();
+            if(tempPlaylist!=null && tempPlaylist.getLength()!=0 && index!=null && index!=-1 && index!=tempPlaylist.getLength()-1){
+                String tempPath = tempPlaylist.getSong(index+1).getPath();
+                play(tempPath);
+                passToActivity.onDataReceived(true);
+                viewModelMain.setCurrentSourceInteger(index+1);
+                mediaControlService.setSource(tempPlaylist);
+            }
+        }
     }
 
 
@@ -329,4 +443,10 @@ public class MediaControlFragment extends AppCompatActivity {
     public void unsetPassDataInterface(){
         passToActivity = null;
     }
+
+    public void setSource(Playlist playlistSource, Integer indexSource) {
+        source = playlistSource;
+        index = indexSource;
+    }
+
 }
