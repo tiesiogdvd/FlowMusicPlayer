@@ -10,11 +10,35 @@
 
     <color name="background">#1E1E1E</color>
     <color name="backgroundSecondary">#80434343</color>
+    <color name="backgroundThird">#B0353535</color>
+    <color name="backgroundNavbar">#D7434343</color>
     <color name="neumorphLight">#323232</color>
     <color name="neumorphDark">#919191</color>
     <color name="text">#FFFFFF</color>
-    <color name="button">#333333</color>
+    <color name="text_secondary">#757575</color>
+    <color name="button">#A6333333</color>
     <color name="drawable_menu">#000000</color>
     <color name="drawable_bar">#FFFFFF</color>
+
+    <fraction name="alpha_bg">0.8</fraction>
+
+    <color name="bg1_start">#152329</color>
+    <color name="bg1_center">#191424</color>
+    <color name="bg1_end">#151118</color>
+
+    <color name="bg2_start">#0d1619</color>
+    <color name="bg2_center">#203036</color>
+    <color name="bg2_end">#000c1d</color>
+
+    <color name="bg3_start">#000000</color>
+    <color name="bg3_center">#293647</color>
+    <color name="bg3_end">#000000</color>
+
+    <color name="settings_selected_primary">#3C4D7C</color>
+    <color name="settings_selected_secondary">@color/button</color>
+
+    <color name="settings_button">#A6333333</color>
+    <color name="settings_button_secondary">#707070</color>
+
 
 </resources>
