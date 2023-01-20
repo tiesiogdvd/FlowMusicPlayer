@@ -9,8 +9,11 @@ This is an application for my own purposes to learn both java and android native
 
 
 
+
 ![77c025530fc85e708a7f5b2b23378218ad2206a6](https://user-images.githubusercontent.com/116734709/212679883-0ee54db2-2073-44da-a9d9-06faac8a9c29.gif)|
-![2e838470a213f1dc59a0381c56d0c977d7f84ddc](https://user-images.githubusercontent.com/116734709/212679500-09b51f87-0971-4070-b1f5-5602654e5514.gif)
+![2e838470a213f1dc59a0381c56d0c977d7f84ddc](https://user-images.githubusercontent.com/116734709/212679500-09b51f87-0971-4070-b1f5-5602654e5514.gif)|
+![fe66e66435131fe381fbe3289b6f9ec97f317eb1](https://user-images.githubusercontent.com/116734709/213597653-1952c10e-3036-48ac-837d-7179919267b4.gif)
+
 
 
 
@@ -32,7 +35,7 @@ This is an application for my own purposes to learn both java and android native
  
   ### -Foreground service with MediaPlayer binded to activity;
   
-  ### -MediaPlayer service notifications with full media controls;
+  ### -MediaPlayer service notifications with full media controls (seekbar, previous, play|pause, next);
   
   ### -Actions on focus change (such as sound from other app);
   
@@ -44,9 +47,9 @@ This is an application for my own purposes to learn both java and android native
   
   ### -Support for config changes such as screen rotation
   
-  ### -App themes for light and dark mode
+  ### -MotionLayout for smooth layout changes
   
-  ### -Dynamic background
+  ### -App themes for light and dark mode
   
   ### -Swipe listener for hiding and showing NavBar controls and MusicBar
   
