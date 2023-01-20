@@ -53,7 +53,7 @@ public class ImageSaver {
             FileOutputStream fileOutputStream = null;
             try {
                 fileOutputStream = new FileOutputStream(createFile());
-                if(bitmapImage!=null){ bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);}
+                if(bitmapImage!=null){ bitmapImage.compress(Bitmap.CompressFormat.JPEG, 90, fileOutputStream);}
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
