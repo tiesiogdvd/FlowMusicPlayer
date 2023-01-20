@@ -17,10 +17,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.util.ArrayList;
 
@@ -30,6 +29,7 @@ import eu.tutorial.androidapplicationfilesystem.adapters.AdapterLibraryFavorites
 import eu.tutorial.androidapplicationfilesystem.adapters.AdapterLibraryFolders;
 import eu.tutorial.androidapplicationfilesystem.adapters.AdapterPlaylistLibrary;
 import eu.tutorial.androidapplicationfilesystem.adapters.AdapterLibraryPlaylists;
+import eu.tutorial.androidapplicationfilesystem.classes.FastScrollRecyclerView.FastScrollRecyclerView;
 import eu.tutorial.androidapplicationfilesystem.classes.MusicData;
 import eu.tutorial.androidapplicationfilesystem.classes.Playlist;
 import eu.tutorial.androidapplicationfilesystem.classes.ViewModelMain;
@@ -66,6 +66,9 @@ public class FragmentLibrarySongs extends Fragment implements PassSelectionStatu
     LinearLayout selectionAddToPlaylist;
     LinearLayout selectionRemove;
     LinearLayout selectionSetAlbumInfo;
+
+    ImageView libraryImage;
+
     ArrayList<Integer> selectionList;
 
     PassMusicStatus passMusicStatus;
@@ -114,6 +117,8 @@ public class FragmentLibrarySongs extends Fragment implements PassSelectionStatu
     private void initViews(View view){
         recyclerView = view.findViewById(R.id.libraryRecyclerViewItems);
         libraryText = view.findViewById(R.id.librarySelectionText);
+
+        libraryImage = view.findViewById(R.id.libraryImage);
 
         selectionBar =  view.findViewById(R.id.selectionBar);
         selectionBar.setVisibility(View.GONE);
@@ -259,22 +264,26 @@ public class FragmentLibrarySongs extends Fragment implements PassSelectionStatu
                 allSongsPaths = viewModelMain.getAllSongsPaths();
                 playlist = viewModelMain.getPlaylist("All Songs");
                 playlist.getSongsArray().sort(MusicData.titleComparator);
+                libraryImage.setImageBitmap(playlist.getPlaylistBitmap(getContext()));
                 break;
 
             case("playlists"):
                 playlists = viewModelMain.getPlaylists().getValue();
                 //playlistsCopy = playlists;
                 playlists.sort(Playlist.titleComparator);
+                libraryImage.setImageBitmap(playlists.get(0).getPlaylistBitmap(getContext()));
                 break;
 
             case("favorites"):
                 requestedPlaylist = viewModelMain.getPlaylist("Favorites");
                 requestedPlaylist.getSongsArray().sort(MusicData.titleComparator);
+                libraryImage.setImageBitmap(requestedPlaylist.getPlaylistBitmap(getContext()));
                 break;
 
             case("playlist"):
                 requestedPlaylist = viewModelMain.getPlaylist(playlistName);
                 requestedPlaylist.getSongsArray().sort(MusicData.titleComparator);
+                libraryImage.setImageBitmap(requestedPlaylist.getPlaylistBitmap(getContext()));
                 break;
 
             case("folders"):
