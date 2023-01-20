@@ -2,6 +2,7 @@ package eu.tutorial.androidapplicationfilesystem.classes;
 
 //Static class to be used for converting dates, paths and etc.
 
+import java.io.File;
 import java.util.concurrent.TimeUnit;
 
 public class TypeConverter {
@@ -24,4 +25,9 @@ public class TypeConverter {
 
         return String.format("%02d:%02d", minutes, seconds);
     }
+
+    public static String getFilePath(String file){
+        return new File(file).getParent();
+    }
+
 }
