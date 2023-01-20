@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
+import android.os.AsyncTask;
 import android.renderscript.Allocation;
 import android.renderscript.Element;
 import android.renderscript.RenderScript;
@@ -20,9 +21,6 @@ import android.view.View;
         private static final float BITMAP_SCALE = 0.2f; //0.2F means the image will be downscaled to 0.2x width and height before being rescaled
         private static final float BLUR_RADIUS = 7.5f;
 
-        public static Bitmap blur(View v) {
-            return blur(v.getContext(), getScreenshot(v));
-        }
 
         public static Bitmap getResizedBitmap(Bitmap bitmap, int newWidth, int newHeight) {
             int width = bitmap.getWidth();
@@ -55,18 +53,6 @@ import android.view.View;
             tmpOut.copyTo(outputBitmap);
 
             return outputBitmap;
-        }
-
-        private static Bitmap getScreenshot(View v) {
-            Bitmap b = Bitmap.createBitmap(v.getWidth(), v.getHeight(), Bitmap.Config.ARGB_8888);
-            Canvas c = new Canvas(b);
-            v.draw(c);
-            return b;
-        }
-
-        private static Bitmap bitmapRescale(Bitmap bitmap, int width, int height){
-            Bitmap rescaledBitmap = bitmap.createScaledBitmap(bitmap, width, height,false);
-            return rescaledBitmap;
         }
 
     }
