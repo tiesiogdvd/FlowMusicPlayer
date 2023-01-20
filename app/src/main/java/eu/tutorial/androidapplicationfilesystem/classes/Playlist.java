@@ -150,7 +150,7 @@ public class Playlist implements Parcelable{
     }
 
     public String getSongPath(int position){
-        if(songs!=null){
+        if(songs!=null && position!=songs.size()){
             return songs.get(position).getPath();
         }else{
             return null;
@@ -190,14 +190,6 @@ public class Playlist implements Parcelable{
         }else{
             return null;
         }
-        //return songs.get(index);
-        /*for(MusicData s: songs){
-            //System.out.println(s.getPath()+" "+path);
-            if (path.equals(s.getPath())) {
-                return s;
-            }
-        }
-        return null;*/
     }
 
 
@@ -205,14 +197,6 @@ public class Playlist implements Parcelable{
         boolean matches = false;
         int index = getSongPosition(path);
         return index != -1;
-        /*for(MusicData s: songs){
-            //System.out.println(s.getPath()+" "+path);
-            if (path.equals(s.getPath())) {
-                matches = true;
-                break;
-            }
-        }
-        return matches;*/
     }
 
 
@@ -230,6 +214,10 @@ public class Playlist implements Parcelable{
         System.out.println(path);
         songs.add(new MusicData(path, title, artist, album,lengthInt,context));
         //setPlaylistBitmap(context);
+    }
+
+    public void addSong(String path){
+        songs.add(new MusicData(path));
     }
 
     public void addSong(MusicData song){
