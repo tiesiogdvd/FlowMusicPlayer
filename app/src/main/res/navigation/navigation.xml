@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation"
+    app:startDestination="@id/fragmentMusicPlayer">
+    <fragment
+        android:id="@+id/fragmentLibrarySongs"
+        android:name="eu.tutorial.androidapplicationfilesystem.activities.fragmentsMainActivity.FragmentLibrarySongs"
+        android:label="FragmentLibrarySongs" >
+        <action
+            android:id="@+id/action_fragmentLibrarySongs_to_fragmentLibrary"
+            app:destination="@id/fragmentLibrary" />
+        <action
+            android:id="@+id/action_fragmentLibrarySongs_to_fragmentMusicPlayer"
+            app:destination="@id/fragmentMusicPlayer" />
+    </fragment>
+    <fragment
+        android:id="@+id/fragmentLibrary"
+        android:name="eu.tutorial.androidapplicationfilesystem.activities.fragmentsMainActivity.FragmentLibrary"
+        android:label="fragment_library"
+        tools:layout="@layout/fragment_library" >
+        <action
+            android:id="@+id/action_fragmentLibrary_to_fragmentLibrarySongs"
+            app:destination="@id/fragmentLibrarySongs" />
+        <action
+            android:id="@+id/action_fragmentLibrary_to_fragmentMusicPlayer"
+            app:destination="@id/fragmentMusicPlayer" />
+    </fragment>
+    <fragment
+        android:id="@+id/fragmentMusicPlayer"
+        android:name="eu.tutorial.androidapplicationfilesystem.activities.fragmentsMainActivity.FragmentMusicPlayer"
+        android:label="FragmentMusicPlayer" >
+        <action
+            android:id="@+id/action_fragmentMusicPlayer_to_fragmentLibrary"
+            app:destination="@id/fragmentLibrary" />
+        <action
+            android:id="@+id/action_fragmentMusicPlayer_to_fragmentLibrarySongs"
+            app:destination="@id/fragmentLibrarySongs" />
+    </fragment>
+</navigation>
