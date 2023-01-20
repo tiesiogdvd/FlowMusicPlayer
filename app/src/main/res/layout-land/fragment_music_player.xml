@@ -45,7 +45,7 @@
             app:neumorph_lightSource="leftTop"
             app:neumorph_shadowElevation="3dp"
             app:neumorph_shapeType="pressed"
-            android:transitionName="toMusicPlayer"/>
+            android:transitionName="imageBarToPlayer"/>
 
         <LinearLayout
             android:id="@+id/linearLayout"
@@ -69,59 +69,50 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
-                    <soup.neumorphism.NeumorphImageButton
+                    <ImageButton
                         android:id="@+id/playlistButton"
-                        style="@style/Widget.Neumorph.ImageButton"
+                        android:background="@drawable/button_selector"
                         android:theme="@style/AppTheme"
                         android:layout_width="70dp"
                         android:layout_height="70dp"
                         android:layout_marginEnd="20dp"
                         android:src="@drawable/ic_action_playlist"
+                        />
 
-                        app:neumorph_shadowElevation="2dp" />
 
-
-                    <soup.neumorphism.NeumorphImageButton
+                    <ImageButton
                         android:id="@+id/lastButton"
-                        style="@style/Widget.Neumorph.ImageButton"
+                        android:background="@drawable/button_selector"
                         android:theme="@style/AppTheme"
                         android:layout_width="70dp"
                         android:layout_height="70dp"
-                        android:src="@drawable/ic_action_previous"
-
-                        app:neumorph_shadowElevation="2dp" />
+                        android:src="@drawable/ic_action_previous" />
 
 
-                    <soup.neumorphism.NeumorphImageButton
+                    <ImageButton
                         android:id="@+id/playButton"
-                        style="@style/Widget.Neumorph.ImageButton"
+                        android:background="@drawable/button_selector"
                         android:theme="@style/AppTheme"
                         android:layout_width="70dp"
                         android:layout_height="70dp"
-                        android:src="@drawable/ic_action_play"
-                        app:neumorph_shadowElevation="2dp"
+                        android:src="@drawable/ic_action_play" />
 
-                        app:neumorph_shapeType="flat" />
-
-                    <soup.neumorphism.NeumorphImageButton
+                    <ImageButton
                         android:id="@+id/nextButton"
-                        style="@style/Widget.Neumorph.ImageButton"
+                        android:background="@drawable/button_selector"
                         android:theme="@style/AppTheme"
                         android:layout_width="70dp"
                         android:layout_height="70dp"
-                        android:src="@drawable/ic_action_next"
-                        app:neumorph_shadowColorLight="#FFFFFF"
-                        app:neumorph_shadowElevation="2dp" />
+                        android:src="@drawable/ic_action_next" />
 
-                    <soup.neumorphism.NeumorphImageButton
+                    <ImageButton
                         android:id="@+id/favoriteButton"
-                        style="@style/Widget.Neumorph.ImageButton"
+                        android:background="@drawable/button_selector"
                         android:theme="@style/AppTheme"
                         android:layout_width="70dp"
                         android:layout_height="70dp"
                         android:layout_marginStart="20dp"
-                        android:src="@drawable/ic_action_favorite"
-                        app:neumorph_shadowElevation="2dp" />
+                        android:src="@drawable/ic_action_favorite" />
 
                 </LinearLayout>
 
@@ -132,6 +123,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/musicImage"
+                android:progressTint="@color/backgroundNavbar"
+                android:progressBackgroundTint="@color/text_secondary"
+                android:thumbTint="@color/settings_selected_primary"
                 android:outlineAmbientShadowColor="@color/black"
                 android:outlineSpotShadowColor="@color/black"
                 app:indicatorColor="@color/black" />

@@ -67,7 +67,7 @@
                 app:neumorph_lightSource="leftTop"
                 app:neumorph_shadowElevation="3dp"
                 app:neumorph_shapeType="pressed"
-                android:transitionName="toMusicPlayer"/>
+                android:transitionName="imageBarToPlayer"/>
 
 
 
@@ -111,6 +111,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/musicImage"
+            android:progressTint="@color/drawable_bar"
+            android:progressBackgroundTint="@color/text_secondary"
+            android:thumbTint="@color/settings_selected_primary"
             android:outlineAmbientShadowColor="@color/black"
             android:outlineSpotShadowColor="@color/black"
             app:indicatorColor="@color/black" />
