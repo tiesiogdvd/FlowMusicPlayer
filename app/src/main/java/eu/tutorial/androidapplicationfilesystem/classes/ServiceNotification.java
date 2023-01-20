@@ -23,10 +23,14 @@ public class ServiceNotification extends Application {
 
         NotificationChannel serviceChannel1 = new NotificationChannel(CHANNEL_ID_1, "MP Channel 1", NotificationManager.IMPORTANCE_HIGH);
         serviceChannel1.setDescription("MP Channel 1 description");
+        serviceChannel1.setSound(null,null);
+        serviceChannel1.setVibrationPattern(null);
         serviceChannel1.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
         NotificationChannel serviceChannel2 = new NotificationChannel(CHANNEL_ID_2, "MP Channel 2", NotificationManager.IMPORTANCE_DEFAULT);
         serviceChannel2.setDescription("MP Channel 2 description");
         serviceChannel2.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+        serviceChannel2.setSound(null,null);
+        serviceChannel2.setVibrationPattern(null);
         NotificationManager manager = getSystemService(NotificationManager.class);
         manager.createNotificationChannel(serviceChannel1);
         manager.createNotificationChannel(serviceChannel2);
