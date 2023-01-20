@@ -37,6 +37,7 @@ public class StyleSetter {
 
 
     public static void setStyles(Context context, Bitmap bitmap){
+        System.out.println("Setting styles");
         m_bitmap = bitmap;
         initViews(context);
         setBackground(context);
@@ -67,11 +68,17 @@ public class StyleSetter {
     }
 
     private static void setBackground(Context context){
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inScaled = false;
+        options.inJustDecodeBounds = false;
+
         if(m_bitmap!=null){
             BitmapDrawable drawable;
             Bitmap blurredBitmap = BlurBuilder.blur(context,m_bitmap);
             drawable = new BitmapDrawable(context.getResources(), blurredBitmap);
+
             setImageDrawableWithAnimation(imageView, drawable, 200);
+
             //imageView.setBackground(drawable);
             //imageView.animate().setStartDelay(100).setDuration(200);
             setFill(true);
@@ -80,38 +87,43 @@ public class StyleSetter {
             System.out.println(UIMode);
 
             if(UIMode == 33){ //33 is the night mode
-                m_drawableBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.img_bg_9);
+                m_drawableBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.img_bg_9, options);
                 Bitmap blurredBitmap = BlurBuilder.blur(context,m_drawableBitmap);
                 BitmapDrawable drawable = new BitmapDrawable(context.getResources(), blurredBitmap);
+
                 setImageDrawableWithAnimation(imageView, drawable, 200);
+
                 //imageView.setBackground(drawable);
                 //imageView.animate().setStartDelay(100).setDuration(200);
                 //imageView.getBackground().setAlpha(40);
                 //imageView.getDrawable().setAlpha(0);
                 //imageView.setImageAlpha(0);
-                imageView.getDrawable().mutate().setAlpha(0);
+                //imageView.getDrawable().mutate().setAlpha(0);
 
             }
             if(UIMode == 17){ //17 for the light mode
-                m_drawableBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.img_bg_7);
+                m_drawableBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.img_bg_7, options);
                 Bitmap blurredBitmap = BlurBuilder.blur(context,m_drawableBitmap);
                 BitmapDrawable drawable = new BitmapDrawable(context.getResources(), blurredBitmap);
                 //drawable.setAlpha(0);
-                setImageDrawableWithAnimation(imageView, drawable, 400);
+
+                setImageDrawableWithAnimation(imageView, drawable, 200);
+
                 //imageView.setBackground(drawable);
                 //imageView.animate().setStartDelay(100).setDuration(200);
                 //imageView.getBackground().setAlpha(20);
                 //imageView.getDrawable().setAlpha(20);
-                imageView.getDrawable().mutate().setAlpha(0);
+                //imageView.getDrawable().mutate().setAlpha(0);
                 //imageView.setImageAlpha(0);
             }
-
             //imageView.setBackground(drawable);
             //imageView.getBackground().setAlpha(80);
             setFill(false);
         }
 
     }
+
+
 
 
     private static void setFill(Boolean hasImage){
@@ -131,7 +143,6 @@ public class StyleSetter {
         btnNext.setColorFilter(color);
         btnPlaylist.setColorFilter(color);
         btnFav.setColorFilter(color);
-        //btnStorage.setColorFilter(color);
         title.setTextColor(color);
         artist.setTextColor(color);
         remainingText.setTextColor(color);
@@ -139,35 +150,13 @@ public class StyleSetter {
     }
 
     public static void setInitBackground(Context context){
-        imageView = ((MainActivity)context).findViewById(R.id.layoutBackground);
-
-        Bitmap drawableBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.img_bg_3);
+        ImageView imageView = ((MainActivity)context).findViewById(R.id.layoutBackground);
+        Bitmap drawableBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.img_bg_8);
         m_drawableBitmap = drawableBitmap;
         Bitmap blurredBitmap = BlurBuilder.blur(context,drawableBitmap);
         BitmapDrawable drawable = new BitmapDrawable(context.getResources(), blurredBitmap);
-
-        //imageView.setBackground(drawable);
         setImageDrawableWithAnimation(imageView, drawable, 200);
-
         imageView.getBackground().setAlpha(0);
-        //setFill(false);
-    }
-
-
-    public static void setInitBackground(Context context, String path){
-        imageView = ((MainActivity)context).findViewById(R.id.layoutBackground);
-        Bitmap drawableBitmap = MusicDataMetadata.getBitmap(path);
-        if (drawableBitmap != null && imageView!= null){
-            Bitmap blurredBitmap = BlurBuilder.blur(context,drawableBitmap);
-            BitmapDrawable drawable = new BitmapDrawable(context.getResources(), blurredBitmap);
-            imageView.setBackground(drawable);
-        }else{
-            m_drawableBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.img_bg_3);
-            Bitmap blurredBitmap = BlurBuilder.blur(context,m_drawableBitmap);
-            BitmapDrawable drawable = new BitmapDrawable(context.getResources(), blurredBitmap);
-            imageView.setBackground(drawable);
-        }
-        //setFill(false);
     }
 
     public static void setImageDrawableWithAnimation(ImageView imageView, Drawable drawable, int duration) {
