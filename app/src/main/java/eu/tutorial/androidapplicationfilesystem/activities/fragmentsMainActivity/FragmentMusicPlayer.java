@@ -59,12 +59,11 @@ public class FragmentMusicPlayer extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
-        if(getContext() instanceof PassMusicStatus){ //Checks if there is an implementation of PassMusicStatus in the context of parent activity
+        if(getActivity() instanceof PassMusicStatus){ //Checks if there is an implementation of PassMusicStatus in the context of parent activity
             passDataInterface = (PassMusicStatus) getActivity();
         } else {
             throw new RuntimeException(getContext().toString() + " must implement PassData");
         }
-
 
         return inflater.inflate(R.layout.fragment_music_player, container, false);
     }
@@ -83,6 +82,7 @@ public class FragmentMusicPlayer extends Fragment{
         mc = new MediaControlFragment(this);
         mc.setPassDataInterface(passDataInterface);
         mc.bindService();
+        mc.receiverBroadcast();
         dialog = new DialogPlaylist();
         btnPlaylist = view.findViewById(R.id.playlistButton);
         favButton = view.findViewById(R.id.favoriteButton);
@@ -108,11 +108,13 @@ public class FragmentMusicPlayer extends Fragment{
             if(index!=null && index!=-1 && viewModelMain.getCurrentSource().getValue()!=null && viewModelMain.getCurrentSource().getValue().getLength()!=0){
                 System.out.println(index);
                 String musicPath = viewModelMain.getCurrentSource().getValue().getSongPath(index);
-                musicFile = new File(musicPath);
-                if(favorites.inPlaylist(musicFile.getAbsolutePath())){
-                    favButton.setImageResource(R.drawable.ic_action_favorite_filled);
-                }else{
-                    favButton.setImageResource(R.drawable.ic_action_favorite);
+                if(musicPath!=null) {
+                    musicFile = new File(musicPath);
+                    if (favorites.inPlaylist(musicFile.getAbsolutePath())) {
+                        favButton.setImageResource(R.drawable.ic_action_favorite_filled);
+                    } else {
+                        favButton.setImageResource(R.drawable.ic_action_favorite);
+                    }
                 }
             }else{
                 if(index==null){
@@ -147,7 +149,7 @@ public class FragmentMusicPlayer extends Fragment{
                 boolean inPlaylist = favorites.inPlaylist(musicFile.getAbsolutePath());
                 if(musicFile!=null && !inPlaylist){
                     System.out.println("Added to playlist");
-                    viewModelMain.addSong(musicFile.getAbsolutePath(), "Favorites", getContext());
+                    viewModelMain.addSong(musicFile.getAbsolutePath(), "Favorites", getActivity());
                     favButton.animate();
                     favButton.setImageResource(R.drawable.ic_action_favorite_filled);
                 }else{
@@ -167,6 +169,7 @@ public class FragmentMusicPlayer extends Fragment{
     public void onDestroy() {
         System.out.println("Destroyed");
         if(mc!=null) {
+            mc.unsetReceivers();
             mc.handlerRemoveCallbacks(); //!IMPORTANT TO NOT CAUSE RUNNABLE MEMORY LEAK
             mc.unbindService();
             mc.unsetPassDataInterface();
@@ -178,6 +181,7 @@ public class FragmentMusicPlayer extends Fragment{
     public void onStop() { //Called after leaving activity, after onPause method then calls onRetart
         //mc.handlerRemoveCallbacks();//!IMPORTANT TO NOT CAUSE RUNNABLE MEMORY LEAK
         if(mc!=null) {
+            mc.unsetReceivers();
             mc.handlerRemoveCallbacks(); //!IMPORTANT TO NOT CAUSE RUNNABLE MEMORY LEAK
             mc.unbindService();
             mc.unsetPassDataInterface();
@@ -187,6 +191,7 @@ public class FragmentMusicPlayer extends Fragment{
 
     @Override
     public void onResume() {
+        mc.receiverBroadcast();
         mc.bindService(); //Service needs to be rebinded after activity changes and etc.
         mc.setPassDataInterface(passDataInterface);
         mc.handlerRemoveCallbacks();//!IMPORTANT TO NOT CAUSE RUNNABLE MEMORY LEAK || On screen rotation || On notification clicked || and etc
@@ -199,6 +204,7 @@ public class FragmentMusicPlayer extends Fragment{
         super.onDetach();
         if(mc!=null) {
             passDataInterface = null;
+            mc.unsetReceivers();
             mc.unsetPassDataInterface();
             mc.handlerRemoveCallbacks();
         }
@@ -207,7 +213,6 @@ public class FragmentMusicPlayer extends Fragment{
 
     public void lastPlayed(File file){
         musicFile = file;
-
     }
 
     public void lastPlayed(File file, Playlist playlist, Integer index){
