@@ -23,6 +23,8 @@ import androidx.core.content.ContextCompat;
 import com.google.android.material.imageview.ShapeableImageView;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
 
 import eu.tutorial.androidapplicationfilesystem.R;
@@ -44,6 +46,7 @@ public class MediaControl extends AppCompatActivity{
     PassMusicStatus passToActivity;
 
     Playlist musicSource;
+    ArrayList <String> sourcePaths;
     Integer musicIndex;
 
 
@@ -57,7 +60,6 @@ public class MediaControl extends AppCompatActivity{
 
         musicSource = null;
         musicIndex = null;
-
 
         bindService();
         setListeners();
@@ -118,7 +120,7 @@ public class MediaControl extends AppCompatActivity{
                         //For that reason code for runnable is activated only after the service is binded
                         //Otherwise methods might be called before the bind and cause crashes
 
-                        if (!mediaControlService.musicPath.equals("none")) { //checks if there was music played before
+                        if (mediaControlService.musicPath!=null && !mediaControlService.musicPath.equals("none")) { //checks if there was music played before
                             String path = mediaControlService.musicPath; //important on activity changes like rotation
                             MetadataGetterSetter.setBarMetadata(context, path);
                             passToActivity.onMediaReady(true);
@@ -137,6 +139,17 @@ public class MediaControl extends AppCompatActivity{
                                     mediaControlService.playMedia(lastSong,musicSource,musicIndex);
 
                                 }else{
+                                    System.out.println("hahahahahahahahahahahahaha");
+                                    mediaControlService.sourcePaths = sourcePaths;
+                                    if(sourcePaths!=null && sourcePaths.size()!=0) {
+                                        for (int i = 0; i < sourcePaths.size(); i++) {
+                                            if (sourcePaths.get(i).equals(lastSong)) {
+                                                musicIndex = i;
+                                                System.out.println(musicIndex);
+                                            }
+                                        }
+                                    }
+                                    mediaControlService.sourceIndex=musicIndex;
                                     mediaControlService.playMedia(lastSong);
                                     System.out.println("huhuhuhuuh");
                                 }
@@ -260,5 +273,9 @@ public class MediaControl extends AppCompatActivity{
 
     public void setLastPosition(int lastSongPosition) {
         this.lastPosition = lastSongPosition;
+    }
+
+    public void setPaths(ArrayList<String> paths) {
+        this.sourcePaths = paths;
     }
 }
