@@ -254,9 +254,6 @@ public class ViewModelMain extends AndroidViewModel{
         this.firstLoad = firstLoad;
     }
 
-
-
-
     public MutableLiveData<Playlist> getCurrentSource() {
         return currentSource;
     }
@@ -270,11 +267,6 @@ public class ViewModelMain extends AndroidViewModel{
         this.currentSource.setValue(currentSource);
         this.currentIndex.setValue(index);
         Settings.setLastSongIndex(index);
-        Settings.setLastSongSource(currentSource.getPlaylistName());
-    }
-
-    public void setCurrentSourcePlaylist(Playlist currentSource) {
-        this.currentSource.setValue(currentSource);
         Settings.setLastSongSource(currentSource.getPlaylistName());
     }
 
