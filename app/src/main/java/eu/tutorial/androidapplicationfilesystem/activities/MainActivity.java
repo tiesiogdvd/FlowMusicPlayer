@@ -10,6 +10,10 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.FragmentContainerView;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.fragment.FragmentNavigator;
+import androidx.navigation.fragment.FragmentNavigatorExtrasKt;
+import androidx.transition.Fade;
+import androidx.transition.Transition;
 
 
 import android.annotation.SuppressLint;
@@ -19,19 +23,25 @@ import android.content.res.Configuration;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.os.Environment;
+import android.transition.TransitionInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.material.imageview.ShapeableImageView;
 
 import java.io.File;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+
 import eu.tutorial.androidapplicationfilesystem.R;
 import eu.tutorial.androidapplicationfilesystem.activities.fragmentsMainActivity.FragmentLibrary;
 import eu.tutorial.androidapplicationfilesystem.activities.fragmentsMainActivity.FragmentLibrarySongs;
 import eu.tutorial.androidapplicationfilesystem.activities.fragmentsMainActivity.FragmentMusicPlayer;
+import eu.tutorial.androidapplicationfilesystem.classes.PathPlaylist;
 import eu.tutorial.androidapplicationfilesystem.classes.PermissionsRetriever;
 import eu.tutorial.androidapplicationfilesystem.classes.MediaControl;
 import eu.tutorial.androidapplicationfilesystem.classes.Playlist;
@@ -57,7 +67,6 @@ public class MainActivity extends AppCompatActivity implements PassMusicStatus {
     FragmentLibrary fragmentLibrary;
     String libraryFragmentTag = "library";
     FragmentLibrarySongs fragmentLibrarySongs;
-    String libraryFragmentSongsTag = "songs";
     private ViewModelMain viewModelMain;
     ConstraintLayout background;
 
@@ -92,16 +101,12 @@ public class MainActivity extends AppCompatActivity implements PassMusicStatus {
         //Prevents recreation of fragment during changes
         fragmentMusicPlayer = (FragmentMusicPlayer) fragmentManager.findFragmentByTag(mpFragmentTag);
         fragmentLibrary = (FragmentLibrary) fragmentManager.findFragmentByTag(libraryFragmentTag);
-       // fragmentLibrarySongs = (FragmentLibrarySongs) fragmentManager.findFragmentByTag(libraryFragmentSongsTag);
         if (fragmentMusicPlayer == null) {
             fragmentMusicPlayer = new FragmentMusicPlayer();
         }
         if (fragmentLibrary == null) {
             fragmentLibrary = new FragmentLibrary();
         }
-        /*if (fragmentLibrarySongs == null) {
-            fragmentLibrarySongs = new FragmentLibrarySongs();
-        }*/
         passSelectionStatus = fragmentLibrarySongs;
     }
 
@@ -176,18 +181,21 @@ public class MainActivity extends AppCompatActivity implements PassMusicStatus {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);  //to hide top navbar
-        //        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_FULLSCREEN);  //to hide top navbar TODO:fix edge black
+        this.getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
+                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
+                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+                View.SYSTEM_UI_FLAG_FULLSCREEN |
+                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         getSupportActionBar().hide(); //to hide top Application Bar
         setContentView(R.layout.activity_main);
 
 
         if (PermissionsRetriever.checkPermissions(MainActivity.this) == 1 || PermissionsRetriever.checkPermissions(MainActivity.this) == 2) {
-
             initiateMethods();
             initFragments();
             setSettings();
             setOnClickListeners();
-
             if (viewModelMain.getLastFragment().equals(mpFragmentTag)) {
                 musicBar.setVisibility(View.GONE);
             } else {
@@ -200,7 +208,6 @@ public class MainActivity extends AppCompatActivity implements PassMusicStatus {
             }
         }
     }
-
 
     @Override
     protected void onDestroy() {
@@ -219,7 +226,6 @@ public class MainActivity extends AppCompatActivity implements PassMusicStatus {
 
     @Override
     protected void onRestart() { //Called after onStop then calls onStart
-        // mc.startService();
         mc.handlerRemoveCallbacks();
         mc.bindService(); //Service needs to be rebinded after activity changes and etc.
         super.onRestart();
@@ -235,7 +241,6 @@ public class MainActivity extends AppCompatActivity implements PassMusicStatus {
     @Override
     protected void onStart() {
         super.onStart();
-        //setAnimation();
         SharedPreferences sh = getSharedPreferences("lastMusic", MODE_PRIVATE);
         Settings.setSettings(sh);
         String lastSongPath = Settings.getLastSongPath();
@@ -246,6 +251,7 @@ public class MainActivity extends AppCompatActivity implements PassMusicStatus {
         Integer index;
 
         if (!mc.isServiceBound() && lastSongPath != null && new File(lastSongPath).exists()) {
+
             mc.setLastSong(lastSongPath);
             if (lastSongPosition != -1) {
                 mc.setLastPosition(lastSongPosition);
@@ -265,6 +271,10 @@ public class MainActivity extends AppCompatActivity implements PassMusicStatus {
                 fragmentMusicPlayer.lastPlayed(new File(lastSongPath), sourcePlaylist, index);
             } else {
                 fragmentMusicPlayer.lastPlayed(new File(lastSongPath));
+                PathPlaylist pathPlaylist = new PathPlaylist();
+                String path = new File(lastSongPath).getParent();
+                ArrayList<String> paths = pathPlaylist.searchPath(path);
+                mc.setPaths(paths);
             }
             mc.bindService();
         }
@@ -276,12 +286,7 @@ public class MainActivity extends AppCompatActivity implements PassMusicStatus {
     @Override
     protected void onPause() {
         if (mc != null) {
-            //Settings.setLastSongPath(mc.getPath());
             Settings.setLastSongRemaining(mc.getRemaining());
-            //Settings.setLastSongSource(viewModelMain.getCurrentSource().getValue().getPlaylistName());
-            //Settings.setLastSongIndex(viewModelMain.getCurrentIndex().getValue());
-            //myPreferences.putString("lastFragment", lastFragment);
-            //myPreferences.apply();
         }
         super.onPause();
     }
@@ -296,12 +301,8 @@ public class MainActivity extends AppCompatActivity implements PassMusicStatus {
         openSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //openFragmentMusicPlayer();
-
-
-                Intent intent = new Intent(MainActivity.this, SettingsActivity.class); //Creates an intent from the current Activity to FileListActivity's class
+                Intent intent = new Intent(MainActivity.this, SettingsActivity.class); //Creates an intent from the current Main Activity to Settings Activity
                 startActivity(intent);
-
             }
         });
 
@@ -330,8 +331,6 @@ public class MainActivity extends AppCompatActivity implements PassMusicStatus {
             Intent intent = new Intent(MainActivity.this, FileListActivity.class); //Creates an intent from the current Activity to FileListActivity's class
             String path = Environment.getExternalStorageDirectory().getPath();
             intent.putExtra("path", path); //Includes data which FileListActivity will use, in this case it will be given storage path
-            //startActivity(intent);
-
             activityLauncher.launch(intent);
             overridePendingTransition(R.anim.pop_in,R.anim.pop_out);
         }
@@ -339,13 +338,21 @@ public class MainActivity extends AppCompatActivity implements PassMusicStatus {
 
 
     private void openFragmentMusicPlayer() {
+
+        Transition transition = new Fade();
+        fragmentMusicPlayer.setSharedElementEnterTransition(transition);
+        fragmentMusicPlayer.setSharedElementReturnTransition(transition);
+
+
         musicBar.setVisibility(View.GONE);
         viewModelMain.setLastFragment(mpFragmentTag);
         fragmentManager.popBackStackImmediate();
+        ImageView imageView = this.findViewById(R.id.musicImageBar);
+
         fragmentManager.beginTransaction()
                 .setCustomAnimations(R.anim.pop_in, R.anim.fade_out, R.anim.pop_in, R.anim.fade_out)
-                //.detach(fragmentLibrary)
                 .replace(R.id.fragmentContainerView, fragmentMusicPlayer, mpFragmentTag)
+                .addSharedElement(imageView ,"toMusicPlayer")
                 .commitNowAllowingStateLoss();
     }
 
