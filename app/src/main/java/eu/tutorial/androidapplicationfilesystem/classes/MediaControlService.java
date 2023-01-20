@@ -21,7 +21,9 @@ import android.media.AudioFocusRequest;
 import android.media.AudioManager;
 import android.media.MediaMetadata;
 import android.media.MediaPlayer;
+import android.media.session.MediaController;
 import android.media.session.MediaSession;
+import android.media.session.MediaSessionManager;
 import android.media.session.PlaybackState;
 import android.net.Uri;
 import android.os.Binder;
@@ -32,6 +34,7 @@ import android.view.KeyEvent;
 import androidx.annotation.Nullable;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import eu.tutorial.androidapplicationfilesystem.R;
 import eu.tutorial.androidapplicationfilesystem.activities.MainActivity;
@@ -42,14 +45,32 @@ public class MediaControlService extends Service implements AudioManager.OnAudio
     String mediaSessionTag = "mediaSession";
     Boolean mpAvailable = false;
     Playlist sourcePlaylist = null;
+    ArrayList<String> sourcePaths;
+
     Integer sourceIndex = null;
+    Notification notification;
+    Notification.Builder notificationBuilder;
 
     MediaSession mediaSession;
+    MediaController mediaController;
+
     NotificationManager notificationManager;
 
     AudioManager audioManager;
 
     AudioFocusRequest focusRequest;
+
+    MusicDataMetadata musicDataMetadata;
+    MediaMetadata.Builder metadataBuilder;
+    PlaybackState.Builder playbackstateBuilder;
+
+    Intent notificationIntent, prevIntent, playIntent, nextIntent;
+    PendingIntent pendingIntent;
+    Notification.Action actionPrev, actionPlay, actionNext;
+
+    int m_state;
+
+    Runnable runnable;
 
     @Override
     public void onAudioFocusChange(int focusChange) {
@@ -86,7 +107,6 @@ public class MediaControlService extends Service implements AudioManager.OnAudio
         }
     }
 
-
     class MyServiceBinder extends Binder{
         public MediaControlService getService(){
             return MediaControlService.this;
@@ -117,11 +137,9 @@ public class MediaControlService extends Service implements AudioManager.OnAudio
                 if(mp.isPlaying()){
                     pauseMedia();
                     mediaSession.setActive(true);
-                    //broadcast("isPlaying",true, "SOURCECHANGED");
                 }else{
                     playMedia();
                     mediaSession.setActive(true);
-                    //broadcast("isPlaying",false, "SOURCECHANGED");
                 }
             }
         }
@@ -132,10 +150,9 @@ public class MediaControlService extends Service implements AudioManager.OnAudio
 
     @Override
     public void onCreate() {//Could put the same things as in onStartCommand, but it will only create the notification once
-        actionNullNotification();
+
         mediaSession = new MediaSession(this, mediaSessionTag);
-        PlaybackState playbackState;
-        //mediaSession.setPlaybackState(PlaybackState.STATE_PAUSED);
+        mediaController = new MediaController(this, mediaSession.getSessionToken());
         mediaSession.setCallback(new MediaSession.Callback() {
             @Override
             public void onPlay() {
@@ -177,6 +194,7 @@ public class MediaControlService extends Service implements AudioManager.OnAudio
             @Override
             public void onSeekTo(long pos) {
                 super.onSeekTo(pos);
+                mediaSeekTo((int) pos);
             }
 
             @Override
@@ -192,11 +210,9 @@ public class MediaControlService extends Service implements AudioManager.OnAudio
                                         if(mp.isPlaying()){
                                             pauseMedia();
                                             mediaSession.setActive(true);
-                                            //broadcast("isPlaying",true, "SOURCECHANGED");
                                         }else{
                                             playMedia();
                                             mediaSession.setActive(true);
-                                            //broadcast("isPlaying",false, "SOURCECHANGED");
                                         }
                                         break;
                                     case KeyEvent.KEYCODE_MEDIA_NEXT:
@@ -216,24 +232,63 @@ public class MediaControlService extends Service implements AudioManager.OnAudio
         });
         mediaSession.setActive(true);
         audioManager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
+        notificationBuilder = new Notification.Builder(this, CHANNEL_ID_1);
+        notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
 
+        setIntents();
+        setActions();
+        buildNotification();
         super.onCreate();
     }
 
-    private void setMediaSessionMetadata(String title, String artist, Bitmap bitmap){
-        MediaMetadata.Builder metadataBuilder = new MediaMetadata.Builder();
-        metadataBuilder.putString(MediaMetadata.METADATA_KEY_TITLE, title);
-        metadataBuilder.putString(MediaMetadata.METADATA_KEY_ARTIST, artist);
-        metadataBuilder.putBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART, bitmap);
-        mediaSession.setMetadata(metadataBuilder.build());
+    private void setIntents(){
+        notificationIntent = new Intent(this, MainActivity.class);  //This intent is used to open Activity on click of notification
+        pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
+
+        prevIntent = new Intent(this, MediaControlService.class);
+        prevIntent.setAction(ACTION_PREVIOUS);
+
+        playIntent = new Intent(this, MediaControlService.class);
+        playIntent.setAction(ACTION_PLAY);
+
+        nextIntent = new Intent(this, MediaControlService.class);
+        nextIntent.setAction(ACTION_NEXT);
+    }
+
+    private void setActions(){
+        actionPrev = new Notification.Action.Builder(
+                Icon.createWithResource(this, R.drawable.ic_action_previous),"Previous",PendingIntent.getService(this,1,prevIntent,PendingIntent.FLAG_IMMUTABLE)).build();
+
+        if(mp.isPlaying()){
+            actionPlay = new Notification.Action.Builder(
+                    Icon.createWithResource(this, R.drawable.ic_action_pause),"Pause",PendingIntent.getService(this,1,playIntent,PendingIntent.FLAG_IMMUTABLE)).build();
+        }else{
+            actionPlay = new Notification.Action.Builder(
+                    Icon.createWithResource(this, R.drawable.ic_action_play),"Pause",PendingIntent.getService(this,1,playIntent,PendingIntent.FLAG_IMMUTABLE)).build();
+        }
+
+        actionNext = new Notification.Action.Builder(
+                Icon.createWithResource(this, R.drawable.ic_action_next),"Play",PendingIntent.getService(this,1,nextIntent,PendingIntent.FLAG_IMMUTABLE)).build();
     }
 
     private void setPlaybackState(int state) {
-        PlaybackState.Builder playbackstateBuilder = new PlaybackState.Builder()
+        if(state==PlaybackState.STATE_PLAYING){
+            setPlayStatus(true);
+            m_state = state;
+        }
+
+        if (state == PlaybackState.STATE_PAUSED || state == PlaybackState.STATE_STOPPED) {
+            setPlayStatus(false);
+            m_state = state;
+        }
+
+
+        playbackstateBuilder = new PlaybackState.Builder()
                 .setActions(PlaybackState.ACTION_PLAY |
                         PlaybackState.ACTION_PAUSE |
-                        PlaybackState.ACTION_STOP);
-        playbackstateBuilder.setState(state, PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN, 0);
+                        PlaybackState.ACTION_STOP |
+                        PlaybackState.ACTION_SEEK_TO);
+        playbackstateBuilder.setState(state, mp.getCurrentPosition(), 1);
         mediaSession.setPlaybackState(playbackstateBuilder.build());
     }
 
@@ -243,10 +298,6 @@ public class MediaControlService extends Service implements AudioManager.OnAudio
         mp.release();
         mp = null;
         super.onDestroy();
-    }
-
-    public void setSource(Playlist playlistSource){
-        sourcePlaylist = playlistSource;
     }
 
     public void setSources(Playlist playlistSource, Integer index){
@@ -261,7 +312,7 @@ public class MediaControlService extends Service implements AudioManager.OnAudio
     }
 
     public void playMedia(String path){
-        sourceIndex = null;
+        //sourceIndex = null;
         sourcePlaylist = null;
         actionPlay(path);
     }
@@ -274,7 +325,15 @@ public class MediaControlService extends Service implements AudioManager.OnAudio
             setPlaybackState(PlaybackState.STATE_PLAYING);
             //Settings.setLastSongIndex(sourceIndex);
             broadcast("isPlaying",true, "SOURCECHANGED");
+
+        } else if(sourcePaths!=null && sourcePaths.size()!=0 && sourceIndex!=null && sourceIndex!=0){
+            sourceIndex = sourceIndex-1;
+            String path = sourcePaths.get(sourceIndex);
+            actionPlay(path);
+            setPlaybackState(PlaybackState.STATE_PLAYING);
+            broadcast("isPlaying",true, "SOURCECHANGED");
         }
+
     }
 
     public void playNext(){
@@ -285,6 +344,14 @@ public class MediaControlService extends Service implements AudioManager.OnAudio
             actionPlay();
             setPlaybackState(PlaybackState.STATE_PLAYING);
             //Settings.setLastSongIndex(sourceIndex);
+            System.out.println("Next");
+            broadcast("isPlaying",true, "SOURCECHANGED");
+
+        } else if(sourcePaths!=null && sourcePaths.size()!=0  && sourceIndex!=null && sourceIndex!=-1 && sourceIndex!=sourcePaths.size()-1){
+            sourceIndex = sourceIndex+1;
+            String path = sourcePaths.get(sourceIndex);
+            actionPlay(path);
+            setPlaybackState(PlaybackState.STATE_PLAYING);
             broadcast("isPlaying",true, "SOURCECHANGED");
         }
     }
@@ -293,25 +360,40 @@ public class MediaControlService extends Service implements AudioManager.OnAudio
         int requestAudioFocusResult = requestFocus();
         if(requestAudioFocusResult== AudioManager.AUDIOFOCUS_REQUEST_GRANTED){
             mp.start();
-            buildNotification(musicPath);
             setPlaybackState(PlaybackState.STATE_PLAYING);
-            broadcast("isPlaying",true, "SOURCECHANGED");
+            System.out.println("PLAY MEDIA");
+            broadcast("isPlaying",true, "PLAYPAUSE");
         }
     }
 
     public void pauseMedia(){
         mp.pause();
-        buildNotification(musicPath);
         setPlaybackState(PlaybackState.STATE_PAUSED);
-        broadcast("isPlaying",false, "SOURCECHANGED");
+        System.out.println("PAUSE MEDIA");
+        broadcast("isPlaying",false, "PLAYPAUSE");
         if(focusRequest!=null) {
             audioManager.abandonAudioFocusRequest(focusRequest);
         }
     }
 
+    public int requestFocus(){
+        AudioAttributes audioAttributes = new AudioAttributes.Builder().setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build();
+        focusRequest = new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
+                .setAudioAttributes(audioAttributes)
+                .setAcceptsDelayedFocusGain(true)
+                .setOnAudioFocusChangeListener(this)
+                .build();
+        return audioManager.requestAudioFocus(focusRequest);
+    }
+
     public void mediaSeekTo(int position){
         //finished = false;
         mp.seekTo(position);
+        if(playbackstateBuilder!=null){
+            playbackstateBuilder.setState(m_state, position, 1);
+            mediaSession.setPlaybackState(playbackstateBuilder.build());
+        }
+
     }
 
     public Boolean isMediaPlaying(){
@@ -349,34 +431,53 @@ public class MediaControlService extends Service implements AudioManager.OnAudio
         });
     }
 
+    private void setMediaSessionMetadata(String path){
+        musicDataMetadata = new MusicDataMetadata();
+        metadataBuilder = new MediaMetadata.Builder();
+        musicDataMetadata.setAllData(path);
+        if(musicDataMetadata.bitmap!=null){
+            metadataBuilder.putBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART, musicDataMetadata.bitmap);
+        }else{
+            metadataBuilder.putBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART, BitmapFactory.decodeResource(getResources(), R.drawable.ic_group_23_image_6));
+        }
+
+        metadataBuilder.putString(MediaMetadata.METADATA_KEY_TITLE, musicDataMetadata.title);
+        metadataBuilder.putString(MediaMetadata.METADATA_KEY_ARTIST, musicDataMetadata.artist);
+        metadataBuilder.putLong(MediaMetadata.METADATA_KEY_DURATION, musicDataMetadata.length);
+        mediaSession.setMetadata(metadataBuilder.build());
+        notificationBuilder.setProgress(1000, 10000, false);
+        notificationManager.notify(1,notificationBuilder.build());
+    }
+
+
+    private void setPlayStatus(Boolean playStatus){
+        if(playStatus){
+            actionPlay = new Notification.Action.Builder(
+                    Icon.createWithResource(this, R.drawable.ic_action_pause),"Pause",PendingIntent.getService(this,1,playIntent,PendingIntent.FLAG_IMMUTABLE)).build();
+        }else{
+            actionPlay = new Notification.Action.Builder(
+                    Icon.createWithResource(this, R.drawable.ic_action_play),"Pause",PendingIntent.getService(this,1,playIntent,PendingIntent.FLAG_IMMUTABLE)).build();
+        }
+        notificationBuilder.setActions(actionPrev,actionPlay,actionNext);
+        notificationManager.notify(1,notificationBuilder.build());
+    }
+
     private void actionPlay(String path) {
         musicPath = path;
         if (new File(path).exists()) {
+
             mp.reset();
             mp = MediaPlayer.create(this, Uri.parse(path));
             mp.start();
-
             mp.setLooping(false);
             mpAvailable = true;
             musicPath = path;
             SharedPreferences sharedPreferences = getSharedPreferences("lastMusic",MODE_PRIVATE);
             sharedPreferences.edit().putString("lastSongSource",null).apply();
             sharedPreferences.edit().putString("lastSongPath",path).apply();
-            buildNotification(path);
+            //buildNotification(path);
+            setMediaSessionMetadata(path);
         }
-    }
-
-    public int requestFocus(){
-        AudioAttributes audioAttributes = new AudioAttributes.Builder().setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build();
-
-        focusRequest = new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
-                .setAudioAttributes(audioAttributes)
-                .setAcceptsDelayedFocusGain(true)
-                .setOnAudioFocusChangeListener(this)
-                .build();
-
-        return audioManager.requestAudioFocus(focusRequest);
-
     }
 
     private void actionPlay() {
@@ -385,18 +486,18 @@ public class MediaControlService extends Service implements AudioManager.OnAudio
             if(sourcePlaylist.getLength()!=0) {
                 String source = sourcePlaylist.getSongPath(sourceIndex);
                 musicPath = source;
-                if (new File(source).exists()) {
+                if (musicPath!=null) {
                     mp.reset();
                     mp = MediaPlayer.create(this, Uri.parse(source));
                     mp.start();
-                    //mp.start();
                     mp.setLooping(false);
                     mpAvailable = true;
                     musicPath = source;
                     SharedPreferences sharedPreferences = getSharedPreferences("lastMusic", MODE_PRIVATE);
                     sharedPreferences.edit().putString("lastSongPath", source).apply();
                     mediaCompletionListener();
-                    buildNotification(source);
+                    //buildNotification(source);
+                    setMediaSessionMetadata(source);
                 }
             }else{
                 actionPlay(Settings.getLastSongPath());
@@ -404,47 +505,11 @@ public class MediaControlService extends Service implements AudioManager.OnAudio
         }
     }
 
-
-    private void buildNotification(String path){
-        Intent notificationIntent = new Intent(this, MainActivity.class);  //This intent is used to open Activity on click of notification
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
-
-        Intent prevIntent = new Intent(this, MediaControlService.class);
-        prevIntent.setAction(ACTION_PREVIOUS);
-
-        Intent playIntent = new Intent(this, MediaControlService.class);
-        playIntent.setAction(ACTION_PLAY);
-
-        Intent nextIntent = new Intent(this, MediaControlService.class);
-        nextIntent.setAction(ACTION_NEXT);
-
-        Notification.Action actionPrev = new Notification.Action.Builder(
-                Icon.createWithResource(this, R.drawable.ic_action_previous),"Previous",PendingIntent.getService(this,1,prevIntent,PendingIntent.FLAG_IMMUTABLE)).build();
-
-        Notification.Action actionPlay;
-        if(mp.isPlaying()){
-            actionPlay = new Notification.Action.Builder(
-                Icon.createWithResource(this, R.drawable.ic_action_pause),"Pause",PendingIntent.getService(this,1,playIntent,PendingIntent.FLAG_IMMUTABLE)).build();
-        }else{
-            actionPlay = new Notification.Action.Builder(
-                    Icon.createWithResource(this, R.drawable.ic_action_play),"Pause",PendingIntent.getService(this,1,playIntent,PendingIntent.FLAG_IMMUTABLE)).build();
-        }
-
-        Notification.Action actionNext = new Notification.Action.Builder(
-                Icon.createWithResource(this, R.drawable.ic_action_next),"Play",PendingIntent.getService(this,1,nextIntent,PendingIntent.FLAG_IMMUTABLE)).build();
-
-        MusicDataMetadata musicDataMetadata = new MusicDataMetadata();
-        musicDataMetadata.setAllData(path);
-        if(musicDataMetadata.bitmap!=null){
-            setMediaSessionMetadata(musicDataMetadata.title,musicDataMetadata.artist,musicDataMetadata.bitmap);
-        }else{
-            setMediaSessionMetadata(musicDataMetadata.title,musicDataMetadata.artist, BitmapFactory.decodeResource(getResources(), R.drawable.ic_group_23_image_6));
-        }
-
-
-        Notification notification = new Notification.Builder(this, CHANNEL_ID_1)
-                .setSmallIcon(R.drawable.ic_group_23)
+    private void buildNotification(){
+        notificationBuilder = new Notification.Builder(this, CHANNEL_ID_1);
+        notificationBuilder
                 .setVisibility(Notification.VISIBILITY_PUBLIC)
+                .setSmallIcon(R.drawable.ic_group_23)
                 .setShowWhen(false)
                 .setContentIntent(pendingIntent) //Enables clicking notification
                 .setOngoing(true)
@@ -453,18 +518,11 @@ public class MediaControlService extends Service implements AudioManager.OnAudio
                 .addAction(actionNext)
                 .setStyle(new Notification.MediaStyle()
                         .setShowActionsInCompactView(0,1,2)
-                        .setMediaSession(mediaSession.getSessionToken()))
-                .build(); //this will start the service
-        startForeground(1, notification);//but this is important to keep in running in the foreground
+                        .setMediaSession(mediaSession.getSessionToken())); //this will start the service
+        notification = notificationBuilder.build();
+        startForeground(1, notificationBuilder.build());//but this is important to keep in running in the foreground
     }
 
-    private void actionNullNotification(){
-        Notification notification = new Notification.Builder(this, CHANNEL_ID_1)
-                .setContentTitle("Song playing")
-                .setSmallIcon(R.drawable.ic_group_23)
-                .build(); //this will start the service
-        startForeground(9,notification);
-    }
 
     private void broadcast(String key, Boolean payload, String action){
         Intent intent = new Intent();
