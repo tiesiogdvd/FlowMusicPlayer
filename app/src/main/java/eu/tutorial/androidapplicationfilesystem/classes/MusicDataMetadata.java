@@ -30,8 +30,6 @@ public class MusicDataMetadata {
     }
 
     public void setAllData(String path){
-        //MediaMetadataRetriever mr = new MediaMetadataRetriever();
-        mr = new MediaMetadataRetriever();
         mr.setDataSource(path);
 
         try{
@@ -62,102 +60,13 @@ public class MusicDataMetadata {
 
         try{
             length = Integer.parseInt(mr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
-            lengthString = convertTimeFormat(length);
+            lengthString = TypeConverter.formatDuration(length);
         }catch(Exception e){
 
         }
         mr.release();
     }
 
-
-
-    //This method required a file to be provided
-    public static String getTitle(File file){
-        String path = file.getAbsolutePath();
-        MediaMetadataRetriever mr = new MediaMetadataRetriever();
-        mr.setDataSource(path);
-        try{
-            String title = mr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-            mr.release();
-            if(title==null){throw new Exception();}
-            return title;
-        }catch(Exception e){
-            mr.release();
-            String title = path.substring(path.lastIndexOf("/")).replace("/","");
-            return title;
-        }
-    }
-
-    public static String getTitle(String path){
-        MediaMetadataRetriever mr = new MediaMetadataRetriever();
-        mr.setDataSource(path);
-        try{
-            String title = mr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-            mr.release();
-            if(title==null){throw new Exception();}
-            return title;
-        }catch(Exception e){
-            mr.release();
-            String title = path.substring(path.lastIndexOf("/")).replace("/","");
-            return title;
-        }
-    }
-
-
-    public static String getArtist(File file){
-        String path = file.getAbsolutePath();
-        MediaStore.Audio.Albums.getContentUri(file.getAbsolutePath());
-        MediaMetadataRetriever mr = new MediaMetadataRetriever();
-        mr.setDataSource(path);
-        try{
-            String artist = mr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
-            mr.release();
-            return artist;
-        }catch(Exception e){
-            mr.release();
-            return null;
-        }
-    }
-
-    public static String getArtist(String path){
-        MediaMetadataRetriever mr = new MediaMetadataRetriever();
-        mr.setDataSource(path);
-        try{
-            String artist = mr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
-            mr.release();
-            return artist;
-        }catch(Exception e){
-            mr.release();
-            return null;
-        }
-    }
-
-    public static String getAlbum(File file){
-        String path = file.getAbsolutePath();
-        MediaMetadataRetriever mr = new MediaMetadataRetriever();
-        mr.setDataSource(path);
-        try{
-            String album = mr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
-            mr.release();
-            return album;
-        }catch(Exception e){
-            mr.release();
-            return null;
-        }
-    }
-
-    public static String getAlbum(String path){
-        MediaMetadataRetriever mr = new MediaMetadataRetriever();
-        mr.setDataSource(path);
-        try{
-            String album = mr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
-            mr.release();
-            return album;
-        }catch(Exception e){
-            mr.release();
-            return null;
-        }
-    }
 
 
     public static Bitmap getBitmap(String path){
@@ -173,84 +82,4 @@ public class MusicDataMetadata {
             return null;
         }
     }
-
-    public static Bitmap getBitmap(File file){
-        String path = file.getAbsolutePath();
-        MediaMetadataRetriever mr = new MediaMetadataRetriever();
-        mr.setDataSource(path);
-        try{
-            byte [] data = mr.getEmbeddedPicture();
-            Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-            mr.release();
-            return bitmap;
-        }catch(Exception e){
-            mr.release();
-            return null;
-        }
-    }
-
-    public static String getLengthString(String path) {
-        MediaMetadataRetriever mr = new MediaMetadataRetriever();
-        mr.setDataSource(path);
-        try{
-            int length = Integer.parseInt(mr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
-            mr.release();
-            String lengthString = convertTimeFormat(length);
-            return lengthString;
-        }catch(Exception e){
-            mr.release();
-            return "";
-        }
-    }
-
-    public static String getLengthString(File file) {
-        MediaMetadataRetriever mr = new MediaMetadataRetriever();
-        mr.setDataSource(file.getAbsolutePath());
-        try{
-            int length = Integer.parseInt(mr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
-            mr.release();
-            String lengthString = convertTimeFormat(length);
-            return lengthString;
-        }catch(Exception e){
-            mr.release();
-            return "";
-        }
-    }
-
-    @SuppressLint("DefaultLocale")
-    private static String convertTimeFormat(int duration){
-        return String.format("%02d:%02d",
-                TimeUnit.MILLISECONDS.toMinutes(duration),
-                TimeUnit.MILLISECONDS.toSeconds(duration) -
-                        (TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(duration))));
-    }
-
-    public static int getLengthInt(String path) {
-        MediaMetadataRetriever mr = new MediaMetadataRetriever();
-        mr.setDataSource(path);
-        try{
-            int length = Integer.parseInt(mr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
-            mr.release();
-            return length;
-        }catch(Exception e){
-            mr.release();
-            return 0;
-        }
-    }
-
-    public static int getLengthInt(File file) {
-        MediaMetadataRetriever mr = new MediaMetadataRetriever();
-        mr.setDataSource(file.getAbsolutePath());
-        try{
-            int length = Integer.parseInt(mr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
-            mr.release();
-            return length;
-        }catch(Exception e){
-            mr.release();
-            return 0;
-        }
-    }
-
-
-
 }
