@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -9,27 +9,45 @@
     android:focusable="true"
     android:focusableInTouchMode="true"
     android:theme="@style/AppTheme"
-    tools:context=".activities.fragmentsMainActivity.FragmentLibrary"
-    >
+    app:layoutDescription="@xml/fragment_library_songs_scene"
+    tools:context=".activities.fragmentsMainActivity.FragmentLibrary">
 
     <LinearLayout
+        android:id="@+id/topPanel"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="vertical"
-        >
+        app:layout_constraintTop_toTopOf="parent">
 
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:foreground="@drawable/gradient_library">
+
+            <ImageView
+                android:id="@+id/libraryImage"
+                android:layout_width="wrap_content"
+                android:layout_height="250dp"
+                android:background="@drawable/img_bg_8"
+                android:scaleType="centerCrop" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="150dp" />
+        </FrameLayout>
 
         <TextView
             android:id="@+id/librarySelectionText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="25dp"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="-100dp"
             android:layout_marginBottom="20dp"
             android:text="All songs"
-            android:textSize="40dp"
-            />
+            android:textSize="40dp" />
+
 
         <TextView
             android:id="@+id/libraryRecentSongsText"
@@ -38,8 +56,7 @@
             android:layout_marginLeft="25dp"
             android:layout_marginBottom="5dp"
             android:text="Recent songs"
-            android:textSize="20dp"
-            />
+            android:textSize="20dp" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/libraryRecyclerView"
@@ -49,7 +66,7 @@
             android:orientation="horizontal"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:itemCount="10"
-            tools:listitem="@layout/recycler_item_library_recentmusic"/>
+            tools:listitem="@layout/recycler_item_library_recentmusic" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -59,17 +76,16 @@
             android:layout_marginBottom="5dp"
             android:background="@drawable/library_buttons">
 
-        <EditText
-            android:id="@+id/search_bar"
-            android:layout_width="match_parent"
-            android:layout_height="20dp"
-            android:background="@android:color/transparent"
-            android:gravity="center_vertical"
-            android:hint="Search"
-            android:textColor="@color/text"
-            android:textColorHint="@color/text"
-            android:textSize="12dp"
-            />
+            <EditText
+                android:id="@+id/search_bar"
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:background="@android:color/transparent"
+                android:gravity="center_vertical"
+                android:hint="Search"
+                android:textColor="@color/text"
+                android:textColorHint="@color/text"
+                android:textSize="12dp" />
 
         </LinearLayout>
 
@@ -86,60 +102,57 @@
                 android:gravity="center_vertical"
                 android:hint="Sort"
                 android:textColorHint="@color/text"
-                android:textSize="11dp"
-                />
+                android:textSize="11dp" />
 
         </LinearLayout>
-
-        <com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView
-            android:id="@+id/libraryRecyclerViewItems"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            app:fastScrollAutoHideDelay="20"
-            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-            tools:itemCount="10"
-            tools:listitem="@layout/recycler_item_library_song"
-            android:clipToPadding="false"
-            android:paddingBottom="150dp"/>
 
 
     </LinearLayout>
 
+
+    <eu.tutorial.androidapplicationfilesystem.classes.FastScrollRecyclerView.FastScrollRecyclerView
+        android:id="@+id/libraryRecyclerViewItems"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clipToPadding="false"
+        android:paddingBottom="100dp"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        app:fastScrollAutoHideDelay="20"
+        android:fastScrollEnabled="true"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:layout_constraintTop_toBottomOf="@+id/topPanel"
+        tools:itemCount="10"
+        tools:listitem="@layout/recycler_item_library_song" />
 
 
     <LinearLayout
         android:id="@+id/selectionBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="7dp"
-        android:orientation="vertical"
         android:background="@drawable/selected_action_bar"
+        android:orientation="vertical"
+        android:padding="7dp"
 
-        app:layout_constraintBottom_toBottomOf="parent"
-        >
+        app:layout_constraintBottom_toBottomOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:orientation="horizontal"
-            android:weightSum="10"
-            >
+            android:weightSum="10">
 
             <Space
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                />
+                android:layout_weight="1" />
 
             <CheckBox
                 android:id="@+id/selectionCheckbox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:buttonTint="@color/drawable_bar"
-                />
+                app:buttonTint="@color/drawable_bar" />
 
             <TextView
                 android:layout_width="0dp"
@@ -147,16 +160,16 @@
                 android:layout_weight="5"
                 android:text="Select all"
                 android:textColor="@color/drawable_bar"
-                android:textSize="13dp"/>
+                android:textSize="13dp" />
 
             <TextView
                 android:id="@+id/selectionNumber"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="3"
-                android:textColor="@color/drawable_bar"
                 android:text="Selected 1/245"
-                android:textSize="13dp"/>
+                android:textColor="@color/drawable_bar"
+                android:textSize="13dp" />
         </LinearLayout>
 
 
@@ -170,8 +183,7 @@
             <Space
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                />
+                android:layout_weight="1" />
 
             <LinearLayout
                 android:id="@+id/selectionAddToPlaylist"
@@ -183,23 +195,22 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:tint="@color/drawable_bar"
-                    android:src="@drawable/ic_action_playlist"/>
+                    android:src="@drawable/ic_action_playlist"
+                    android:tint="@color/drawable_bar" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/drawable_bar"
                     android:text="Add to playlist"
-                    android:textSize="10dp"/>
+                    android:textColor="@color/drawable_bar"
+                    android:textSize="10dp" />
 
             </LinearLayout>
 
             <Space
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                />
+                android:layout_weight="1" />
 
             <LinearLayout
                 android:id="@+id/selectionDelete"
@@ -211,23 +222,22 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:tint="@color/drawable_bar"
-                    android:src="@drawable/ic_action_playlist"/>
+                    android:src="@drawable/ic_action_playlist"
+                    android:tint="@color/drawable_bar" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/drawable_bar"
                     android:text="Delete"
-                    android:textSize="10dp"/>
+                    android:textColor="@color/drawable_bar"
+                    android:textSize="10dp" />
 
             </LinearLayout>
 
             <Space
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                />
+                android:layout_weight="1" />
 
 
             <LinearLayout
@@ -240,24 +250,24 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:tint="@color/drawable_bar"
-                    android:src="@drawable/ic_action_playlist"/>
+                    android:src="@drawable/ic_action_playlist"
+                    android:tint="@color/drawable_bar" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/drawable_bar"
                     android:text="Set album info"
-                    android:textSize="10dp"/>
+                    android:textColor="@color/drawable_bar"
+                    android:textSize="10dp" />
 
             </LinearLayout>
+
             <Space
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                />
+                android:layout_weight="1" />
         </LinearLayout>
     </LinearLayout>
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.motion.widget.MotionLayout>
