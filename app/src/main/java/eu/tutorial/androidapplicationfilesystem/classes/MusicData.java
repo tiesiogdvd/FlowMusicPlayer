@@ -221,6 +221,11 @@ public class MusicData{
         }
     }
 
+    public MusicData(String path){
+        initConstructorData(path);
+        this.date = setInitialDate();
+    }
+
     public MusicData(String path, String date){
         initConstructorData(path);
         this.date = date;
