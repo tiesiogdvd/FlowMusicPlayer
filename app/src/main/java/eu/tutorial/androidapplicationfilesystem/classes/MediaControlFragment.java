@@ -15,10 +15,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.media.MediaMetadata;
+import android.media.MediaMetadataRetriever;
 import android.os.Handler;
 import android.os.IBinder;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,6 +39,8 @@ import soup.neumorphism.NeumorphImageButton;
 
 public class MediaControlFragment extends AppCompatActivity {
 
+    boolean receiversRegistered;
+
     ImageButton btnPlay;
     ImageButton btnPrevious;
     ImageButton btnNext;
@@ -51,6 +56,7 @@ public class MediaControlFragment extends AppCompatActivity {
 
     BroadcastReceiver receiverFinished;
     BroadcastReceiver receiverChange;
+    BroadcastReceiver receiverPlayState;
 
     MediaControlService mediaControlService;
     boolean isServiceBound;
@@ -66,18 +72,11 @@ public class MediaControlFragment extends AppCompatActivity {
 
     public MediaControlFragment(FragmentMusicPlayer fragmentMusicPlayer) {
 
-
-       /* if(context instanceof PassMusicStatus){ //Checks if there is an implementation of PassMusicStatus in the context of parent activity
-            passToActivity = (PassMusicStatus) context;
-        } else {
-            throw new RuntimeException(context.toString() + " must implement PassData");
-        }*/
-
         this.isServiceBound = false;
         this.handler =  new Handler();
         this.seekBar = null;
 
-        this.context = fragmentMusicPlayer.getContext();
+        this.context = fragmentMusicPlayer.getActivity();
         this.fragmentMusicPlayer = fragmentMusicPlayer;
 
         this.btnPrevious = fragmentMusicPlayer.requireView().findViewById(R.id.lastButton);
@@ -107,8 +106,8 @@ public class MediaControlFragment extends AppCompatActivity {
         setOnSeekbarListener(); //Actives seekbar listener method
         if (mediaControlService.isMediaReady()){ //Only runs the code if it detects that the service is playing audio
             System.out.println(mediaControlService.mediaRemaining());
-            totalText.setText(formatDuration(mediaControlService.mediaDuration()));
-            remainingText.setText(formatDuration(mediaControlService.mediaRemaining()));
+            totalText.setText(TypeConverter.formatDuration(mediaControlService.mediaDuration()));
+            remainingText.setText(TypeConverter.formatDuration(mediaControlService.mediaRemaining()));
             seekBar.setMax(mediaControlService.mediaDuration());
             seekBar.setProgress(mediaControlService.mediaRemaining());
             if(mediaControlService.isMediaPlaying()) {
@@ -174,7 +173,8 @@ public class MediaControlFragment extends AppCompatActivity {
 
 
     public void bindService(){
-        receiverBroadcast();
+
+        //receiverBroadcast();
         serviceIntent.setAction("create");
         ContextCompat.startForegroundService(context, serviceIntent);
 
@@ -191,15 +191,15 @@ public class MediaControlFragment extends AppCompatActivity {
                     //For that reason code for runnable is activated only after the service is binded
                     //Otherwise methods might be called before the bind and cause crashes
 
-                    if(!mediaControlService.musicPath.equals("none")){ //checks if there was music played before
+                    if(mediaControlService.musicPath!=null && !mediaControlService.musicPath.equals("none")){ //checks if there was music played before
                         String path = mediaControlService.musicPath; //important on activity changes like rotation
                         setMetadata(path); //sets metadata to last played song
                         if(mediaControlService.isMediaPlaying()){
                             btnPlay.setImageResource(R.drawable.ic_action_pause);
                             setRunnable();
                         }else{
-                            totalText.setText(formatDuration(mediaControlService.mediaDuration()));
-                            remainingText.setText(formatDuration(mediaControlService.mediaRemaining()));
+                            totalText.setText(TypeConverter.formatDuration(mediaControlService.mediaDuration()));
+                            remainingText.setText(TypeConverter.formatDuration(mediaControlService.mediaRemaining()));
                             seekBar.setMax(mediaControlService.mediaDuration());
                             seekBar.setProgress(mediaControlService.mediaRemaining());
                         }
@@ -225,99 +225,78 @@ public class MediaControlFragment extends AppCompatActivity {
         }
     }
 
-
-
     public void play(){
         mediaControlService.playMedia();
         setRunnable();
         btnPlay.setImageResource(R.drawable.ic_action_pause);
-       // btnBottomBar.setImageResource(R.drawable.ic_action_pause);
-
     }
 
     public void pause(){
         mediaControlService.pauseMedia();
         handler.removeCallbacks(runnable);
         btnPlay.setImageResource(R.drawable.ic_action_play);
-        //btnBottomBar.setImageResource(R.drawable.ic_action_play);
     }
-
-    public void stopService(){
-        Intent serviceIntent = new Intent(context, MediaControlService.class);
-        stopService(serviceIntent);
-    }
-
-
-    public boolean isPlaying(){
-        return mediaControlService.isMediaPlaying();
-    }
-
-
-    @SuppressLint("DefaultLocale")
-    private String convertTimeFormat(int duration){
-        return String.format("%02d:%02d",
-                TimeUnit.MILLISECONDS.toMinutes(duration),
-                TimeUnit.MILLISECONDS.toSeconds(duration) -
-                        (TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(duration))));
-    }
-
-    private String formatDuration(int duration) {
-        int minutes = (int) TimeUnit.MINUTES.convert(duration, TimeUnit.MILLISECONDS);
-        int seconds = (int) (TimeUnit.SECONDS.convert(duration, TimeUnit.MILLISECONDS)
-                - minutes * TimeUnit.SECONDS.convert(1, TimeUnit.MINUTES));
-
-        return String.format("%02d:%02d", minutes, seconds);
-    }
-
 
     public void receiverBroadcast(){
-        receiverFinished = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                Boolean isFinished = intent.getExtras().getBoolean("isFinished");
-                mediaControlService.pauseMedia();
-                handler.removeCallbacks(runnable);
-                btnPlay.setImageResource(R.drawable.ic_action_play);
-                if(passToActivity!=null){
-                    passToActivity.onDataReceived(false);//TODO: fix crash on media finish after rotation
-                }
-            }
-        };
-        context.registerReceiver(receiverFinished,new IntentFilter("STATE"));
-
-
-
-        receiverChange = new BroadcastReceiver(){
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                Boolean isPlaying =intent.getExtras().getBoolean("isPlaying");
-                viewModelMain.setCurrentSourceInteger(mediaControlService.sourceIndex);
-
-                if(isPlaying){
-                    btnPlay.setImageResource(R.drawable.ic_action_pause);
-                }else{
+        if(receiversRegistered == false) {
+            receiverFinished = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    Boolean isFinished = intent.getExtras().getBoolean("isFinished");
+                    mediaControlService.pauseMedia();
+                    handler.removeCallbacks(runnable);
                     btnPlay.setImageResource(R.drawable.ic_action_play);
-                    //handler.removeCallbacks(runnable);
+                    if (passToActivity != null) {
+                        passToActivity.onDataReceived(false);
+                    }
                 }
-                //btnPlay.setImageResource(R.drawable.ic_action_pause);
-                //setMetadata(mediaControlService.musicPath);
+            };
+            context.registerReceiver(receiverFinished, new IntentFilter("STATE"));
 
-               /* if (!isPlaying){
-                    pause();
-                }else{
-                    play();
-                }*/
+            receiverChange = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    boolean isPlaying = intent.getExtras().getBoolean("isPlaying");
+                    viewModelMain.setCurrentSourceInteger(mediaControlService.sourceIndex);
 
-            }
-        };
-        context.registerReceiver(receiverChange, new IntentFilter("SOURCECHANGED"));
+                    if (isPlaying) {
+                        btnPlay.setImageResource(R.drawable.ic_action_pause);
+                        setMetadata(mediaControlService.musicPath);
+                        passToActivity.onDataReceived(true);
+                        setRunnable();
 
-    }
+                    } else {
+                        btnPlay.setImageResource(R.drawable.ic_action_play);
+                        setMetadata(mediaControlService.musicPath);
+                        passToActivity.onDataReceived(false);
+                    }
 
 
-    public void unsetOnSeekbarListener(){
-        if(seekBar!=null) {
-            seekBar.setOnSeekBarChangeListener(null);
+                }
+            };
+            context.registerReceiver(receiverChange, new IntentFilter("SOURCECHANGED"));
+
+
+            receiverPlayState = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    boolean isPlaying = intent.getExtras().getBoolean("isPlaying");
+                    System.out.println("Next");
+                    if (isPlaying) {
+                        btnPlay.setImageResource(R.drawable.ic_action_pause);
+                        if (passToActivity != null) {
+                            passToActivity.onDataReceived(true);
+                        }
+                    } else {
+                        btnPlay.setImageResource(R.drawable.ic_action_play);
+                        if (passToActivity != null) {
+                            passToActivity.onDataReceived(false);
+                        }
+                    }
+                }
+            };
+            context.registerReceiver(receiverPlayState, new IntentFilter("PLAYPAUSE"));
+            receiversRegistered = true;
         }
     }
 
@@ -339,7 +318,7 @@ public class MediaControlFragment extends AppCompatActivity {
                     mediaControlService.mediaSeekTo(progress);
                 }
                 if(isServiceBound){
-                    remainingText.setText(convertTimeFormat(mediaControlService.mediaRemaining()));
+                    remainingText.setText(TypeConverter.formatDuration(mediaControlService.mediaRemaining()));
                 }
             }
             @Override
@@ -354,9 +333,6 @@ public class MediaControlFragment extends AppCompatActivity {
         btnPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view){
-                //savePlaylistData();
-
-                System.out.println(mediaControlService.isMediaPlaying());
                 if(mediaControlService!=null){
                     if(!mediaControlService.isMediaPlaying()) {
                         passToActivity.onDataReceived(true);
@@ -374,20 +350,16 @@ public class MediaControlFragment extends AppCompatActivity {
         btnPrevious.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //playPrevious();
                 playPreviousFromMp();
-                setMetadata(mediaControlService.musicPath);
-                setRunnable();
+
             }
         });
 
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //playNext();
                 playNextFromMp();
-                setMetadata(mediaControlService.musicPath);
-                setRunnable();
+                //setRunnable();
             }
         });
     }
@@ -395,44 +367,14 @@ public class MediaControlFragment extends AppCompatActivity {
     public void playPreviousFromMp(){
         mediaControlService.playPrev();
         viewModelMain.setCurrentSourceInteger(mediaControlService.sourceIndex);
-        setMetadata(mediaControlService.musicPath);
+        //setMetadata(mediaControlService.musicPath);
 
     }
 
     public void playNextFromMp(){
         mediaControlService.playNext();
         viewModelMain.setCurrentSourceInteger(mediaControlService.sourceIndex);
-        setMetadata(mediaControlService.musicPath);
-    }
-
-
-    public void playPrevious(){
-        if(isServiceBound) {
-            Playlist tempPlaylist = viewModelMain.getCurrentSource().getValue();
-            Integer index = viewModelMain.getCurrentIndex().getValue();
-            if(tempPlaylist!=null && tempPlaylist.getLength()!=0 && index!=null && index!=-1 && index!=0){
-                String tempPath = tempPlaylist.getSong(index-1).getPath();
-                play(tempPath);
-                passToActivity.onDataReceived(true);
-                viewModelMain.setCurrentSourceInteger(index-1);
-            }else{
-                System.out.println("Problem with source");
-            }
-        }
-    }
-
-    public void playNext(){
-        if(isServiceBound) {
-            Playlist tempPlaylist = viewModelMain.getCurrentSource().getValue();
-            Integer index = viewModelMain.getCurrentIndex().getValue();
-            if(tempPlaylist!=null && tempPlaylist.getLength()!=0 && index!=null && index!=-1 && index!=tempPlaylist.getLength()-1){
-                String tempPath = tempPlaylist.getSong(index+1).getPath();
-                play(tempPath);
-                passToActivity.onDataReceived(true);
-                viewModelMain.setCurrentSourceInteger(index+1);
-                mediaControlService.setSource(tempPlaylist);
-            }
-        }
+        //setMetadata(mediaControlService.musicPath);
     }
 
 
@@ -449,4 +391,23 @@ public class MediaControlFragment extends AppCompatActivity {
         index = indexSource;
     }
 
+    public void setContext(Context context) {
+        this.context = context;
+    }
+
+    public void unsetReceivers() {
+
+        if(receiversRegistered && receiverFinished!=null && receiverChange!=null){
+            context.unregisterReceiver(receiverFinished);
+            context.unregisterReceiver(receiverChange);
+            context.unregisterReceiver(receiverPlayState);
+            receiverFinished = null;
+            receiverChange = null;
+            receiverPlayState = null;
+            receiversRegistered = false;
+        }
+
+
+
+    }
 }
