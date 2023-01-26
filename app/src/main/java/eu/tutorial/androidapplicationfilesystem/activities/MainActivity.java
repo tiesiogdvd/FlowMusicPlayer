@@ -10,8 +10,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.FragmentContainerView;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.fragment.FragmentNavigator;
-import androidx.navigation.fragment.FragmentNavigatorExtrasKt;
 import androidx.transition.Fade;
 import androidx.transition.Transition;
 
@@ -23,18 +21,15 @@ import android.content.res.Configuration;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.os.Environment;
-import android.transition.TransitionInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.google.android.material.imageview.ShapeableImageView;
 
 import java.io.File;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import eu.tutorial.androidapplicationfilesystem.R;
@@ -49,8 +44,6 @@ import eu.tutorial.androidapplicationfilesystem.classes.Settings;
 import eu.tutorial.androidapplicationfilesystem.classes.SwipeListener;
 import eu.tutorial.androidapplicationfilesystem.classes.ViewModelMain;
 import eu.tutorial.androidapplicationfilesystem.interfaces.PassMusicStatus;
-import eu.tutorial.androidapplicationfilesystem.interfaces.PassSelectionStatus;
-import soup.neumorphism.NeumorphImageButton;
 
 public class MainActivity extends AppCompatActivity implements PassMusicStatus {
 
@@ -71,7 +64,6 @@ public class MainActivity extends AppCompatActivity implements PassMusicStatus {
     ConstraintLayout background;
 
     Boolean selectEnabled;
-    PassSelectionStatus passSelectionStatus;
 
 
     private void initiateMethods() {
@@ -107,7 +99,6 @@ public class MainActivity extends AppCompatActivity implements PassMusicStatus {
         if (fragmentLibrary == null) {
             fragmentLibrary = new FragmentLibrary();
         }
-        passSelectionStatus = fragmentLibrarySongs;
     }
 
 
@@ -273,8 +264,8 @@ public class MainActivity extends AppCompatActivity implements PassMusicStatus {
                 fragmentMusicPlayer.lastPlayed(new File(lastSongPath));
                 PathPlaylist pathPlaylist = new PathPlaylist();
                 String path = new File(lastSongPath).getParent();
-                ArrayList<String> paths = pathPlaylist.searchPath(path);
-                mc.setPaths(paths);
+                //ArrayList<String> paths = pathPlaylist.searchPath(path);
+                //mc.setPaths(paths);
             }
             mc.bindService();
         }
