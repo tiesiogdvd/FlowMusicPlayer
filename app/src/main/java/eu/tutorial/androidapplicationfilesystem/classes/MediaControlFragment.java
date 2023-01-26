@@ -8,45 +8,58 @@ Implements the MetadataGetterSetter class to set the title, artist and bitmap im
 
 package eu.tutorial.androidapplicationfilesystem.classes;
 
-import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.media.MediaMetadata;
-import android.media.MediaMetadataRetriever;
 import android.os.Handler;
 import android.os.IBinder;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
-import java.util.concurrent.TimeUnit;
+
+import com.masoudss.lib.SeekBarOnProgressChanged;
+import com.masoudss.lib.WaveformSeekBar;
+
+import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
 
 import eu.tutorial.androidapplicationfilesystem.R;
-import eu.tutorial.androidapplicationfilesystem.activities.MainActivity;
 import eu.tutorial.androidapplicationfilesystem.activities.fragmentsMainActivity.FragmentMusicPlayer;
 import eu.tutorial.androidapplicationfilesystem.interfaces.PassMusicStatus;
-import soup.neumorphism.NeumorphImageButton;
+import linc.com.amplituda.Amplituda;
+import linc.com.amplituda.AmplitudaProgressListener;
+import linc.com.amplituda.Cache;
+import linc.com.amplituda.Compress;
+import linc.com.amplituda.ProgressOperation;
+import linc.com.amplituda.exceptions.io.AmplitudaIOException;
+
 
 public class MediaControlFragment extends AppCompatActivity {
 
     boolean receiversRegistered;
 
     ImageButton btnPlay;
+
+    MetadataGetterSetter metadataGetterSetter;
     ImageButton btnPrevious;
     ImageButton btnNext;
     //NeumorphImageButton btnBottomBar;
     final Handler handler;
     SeekBar seekBar;
+    WaveformSeekBar playerVisualizer;
     TextView totalText,remainingText;
 
     Context context;
@@ -70,31 +83,45 @@ public class MediaControlFragment extends AppCompatActivity {
 
     ViewModelMain viewModelMain;
 
+    Amplituda amplituda;
+    AmplitudaProgressListener amplitudaProgressListener;
+
     public MediaControlFragment(FragmentMusicPlayer fragmentMusicPlayer) {
 
         this.isServiceBound = false;
         this.handler =  new Handler();
         this.seekBar = null;
 
+
         this.context = fragmentMusicPlayer.getActivity();
         this.fragmentMusicPlayer = fragmentMusicPlayer;
-
+        amplituda = new Amplituda(context);
         this.btnPrevious = fragmentMusicPlayer.requireView().findViewById(R.id.lastButton);
         this.btnNext = fragmentMusicPlayer.requireView().findViewById(R.id.nextButton);
         this.btnPlay =  fragmentMusicPlayer.requireView().findViewById(R.id.playButton);
         this.seekBar = fragmentMusicPlayer.requireView().findViewById(R.id.musicProgress);
         this.totalText =  fragmentMusicPlayer.requireView().findViewById(R.id.musicTotalText);
         this.remainingText = fragmentMusicPlayer.requireView().findViewById(R.id.musicRemainingText);
-        //this.btnBottomBar = ((MainActivity) context).findViewById(R.id.bottomNavbar);
-        //btnPlay1.setImageResource(R.drawable.ic_action_pause);
-
-
+        this.playerVisualizer = fragmentMusicPlayer.requireView().findViewById(R.id.visualizer);
         serviceIntent = new Intent(context, MediaControlService.class);
-        //startService();
-        //viewModelMain = new ViewModelMain(((MainActivity) context).getApplication());
-        //viewModelMain =  new ViewModelProvider(((MainActivity) context).owne).get(ViewModelMain.class);
+        metadataGetterSetter = new MetadataGetterSetter();
         bindService();
         setListeners();
+
+        amplitudaProgressListener = new AmplitudaProgressListener() {
+            @Override
+            public void onProgress(ProgressOperation operation, int progress) {
+            }
+            @Override
+            public void onStopProgress() {
+                super.onStopProgress();
+                runOnUiThread(() -> {
+                    playerVisualizer.animate().setDuration(2000).setStartDelay(1000).translationY(0).alpha(1.0f).setInterpolator(new AccelerateDecelerateInterpolator());
+                    playerVisualizer.setVisibility(View.VISIBLE);
+                    // todo: update your ui / view in activity
+                });
+            }
+        };
 
     }
 
@@ -103,6 +130,7 @@ public class MediaControlFragment extends AppCompatActivity {
     }
 
     public void setRunnable(){//This runnable moves seekbar at a selected interval
+
         setOnSeekbarListener(); //Actives seekbar listener method
         if (mediaControlService.isMediaReady()){ //Only runs the code if it detects that the service is playing audio
             System.out.println(mediaControlService.mediaRemaining());
@@ -110,22 +138,61 @@ public class MediaControlFragment extends AppCompatActivity {
             remainingText.setText(TypeConverter.formatDuration(mediaControlService.mediaRemaining()));
             seekBar.setMax(mediaControlService.mediaDuration());
             seekBar.setProgress(mediaControlService.mediaRemaining());
+
             if(mediaControlService.isMediaPlaying()) {
                 handler.removeCallbacks(runnable);
                 runnable = new Runnable() {
                     @Override
                     public void run() {
+                        playerVisualizer.setProgress(mediaControlService.mediaRemaining());
                         seekBar.setProgress(mediaControlService.mediaRemaining()); //Requests the service position of MediaPlayer every 0.5s
                         System.out.println("Runnable instance " + handler.toString());
-                        handler.postDelayed(this, 1000);
+                        handler.postDelayed(this, 20);
                     }
                 };
                 handler.postDelayed(runnable, 0);
             }
+
+            playerVisualizer.setOnProgressChanged(new SeekBarOnProgressChanged() {
+                @Override
+                public void onProgressChanged(@NonNull WaveformSeekBar waveformSeekBar, float v, boolean b) {
+                    if(b){
+                        mediaControlService.mediaSeekTo((int) v);
+                    }
+                }
+            });
+
         }
     }
 
+    public int[] convertListToArray(List<Integer> list) {
+        return list.stream().mapToInt(i->i).toArray();
+    }
 
+    public void setWaveFormSeekbar(){
+        playerVisualizer.animate().setDuration(1000).setStartDelay(1000).translationY(200).alpha(0.0f).setInterpolator(new AccelerateDecelerateInterpolator());
+        //playerVisualizer.setVisibility(View.INVISIBLE);
+
+        Executors.newSingleThreadExecutor().execute(() -> {
+            // todo: background tasks
+            amplituda.processAudio(mediaControlService.musicPath,Compress.withParams(Compress.AVERAGE, 1), Cache.withParams(Cache.REUSE),amplitudaProgressListener).get(result -> {
+                List<Integer> amplitudesData = result.amplitudesAsList();
+                int[] intsArray =  convertListToArray(amplitudesData);
+                playerVisualizer.setSampleFrom(intsArray);
+                runOnUiThread(() -> {
+                    playerVisualizer.setMaxProgress(mediaControlService.mediaDuration());
+                    playerVisualizer.setVisibleProgress((float)mediaControlService.mediaDuration()/3);
+                    playerVisualizer.clearAnimation();
+                    // todo: update your ui / view in activity
+                });
+            }, exception -> {
+                if(exception instanceof AmplitudaIOException) {
+                    System.out.println("IO Exception!");
+                }
+            });
+        });
+
+    }
 
     public void play(String path) {
         try{
@@ -154,7 +221,6 @@ public class MediaControlFragment extends AppCompatActivity {
                 mediaControlService.playMedia(path, playlist, index);
                 btnPlay.setImageResource(R.drawable.ic_action_pause);
                 setRunnable();
-                //isFinished();
             }
         }catch(Exception e){
             Toast.makeText(context, "Path is nulll", Toast.LENGTH_SHORT).show();
@@ -167,7 +233,7 @@ public class MediaControlFragment extends AppCompatActivity {
 
     public void setMetadata(String path){
         //MetadataGetterSetter class is called to receive metadata with the help of MusicData class and then put it into activity_main Views
-        MetadataGetterSetter.retrieveMetadata(path, context);
+        metadataGetterSetter.retrieveMetadata(path, context);
         //For it to work it is required the audio file path and MainActivity context
     }
 
@@ -194,6 +260,8 @@ public class MediaControlFragment extends AppCompatActivity {
                     if(mediaControlService.musicPath!=null && !mediaControlService.musicPath.equals("none")){ //checks if there was music played before
                         String path = mediaControlService.musicPath; //important on activity changes like rotation
                         setMetadata(path); //sets metadata to last played song
+                        setWaveFormSeekbar();
+
                         if(mediaControlService.isMediaPlaying()){
                             btnPlay.setImageResource(R.drawable.ic_action_pause);
                             setRunnable();
@@ -203,6 +271,8 @@ public class MediaControlFragment extends AppCompatActivity {
                             seekBar.setMax(mediaControlService.mediaDuration());
                             seekBar.setProgress(mediaControlService.mediaRemaining());
                         }
+
+                        //setWaveFormSeekbar();
                     }
 
 
@@ -237,6 +307,8 @@ public class MediaControlFragment extends AppCompatActivity {
         btnPlay.setImageResource(R.drawable.ic_action_play);
     }
 
+
+
     public void receiverBroadcast(){
         if(receiversRegistered == false) {
             receiverFinished = new BroadcastReceiver() {
@@ -258,7 +330,7 @@ public class MediaControlFragment extends AppCompatActivity {
                 public void onReceive(Context context, Intent intent) {
                     boolean isPlaying = intent.getExtras().getBoolean("isPlaying");
                     viewModelMain.setCurrentSourceInteger(mediaControlService.sourceIndex);
-
+                    setWaveFormSeekbar();
                     if (isPlaying) {
                         btnPlay.setImageResource(R.drawable.ic_action_pause);
                         setMetadata(mediaControlService.musicPath);
@@ -327,6 +399,8 @@ public class MediaControlFragment extends AppCompatActivity {
             public void onStopTrackingTouch(SeekBar seekBar) {}
 
         });
+
+
     }
 
     private void setListeners(){
