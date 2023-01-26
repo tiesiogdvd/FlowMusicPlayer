@@ -339,13 +339,14 @@ public class MediaControlService extends Service implements AudioManager.OnAudio
     public void playNext(){
 
         if(sourcePlaylist!=null && sourcePlaylist.getLength()!=0 && sourceIndex!=null && sourceIndex!=-1 && sourceIndex!=sourcePlaylist.getLength()-1){
-            String tempPath = sourcePlaylist.getSong(sourceIndex+1).getPath();
-            sourceIndex = sourceIndex+1;
-            actionPlay();
-            setPlaybackState(PlaybackState.STATE_PLAYING);
-            //Settings.setLastSongIndex(sourceIndex);
-            System.out.println("Next");
-            broadcast("isPlaying",true, "SOURCECHANGED");
+            if(sourcePlaylist.getSong(sourceIndex+1)!=null){
+                String tempPath = sourcePlaylist.getSong(sourceIndex+1).getPath();
+                sourceIndex = sourceIndex+1;
+                actionPlay();
+                setPlaybackState(PlaybackState.STATE_PLAYING);
+                broadcast("isPlaying",true, "SOURCECHANGED");
+            }
+
 
         } else if(sourcePaths!=null && sourcePaths.size()!=0  && sourceIndex!=null && sourceIndex!=-1 && sourceIndex!=sourcePaths.size()-1){
             sourceIndex = sourceIndex+1;
