@@ -8,6 +8,7 @@ import android.media.MediaMetadataRetriever;
 import android.provider.MediaStore;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -31,7 +32,6 @@ public class MusicDataMetadata {
 
     public void setAllData(String path){
         mr.setDataSource(path);
-
         try{
             title = mr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
             if(title==null){throw new Exception();}
@@ -64,7 +64,11 @@ public class MusicDataMetadata {
         }catch(Exception e){
 
         }
-        mr.release();
+        try {
+            mr.release();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
@@ -78,7 +82,11 @@ public class MusicDataMetadata {
             mr.release();
             return bitmap;
         }catch(Exception e){
-            mr.release();
+            try {
+                mr.release();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
             return null;
         }
     }
