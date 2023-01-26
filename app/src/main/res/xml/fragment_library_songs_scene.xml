@@ -20,6 +20,19 @@
                motion:motionTarget="@+id/topPanel"
                motion:framePosition="100"
                android:translationY="-200dp" />
+           <KeyAttribute
+               motion:motionTarget="@+id/menuPanelWrap"
+               motion:framePosition="100"
+               android:translationY="20dp"
+               android:background="@drawable/library_buttons"/>
+           <KeyAttribute
+               motion:motionTarget="@+id/menuPanelWrap"
+               motion:framePosition="100"
+               android:elevation="3dp" />
+           <KeyAttribute
+               motion:motionTarget="@+id/libraryRecyclerViewItems"
+               motion:framePosition="100"
+               android:translationY="30dp" />
        </KeyFrameSet>
         <OnSwipe
             motion:touchAnchorId="@+id/libraryRecyclerViewItems"
@@ -34,6 +47,7 @@
             android:id="@+id/topPanel"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            motion:layout_constraintTop_toTopOf="parent" />
+            motion:layout_constraintTop_toTopOf="parent"
+            android:background="@drawable/library_buttons"/>
     </ConstraintSet>
 </MotionScene>
