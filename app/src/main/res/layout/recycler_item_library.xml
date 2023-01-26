@@ -4,6 +4,8 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical"
+    android:layout_gravity="center"
+    android:gravity="center_horizontal"
     android:background="@drawable/library_playlist"
     android:layout_marginRight="10dp"
     android:padding="5dp"
