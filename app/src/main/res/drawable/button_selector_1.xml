@@ -2,6 +2,6 @@
 <animated-selector xmlns:android="http://schemas.android.com/apk/res/android"
     android:enterFadeDuration="100"
     android:exitFadeDuration="100">
-    <item android:state_pressed="false" android:drawable="@drawable/button_round5" />
+    <item android:state_pressed="false" android:drawable="@drawable/button_round5"/>
     <item android:drawable="@drawable/button_round_pressed5" />
 </animated-selector>
