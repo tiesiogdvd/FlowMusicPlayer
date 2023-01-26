@@ -24,6 +24,7 @@ import eu.tutorial.androidapplicationfilesystem.classes.DialogPlaylist;
 import eu.tutorial.androidapplicationfilesystem.classes.MediaControlFragment;
 import eu.tutorial.androidapplicationfilesystem.classes.Playlist;
 import eu.tutorial.androidapplicationfilesystem.classes.Settings;
+import eu.tutorial.androidapplicationfilesystem.classes.TypeConverter;
 import eu.tutorial.androidapplicationfilesystem.classes.ViewModelMain;
 import eu.tutorial.androidapplicationfilesystem.interfaces.PassMusicStatus;
 import soup.neumorphism.NeumorphImageButton;
@@ -110,7 +111,7 @@ public class FragmentMusicPlayer extends Fragment{
                 String musicPath = viewModelMain.getCurrentSource().getValue().getSongPath(index);
                 if(musicPath!=null) {
                     musicFile = new File(musicPath);
-                    if (favorites.inPlaylist(musicFile.getAbsolutePath())) {
+                    if (favorites!=null && favorites.inPlaylist(musicFile.getAbsolutePath())) {
                         favButton.setImageResource(R.drawable.ic_action_favorite_filled);
                     } else {
                         favButton.setImageResource(R.drawable.ic_action_favorite);
@@ -122,7 +123,7 @@ public class FragmentMusicPlayer extends Fragment{
                     Settings.setSettings(sharedPreferences);
                     String musicPath = Settings.getLastSongPath();
                     musicFile = new File(musicPath);
-                    if(favorites.inPlaylist(musicFile.getAbsolutePath())){
+                    if(favorites!=null && favorites.inPlaylist(musicFile.getAbsolutePath())){
                         favButton.setImageResource(R.drawable.ic_action_favorite_filled);
                     }else{
                         favButton.setImageResource(R.drawable.ic_action_favorite);
@@ -146,21 +147,26 @@ public class FragmentMusicPlayer extends Fragment{
         favButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean inPlaylist = favorites.inPlaylist(musicFile.getAbsolutePath());
-                if(musicFile!=null && !inPlaylist){
-                    System.out.println("Added to playlist");
-                    viewModelMain.addSong(musicFile.getAbsolutePath(), "Favorites", getActivity());
-                    favButton.animate();
-                    favButton.setImageResource(R.drawable.ic_action_favorite_filled);
-                }else{
-                    System.out.println("Null or already added");
-                    if(musicFile!=null) {
-                        viewModelMain.removeSong(musicFile.getAbsolutePath(), "Favorites");
-                        favButton.setImageResource(R.drawable.ic_action_favorite);
-                    }
-                }
 
+                if (favorites != null) {
+                    boolean inPlaylist = favorites.inPlaylist(musicFile.getAbsolutePath());
+                    if (musicFile != null && !inPlaylist) {
+                        System.out.println("Added to playlist");
+                        viewModelMain.addSong(musicFile.getAbsolutePath(), "Favorites", getActivity());
+                        favButton.animate();
+                        favButton.setImageResource(R.drawable.ic_action_favorite_filled);
+                    } else {
+                        System.out.println("Null or already added");
+                        if (musicFile != null) {
+                            viewModelMain.removeSong(musicFile.getAbsolutePath(), "Favorites");
+                            favButton.setImageResource(R.drawable.ic_action_favorite);
+                        }
+                    }
+                }else{
+                    viewModelMain.addPlaylist("Favorites", TypeConverter.getDateString());
+                }
             }
+
         });
 
     }
