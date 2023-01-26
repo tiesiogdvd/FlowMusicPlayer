@@ -54,6 +54,10 @@ public class ViewModelMain extends AndroidViewModel{
         playlists.setValue(playlists.getValue());
         isLoaded = true;
 
+        if(getPlaylist("Favorites")==null){
+            addPlaylist("Favorites", TypeConverter.getDateString());
+        }
+
         String lastSongSource = Settings.getLastSongSource();
         Integer lastSongIndex = Settings.getLastSongIndex();
         Playlist playlist = getPlaylist(lastSongSource);
@@ -65,10 +69,6 @@ public class ViewModelMain extends AndroidViewModel{
 
     public boolean isLoaded(){
         return isLoaded;
-    }
-
-    public void getSources(){
-
     }
 
     public void addPlaylist(String playlistName, String date){
@@ -87,6 +87,49 @@ public class ViewModelMain extends AndroidViewModel{
         //System.out.println("B:LEDFED:E:");
         playlists.setValue(playlistsAdd);
     }
+
+    public void removePlaylist(String playlistName){
+        if(!playlistName.equals("Favorites") && !playlistName.equals("All Songs")) {
+            myDB.removePlaylist(playlistName);
+            ArrayList<Playlist> playlistsTemp = playlists.getValue();
+            for (int i = 0; i < playlistsTemp.size(); i++) {
+                if (playlistsTemp.get(i).getPlaylistName().equals(playlistName)) {
+                    System.out.println("REMOVEED");
+                    playlistsTemp.remove(i);
+                    break;
+                }
+            }
+            System.out.println("DESTRUCTION");
+            playlists.postValue(playlistsTemp);
+        }
+    }
+
+    public void removePlaylistList(ArrayList <Integer> indexesToRemove, ArrayList<Playlist> sortedArray){
+        ArrayList<Playlist> playlistsTemp = playlists.getValue();
+        ArrayList<Playlist> playlistsTempSorted = (ArrayList<Playlist>) sortedArray.clone();
+
+        for(Integer index:indexesToRemove){
+            System.out.println(index + "CURRENT INDEX");
+            String playlistName = playlistsTempSorted.get(index).getPlaylistName();
+            System.out.println(sortedArray.size() + " SIZE");
+            System.out.println(indexesToRemove + "indexes");
+            if(!playlistName.equals("Favorites") && !playlistName.equals("All Songs")) {
+                myDB.removePlaylist(playlistName);
+                for (int i = 0; i < playlistsTemp.size(); i++) {
+                    if (playlistsTemp.get(i).getPlaylistName().equals(playlistName)) {
+                        System.out.println("REMOVEED");
+                        System.out.println(playlistName);
+                        playlistsTemp.remove(i);
+                        break;
+                    }
+                }
+                System.out.println("DESTRUCTION");
+             }
+        }
+        playlistsTempSorted.clear();
+        playlists.postValue(playlistsTemp);
+    }
+
 
     public void addSong(String path, String playlistName, String date){
         ArrayList <Playlist> playlistsAddSong = playlists.getValue();
@@ -116,6 +159,36 @@ public class ViewModelMain extends AndroidViewModel{
 
 
 
+    public void addSong(MusicData song, String playlistName){
+        ArrayList <Playlist> playlistsAddSong = playlists.getValue();
+        for(Playlist playlist: playlistsAddSong){
+            if(playlist.getPlaylistName().equals(playlistName)){
+                playlist.addSong(song);
+                myDB.addSong(playlistName,song.getPath(),song.getTitle(),song.getArtist(),song.getAlbum(),song.getLength(),TypeConverter.getDateString());
+                break;
+            }
+        }
+        playlists.postValue(playlistsAddSong);
+    }
+
+
+    public void addSongList(ArrayList <MusicData> songs, String playlistName){
+        ArrayList <Playlist> playlistsAddSong = playlists.getValue();
+        for(Playlist playlist: playlistsAddSong){
+            if(playlist.getPlaylistName().equals(playlistName)){
+                for(MusicData song: songs){
+                    playlist.addSong(song);
+                    myDB.addSong(playlistName,song.getPath(),song.getTitle(),song.getArtist(),song.getAlbum(),song.getLength(),TypeConverter.getDateString());
+                }
+                break;
+            }
+        }
+        if(playlistsAddSong.size()!=0){
+            playlists.postValue(playlistsAddSong);
+        }
+    }
+
+
     public void addSong(SongDataTest song, String playlistName){
         ArrayList <Playlist> playlistsAddSong = playlists.getValue();
         for(Playlist playlist: playlistsAddSong){
@@ -136,6 +209,20 @@ public class ViewModelMain extends AndroidViewModel{
         for(Playlist playlist: playlistsRemoveSong){
             if(playlist.getPlaylistName().equals(playlistName)){
                 playlist.removeSong(path, getApplication().getBaseContext());
+                break;
+            }
+        }
+        playlists.postValue(playlistsRemoveSong);
+    }
+
+    public void removeSongList(ArrayList <MusicData> songs, String playlistName){
+        ArrayList <Playlist> playlistsRemoveSong = playlists.getValue();
+        for(Playlist playlist: playlistsRemoveSong){
+            if(playlist.getPlaylistName().equals(playlistName)){
+                for(MusicData song:songs){
+                    myDB.removeSong(song.getPath(), playlistName);
+                    playlist.removeSong(song.getPath(), getApplication().getBaseContext());
+                }
                 break;
             }
         }
