@@ -11,12 +11,15 @@
     <color name="background">#1E1E1E</color>
     <color name="backgroundSecondary">#80434343</color>
     <color name="backgroundThird">#B0353535</color>
+    <color name="backgroundFourth">#2C2C2C</color>
     <color name="backgroundNavbar">#D7434343</color>
     <color name="neumorphLight">#323232</color>
     <color name="neumorphDark">#919191</color>
     <color name="text">#FFFFFF</color>
     <color name="text_secondary">#757575</color>
+    <color name="text_third">#939393</color>
     <color name="button">#A6333333</color>
+    <color name="button_secondary">#651C1C1C</color>
     <color name="drawable_menu">#000000</color>
     <color name="drawable_bar">#FFFFFF</color>
 
