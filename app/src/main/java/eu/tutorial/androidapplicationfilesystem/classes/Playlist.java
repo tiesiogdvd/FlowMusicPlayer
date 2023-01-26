@@ -176,7 +176,7 @@ public class Playlist implements Parcelable{
     public MusicData getSong(int index){
         System.out.println(index);
         System.out.println(songs.size());
-        if (!(songs.size() <index)) {
+        if (!(songs.size()<=index)) {
             return songs.get(index);
         }else{
             return null;
