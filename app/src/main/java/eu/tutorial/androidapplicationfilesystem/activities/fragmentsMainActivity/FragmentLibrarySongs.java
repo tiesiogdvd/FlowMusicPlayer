@@ -24,26 +24,19 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import eu.tutorial.androidapplicationfilesystem.R;
-import eu.tutorial.androidapplicationfilesystem.adapters.AdapterLibraryAllSongs;
-import eu.tutorial.androidapplicationfilesystem.adapters.AdapterLibraryFavorites;
+import eu.tutorial.androidapplicationfilesystem.adapters.AdapterLibraryPlaylist;
 import eu.tutorial.androidapplicationfilesystem.adapters.AdapterLibraryFolders;
-import eu.tutorial.androidapplicationfilesystem.adapters.AdapterPlaylistLibrary;
 import eu.tutorial.androidapplicationfilesystem.adapters.AdapterLibraryPlaylists;
+import eu.tutorial.androidapplicationfilesystem.classes.DialogPlaylistLibrary;
 import eu.tutorial.androidapplicationfilesystem.classes.FastScrollRecyclerView.FastScrollRecyclerView;
 import eu.tutorial.androidapplicationfilesystem.classes.MusicData;
 import eu.tutorial.androidapplicationfilesystem.classes.Playlist;
 import eu.tutorial.androidapplicationfilesystem.classes.ViewModelMain;
 import eu.tutorial.androidapplicationfilesystem.interfaces.PassMusicStatus;
-import eu.tutorial.androidapplicationfilesystem.interfaces.PassSelectionStatus;
+public class FragmentLibrarySongs extends Fragment{
 
-
-public class FragmentLibrarySongs extends Fragment implements PassSelectionStatus {
-
-    AdapterLibraryAllSongs adapterLibraryAllSongs;
-    AdapterLibraryFavorites adapterLibraryFavorites;
+    AdapterLibraryPlaylist adapterLibraryAllSongs, adapterLibraryFavorites, adapterPlaylistLibrary;
     AdapterLibraryFolders adapterLibraryFolders;
-    AdapterPlaylistLibrary adapterPlaylistLibrary;
-
     AdapterLibraryPlaylists adapterLibraryPlaylists;
 
     FastScrollRecyclerView recyclerView;
@@ -54,7 +47,6 @@ public class FragmentLibrarySongs extends Fragment implements PassSelectionStatu
     ArrayList<String> allSongsPaths;
     ArrayList<Playlist> playlists;
 
-    Playlist playlist;
     String action;
     String playlistName;
     EditText searchBar;
@@ -63,9 +55,14 @@ public class FragmentLibrarySongs extends Fragment implements PassSelectionStatu
 
     Boolean selectionMode;
     TextView selectionNumber;
+
+
     LinearLayout selectionAddToPlaylist;
-    LinearLayout selectionRemove;
+    LinearLayout selectionDelete;
     LinearLayout selectionSetAlbumInfo;
+    LinearLayout selectionRemoveFromPlaylist;
+    LinearLayout selectionSetPlaylistCover;
+    LinearLayout selectionRemovePlaylist;
 
     ImageView libraryImage;
 
@@ -106,12 +103,25 @@ public class FragmentLibrarySongs extends Fragment implements PassSelectionStatu
             playlistName = getArguments().getString("playlist");
         }
 
-        //view.onkey
-
         initViews(view);
         initViewModel();
+        initListeners();
 
         return view;
+    }
+
+
+    private void hideViewsPlaylist(){
+        selectionSetAlbumInfo.setVisibility(View.GONE);
+        selectionRemovePlaylist.setVisibility(View.GONE);
+    }
+
+    private void hideViewsPlaylists(){
+        selectionAddToPlaylist.setVisibility(View.GONE);
+        selectionDelete.setVisibility(View.GONE);
+        selectionSetAlbumInfo.setVisibility(View.GONE);
+        selectionSetPlaylistCover.setVisibility(View.GONE);
+        selectionRemoveFromPlaylist.setVisibility(View.GONE);
     }
 
     private void initViews(View view){
@@ -122,45 +132,41 @@ public class FragmentLibrarySongs extends Fragment implements PassSelectionStatu
 
         selectionBar =  view.findViewById(R.id.selectionBar);
         selectionBar.setVisibility(View.GONE);
+        System.out.println("GONE");
+
         selectionNumber = view.findViewById(R.id.selectionNumber);
 
+        selectionAddToPlaylist = view.findViewById(R.id.selectionAddToPlaylist);
+        selectionDelete = view.findViewById(R.id.selectionDelete);
+
+        selectionSetAlbumInfo = view.findViewById(R.id.selectionSetAlbumInfo);
+        selectionRemoveFromPlaylist = view.findViewById(R.id.selectionRemoveFromPlaylist);
+        selectionSetPlaylistCover = view.findViewById(R.id.selectionSetPlaylistCover);
+        selectionRemovePlaylist = view.findViewById(R.id.selectionRemovePlaylist);
 
         switch (action){
             case("allSongs"):
                 libraryText.setText("All Songs");
+                hideViewsPlaylist();
                 break;
-
             case("playlists"):
-
                 libraryText.setText("Playlists");
-
+                hideViewsPlaylists();
                 break;
-
             case("favorites"):
                 libraryText.setText("Favorites");
-
+                hideViewsPlaylist();
                 break;
-
             case("playlist"):
                 libraryText.setText(playlistName);
-
+                hideViewsPlaylist();
                 break;
-
             case("folders"):
                 libraryText.setText("Folders");
                 break;
-
             default:
                 break;
-
         }
-
-
-
-
-
-
-
 
         playlists = new ArrayList<>();
         fragmentManager = requireActivity().getSupportFragmentManager();
@@ -169,12 +175,10 @@ public class FragmentLibrarySongs extends Fragment implements PassSelectionStatu
         searchBar.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
             }
 
             @Override
@@ -223,25 +227,28 @@ public class FragmentLibrarySongs extends Fragment implements PassSelectionStatu
     @SuppressLint("NotifyDataSetChanged")
     private void initViewModel(){
         viewModelMain = new ViewModelProvider(requireActivity()).get(ViewModelMain.class); //Initiated ViewModel
+
         /*viewModelMain.getPlaylists().observe(getViewLifecycleOwner(), playlistsViewModel -> { //Initiated observable for retrieving LiveData of playlists in ViewModel
             if(playlistsViewModel!=null){
-                playlists.clear();
-                playlists.addAll(playlistsViewModel);
-
                 switch (action){
                     case("allSongs"):
+                        requestedPlaylist = viewModelMain.getPlaylist("All Songs");
                         adapterLibraryAllSongs.notifyDataSetChanged(); //Adapter will reconstruct the views on playlist LiveData changes in ViewModel
                         break;
 
                     case("playlists"):
+                        playlists.clear();
+                        playlists.addAll(playlistsViewModel);
                         adapterLibraryPlaylists.notifyDataSetChanged();
                         break;
 
                     case("favorites"):
+                        requestedPlaylist = viewModelMain.getPlaylist("Favorites");
                         adapterLibraryFavorites.notifyDataSetChanged();
                         break;
 
                     case("playlist"):
+                        requestedPlaylist = viewModelMain.getPlaylist(playlistName);
                         adapterPlaylistLibrary.notifyDataSetChanged();
                         //adapterPlaylistsLibrary.notifyDataSetChanged();
                         break;
@@ -258,120 +265,292 @@ public class FragmentLibrarySongs extends Fragment implements PassSelectionStatu
 
         //playlists = viewModelMain.getPlaylists().getValue();
 
+        playlists = viewModelMain.getPlaylists().getValue();
+        playlists.sort(Playlist.titleComparator);
 
         switch (action){
             case("allSongs"):
                 allSongsPaths = viewModelMain.getAllSongsPaths();
-                playlist = viewModelMain.getPlaylist("All Songs");
-                playlist.getSongsArray().sort(MusicData.titleComparator);
-                libraryImage.setImageBitmap(playlist.getPlaylistBitmap(getContext()));
+                requestedPlaylist = viewModelMain.getPlaylist("All Songs");
+                libraryImage.setImageBitmap(requestedPlaylist.getPlaylistBitmap(getContext()));
                 break;
-
             case("playlists"):
-                playlists = viewModelMain.getPlaylists().getValue();
-                //playlistsCopy = playlists;
-                playlists.sort(Playlist.titleComparator);
                 libraryImage.setImageBitmap(playlists.get(0).getPlaylistBitmap(getContext()));
                 break;
-
             case("favorites"):
                 requestedPlaylist = viewModelMain.getPlaylist("Favorites");
-                requestedPlaylist.getSongsArray().sort(MusicData.titleComparator);
                 libraryImage.setImageBitmap(requestedPlaylist.getPlaylistBitmap(getContext()));
                 break;
-
             case("playlist"):
                 requestedPlaylist = viewModelMain.getPlaylist(playlistName);
-                requestedPlaylist.getSongsArray().sort(MusicData.titleComparator);
                 libraryImage.setImageBitmap(requestedPlaylist.getPlaylistBitmap(getContext()));
                 break;
-
             case("folders"):
                 break;
-
             default:
                 break;
 
         }
     }
+
+
+    private void initListeners() {
+        selectionAddToPlaylist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(selectionList!=null && selectionList.size()!=0){
+                    DialogPlaylistLibrary dialogPlaylistLibrary = new DialogPlaylistLibrary();
+                    dialogPlaylistLibrary.createDialog(requireActivity(),viewModelMain.getPlaylists().getValue(),createSelectionArray());
+                }
+            }
+        });
+
+
+        selectionRemoveFromPlaylist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewModelMain.removeSongList(createSelectionArray(),requestedPlaylist.getPlaylistName());
+                switch (action){
+                    case("allSongs"):
+                        for(Integer index:selectionList){
+                            adapterLibraryAllSongs.notifyItemRemoved(index);
+                        }
+                        break;
+                    case("playlists"):
+                        break;
+                    case("favorites"):
+                        for(Integer index:selectionList){
+                            adapterLibraryFavorites.notifyItemRemoved(index);
+                        }
+                        //adapterLibraryFavorites.notifyDataSetChanged();
+                        break;
+                    case("playlist"):
+                        for(Integer index:selectionList){
+                            adapterPlaylistLibrary.notifyItemRemoved(index);
+                        }
+                        //adapterPlaylistLibrary.notifyDataSetChanged();
+                        break;
+                    case("folders"):
+
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+
+        selectionRemovePlaylist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                viewModelMain.removePlaylistList(selectionList,playlists);
+
+                switch (action){
+                    case("allSongs"):
+                        //adapterLibraryAllSongs.notifyDataSetChanged();
+                        break;
+                    case("playlists"):
+                        for(Integer index:selectionList){
+                            adapterLibraryPlaylists.notifyItemRemoved(index);
+                        }
+                        //adapterLibraryPlaylists.notifyDataSetChanged();
+                        break;
+                    case("favorites"):
+                        //adapterLibraryFavorites.notifyDataSetChanged();
+                        break;
+                    case("playlist"):
+                        //adapterPlaylistLibrary.notifyDataSetChanged();
+                        break;
+                    case("folders"):
+
+                        break;
+                    default:
+                        break;
+                }
+
+            }
+        });
+    }
+
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initRecyclerViews();
+        //selectionBar.setVisibility(View.GONE);
     }
 
     private void initRecyclerViews(){
         switch (action){
             case("allSongs"):
-                adapterLibraryAllSongs = new AdapterLibraryAllSongs(this, allSongsPaths,playlist);
+                adapterLibraryAllSongs = new AdapterLibraryPlaylist(this, allSongsPaths, requestedPlaylist);
+                //adapterLibraryAllSongs.setHasStableIds(true);
                 recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
                 recyclerView.setHasFixedSize(true);
                 recyclerView.setAdapter(adapterLibraryAllSongs);
                 break;
             case("playlists"):
-                adapterLibraryPlaylists = new AdapterLibraryPlaylists(requireContext(),playlists);
+                adapterLibraryPlaylists = new AdapterLibraryPlaylists(this,playlists);
+                //adapterLibraryPlaylists.setHasStableIds(true);
                 recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
                 recyclerView.setHasFixedSize(true);
                 recyclerView.setAdapter(adapterLibraryPlaylists);
                 break;
-               /* adapterLibraryPlaylists = new AdapterLibraryPlaylists(getContext(),playlists);
-                recyclerView.setHasFixedSize(true);
-                recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-                recyclerView.setAdapter(adapterLibraryPlaylists);*/
-
             case("favorites"):
-                adapterLibraryFavorites = new AdapterLibraryFavorites(getContext(),requestedPlaylist);
+                adapterLibraryFavorites = new AdapterLibraryPlaylist(this,null,requestedPlaylist);
+                //adapterLibraryFavorites.setHasStableIds(true);
                 recyclerView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
                 recyclerView.setHasFixedSize(true);
                 recyclerView.setAdapter(adapterLibraryFavorites);
                 break;
-
             case("playlist"):
-                adapterPlaylistLibrary = new AdapterPlaylistLibrary(getContext(),requestedPlaylist);
+                adapterPlaylistLibrary = new AdapterLibraryPlaylist(this,null,requestedPlaylist);
+                //adapterPlaylistLibrary.setHasStableIds(true);
                 recyclerView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
                 recyclerView.setHasFixedSize(true);
                 recyclerView.setAdapter(adapterPlaylistLibrary);
                 break;
-
             case("folders"):
-                adapterLibraryFolders = new AdapterLibraryFolders(getContext(),allSongsPaths,playlist);
+                adapterLibraryFolders = new AdapterLibraryFolders(getContext(),allSongsPaths, requestedPlaylist);
                 recyclerView.setLayoutManager(new GridLayoutManager(getContext(), GridLayoutManager.DEFAULT_SPAN_COUNT));
                 recyclerView.setHasFixedSize(true);
                 recyclerView.setAdapter(adapterLibraryFolders);
                 break;
-
             default:
                 break;
-
         }
     }
 
     public void backPressed(){
         //selectionBar =  getView().findViewById(R.id.selectionBar);
-        selectionBar.setVisibility(View.GONE);
         selectionList = null;
         selectionList = new ArrayList<>();
+        selectionMode = false;
+        selectionBar.setVisibility(View.GONE);
 
-        adapterLibraryAllSongs.disableSelectMode();
 
+        switch (action){
+            case("allSongs"):
+                adapterLibraryAllSongs.disableSelectMode();
+                adapterLibraryAllSongs.notifyDataSetChanged();
+                break;
+            case("playlists"):
+                adapterLibraryPlaylists.disableSelectionMode();
+                adapterLibraryPlaylists.notifyDataSetChanged();
+                break;
+            case("favorites"):
+                adapterLibraryFavorites.disableSelectMode();
+                adapterLibraryFavorites.notifyDataSetChanged();
+                break;
+            case("playlist"):
+                adapterPlaylistLibrary.disableSelectMode();
+                adapterPlaylistLibrary.notifyDataSetChanged();
+                break;
+            case("folders"):
+
+                break;
+            default:
+                break;
+        }
     }
 
+    public void selectAll(){
+        selectionList = new ArrayList<>();
+        for(int i = 0; i < requestedPlaylist.getLength(); i++){
+            selectionList.add(i);
+        }
+    }
+
+    public ArrayList<MusicData> createSelectionArray(){
+        ArrayList<MusicData> selectedSongs = new ArrayList<>();
+        for(Integer index:selectionList){
+               selectedSongs.add(requestedPlaylist.getSong(index));
+        }
+        return selectedSongs;
+    }
+
+    public boolean selectedListContains(Integer position){
+        System.out.println(selectionList.contains(position) + "Position");
+        return selectionList.contains(position);
+
+    }
 
     @SuppressLint("SetTextI18n")
-    @Override
     public void onChecked(Boolean isChecked, Integer itemChecked) {
+        boolean selectionWasEnabled = selectionMode;
         selectionMode = true;
         passMusicStatus.onRequestNavbar(false,this);
-        selectionBar.setVisibility(View.VISIBLE);
-        if(isChecked){
-          selectionList.add(itemChecked);
-          selectionNumber.setText("Selected " + selectionList.size() + "/" + playlist.getLength());
+
+        switch (action){
+            case("allSongs"):
+                if(isChecked){
+                    selectionList.add(itemChecked);
+                    selectionNumber.setText("Selected " + selectionList.size() + "/" + requestedPlaylist.getLength());
+                }
+                if(!isChecked){
+                    selectionList.remove(itemChecked);
+                    selectionNumber.setText("Selected " + selectionList.size() + "/" + requestedPlaylist.getLength());
+                }
+                break;
+            case("playlists"):
+                if(isChecked){
+                    selectionList.add(itemChecked);
+                    selectionNumber.setText("Selected " + selectionList.size() + "/" + playlists.size());
+                }
+                if(!isChecked){
+                    selectionList.remove(itemChecked);
+                    selectionNumber.setText("Selected " + selectionList.size() + "/" + playlists.size());
+                }
+                break;
+            case("favorites"):
+                if(isChecked){
+                    selectionList.add(itemChecked);
+                    selectionNumber.setText("Selected " + selectionList.size() + "/" + requestedPlaylist.getLength());
+                }
+                if(!isChecked){
+                    selectionList.remove(itemChecked);
+                    selectionNumber.setText("Selected " + selectionList.size() + "/" + requestedPlaylist.getLength());
+                }
+                break;
+            case("playlist"):
+                if(isChecked){
+                    selectionList.add(itemChecked);
+                    selectionNumber.setText("Selected " + selectionList.size() + "/" + requestedPlaylist.getLength());
+                }
+                if(!isChecked){
+                    selectionList.remove(itemChecked);
+                    selectionNumber.setText("Selected " + selectionList.size() + "/" + requestedPlaylist.getLength());
+                }
+                break;
+            case("folders"):
+                break;
+            default:
+                break;
         }
-        if(!isChecked){
-            //selectionList.removeIf(index -> index.equals(itemChecked));
-            selectionList.remove(itemChecked);
-            selectionNumber.setText("Selected " + selectionList.size() + "/" + playlist.getLength());
+
+        if(!selectionWasEnabled){
+            selectionBar.setVisibility(View.VISIBLE);
+            switch (action){
+                case("allSongs"):
+                    adapterLibraryAllSongs.notifyDataSetChanged();
+                    break;
+                case("playlists"):
+                    adapterLibraryPlaylists.notifyDataSetChanged();
+                    break;
+                case("favorites"):
+                    adapterLibraryFavorites.notifyDataSetChanged();
+                    break;
+                case("playlist"):
+                    adapterPlaylistLibrary.notifyDataSetChanged();
+                    break;
+                case("folders"):
+                    break;
+                default:
+                    break;
+            }
+
         }
     }
+
+
 }
