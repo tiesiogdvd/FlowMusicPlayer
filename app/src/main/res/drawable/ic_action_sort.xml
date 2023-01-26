@@ -1,0 +1,22 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="700dp"
+    android:height="700dp"
+    android:viewportWidth="700"
+    android:viewportHeight="700"
+    android:tint="@color/drawable_bar">
+  <path
+      android:fillColor="#FF000000"
+      android:pathData="
+      m445.2,
+      302.4 l-95.2,
+      156.8 -95.2,
+      -156.8 95.2,
+      16.8zM254.8,
+
+
+      257.6 L350,
+      100.8 445.2,
+      257.6 350,
+      240.8z"
+      android:fillType="evenOdd"/>
+</vector>
