@@ -17,7 +17,7 @@ public class PathPlaylist {
         File rootPath = new File(path);
         File[] filesAndFolders = rootPath.listFiles();
         ArrayList <String> allSongsPaths = new ArrayList<>();
-        if(filesAndFolders!=null && filesAndFolders.length!=0){
+        if(filesAndFolders!=null && filesAndFolders.length!=0 && filesAndFolders.length!=-1){
             for (File selectedPath : filesAndFolders) {
                 if (selectedPath != null) {
                     String fileType = selectedPath.getAbsolutePath().substring(selectedPath.getAbsolutePath().lastIndexOf(".")); //checks if file type is valid
