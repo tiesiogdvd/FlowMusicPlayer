@@ -15,7 +15,7 @@
         app:layout_constraintBaseline_toTopOf="parent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:foreground="@drawable/gradient_library">
+        android:foreground="@drawable/gradient_library_bottom">
 
         <ImageView
             android:id="@+id/libraryImage"
@@ -161,153 +161,250 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/selectionBar"
+        android:id="@+id/selectionBarPanel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="7dp"
-        android:orientation="vertical"
-        android:background="@drawable/selected_action_bar"
-
-        app:layout_constraintBottom_toBottomOf="parent"
-        >
+        app:layout_constraintBottom_toBottomOf="parent">
 
         <LinearLayout
+            android:id="@+id/selectionBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:orientation="horizontal"
-            android:weightSum="10"
-            >
+            android:background="@drawable/selected_action_bar"
+            android:orientation="vertical"
+            android:padding="7dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:visibilityMode="ignore">
 
-            <Space
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_marginLeft="10dp"
+                android:orientation="horizontal"
+                android:weightSum="10">
+
+                <Space
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <CheckBox
+                    android:id="@+id/selectionCheckbox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:buttonTint="@color/drawable_bar" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="5"
+                    android:text="Select all"
+                    android:textColor="@color/drawable_bar"
+                    android:textSize="13dp" />
+
+                <TextView
+                    android:id="@+id/selectionNumber"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:text="Selected 1/245"
+                    android:textColor="@color/drawable_bar"
+                    android:textSize="13dp" />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:animateLayoutChanges="true"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:weightSum="4">
                 />
 
-            <CheckBox
-                android:id="@+id/selectionCheckbox"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:buttonTint="@color/drawable_bar"
-                />
+                <LinearLayout
+                    android:id="@+id/selectionAddToPlaylist"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="10dp"
+                    android:orientation="vertical">
 
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="5"
-                android:text="Select all"
-                android:textColor="@color/drawable_bar"
-                android:textSize="13dp"/>
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_action_playlist"
+                        android:tint="@color/drawable_bar" />
 
-            <TextView
-                android:id="@+id/selectionNumber"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="3"
-                android:textColor="@color/drawable_bar"
-                android:text="Selected 1/245"
-                android:textSize="13dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:minLines="2"
+                        android:text="Add to\nplaylist"
+                        android:textColor="@color/drawable_bar"
+                        android:textSize="10dp" />
+
+                </LinearLayout>
+
+
+
+
+
+
+                <LinearLayout
+                    android:id="@+id/selectionDelete"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="10dp"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_action_playlist"
+                        android:tint="@color/drawable_bar" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:minLines="2"
+                        android:text="Delete"
+                        android:textColor="@color/drawable_bar"
+                        android:textSize="10dp" />
+
+                </LinearLayout>
+
+
+
+
+
+
+
+                <LinearLayout
+                    android:id="@+id/selectionSetAlbumInfo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="10dp"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_action_playlist"
+                        android:tint="@color/drawable_bar" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:minLines="2"
+                        android:text="Set album\ninfo"
+                        android:textColor="@color/drawable_bar"
+                        android:textSize="10dp" />
+
+                </LinearLayout>
+
+
+
+
+
+
+
+                <LinearLayout
+                    android:id="@+id/selectionRemoveFromPlaylist"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="10dp"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_action_playlist"
+                        android:tint="@color/drawable_bar" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:minLines="2"
+                        android:text="Remove from\nplaylist"
+                        android:textColor="@color/drawable_bar"
+                        android:textSize="10dp" />
+                </LinearLayout>
+
+
+
+
+
+
+
+
+                <LinearLayout
+                    android:id="@+id/selectionSetPlaylistCover"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="10dp"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_action_playlist"
+                        android:tint="@color/drawable_bar" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:minLines="2"
+                        android:text="Set playlist\ncover"
+                        android:textColor="@color/drawable_bar"
+                        android:textSize="10dp" />
+
+                </LinearLayout>
+
+
+
+                <LinearLayout
+                    android:id="@+id/selectionRemovePlaylist"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="20dp"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_action_playlist"
+                        android:tint="@color/drawable_bar" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:minLines="2"
+                        android:text="Remove\nplaylist"
+                        android:textColor="@color/drawable_bar"
+                        android:textSize="10dp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
         </LinearLayout>
 
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="4">
-
-
-            <Space
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                />
-
-            <LinearLayout
-                android:id="@+id/selectionAddToPlaylist"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:tint="@color/drawable_bar"
-                    android:src="@drawable/ic_action_playlist"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/drawable_bar"
-                    android:text="Add to playlist"
-                    android:textSize="10dp"/>
-
-            </LinearLayout>
-
-            <Space
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                />
-
-            <LinearLayout
-                android:id="@+id/selectionDelete"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:tint="@color/drawable_bar"
-                    android:src="@drawable/ic_action_playlist"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/drawable_bar"
-                    android:text="Delete"
-                    android:textSize="10dp"/>
-
-            </LinearLayout>
-
-            <Space
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                />
-
-
-            <LinearLayout
-                android:id="@+id/selectionSetAlbumInfo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:tint="@color/drawable_bar"
-                    android:src="@drawable/ic_action_playlist"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/drawable_bar"
-                    android:text="Set album info"
-                    android:textSize="10dp"/>
-
-            </LinearLayout>
-            <Space
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                />
-        </LinearLayout>
     </LinearLayout>
 
 
