@@ -49,6 +49,8 @@ public class Settings {
 
     private static int lastSongIndex;
 
+    private static boolean backgroundMode;
+
 
     public static void setSettings(SharedPreferences sharedPreferences){
 
@@ -66,6 +68,7 @@ public class Settings {
         lastSongRemaining = sharedPreferences.getInt("lastSongRemaining", -1);
         lastSongSource = sharedPreferences.getString("lastSongSource", null);
         lastSongIndex = sharedPreferences.getInt("lastSongIndex", -1);
+        backgroundMode = sharedPreferences.getBoolean("backgroundMode",false);
 
         Settings.sharedPreferences = sharedPreferences;
     }
@@ -108,6 +111,10 @@ public class Settings {
 
     public static String getLastSongSource() {
         return lastSongSource;
+    }
+
+    public static Boolean getBackgroundMode(){
+        return backgroundMode;
     }
 
     public static Boolean isFirstRun(){
@@ -170,5 +177,10 @@ public class Settings {
     public static void setLastSongIndex(int lastSongIndex) {
         Settings.lastSongIndex = lastSongIndex;
         sharedPreferences.edit().putInt("lastSongIndex", lastSongIndex).apply();
+    }
+
+    public static void setBackgroundMode(boolean backgroundMode) {
+        Settings.backgroundMode = backgroundMode;
+        sharedPreferences.edit().putBoolean("backgroundMode", backgroundMode).apply();
     }
 }
