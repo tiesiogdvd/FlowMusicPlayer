@@ -62,14 +62,30 @@
                 android:transitionName="imageBarToPlayer"
                 />
 
-            <TextView
-                android:id="@+id/musicSongNameBar"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:text="Title:"
-                android:textSize="13dp"
-                android:layout_weight="9"/>
+                android:layout_weight="9"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/musicSongNameBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:text="Title:"
+                    android:textColor="@color/drawable_bar"
+                    android:textSize="13dp" />
+
+                <TextView
+                    android:id="@+id/musicSongArtistBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:text="Artist:"
+                    android:textColor="@color/drawable_bar"
+                    android:textSize="9dp" />
+            </LinearLayout>
 
 
             <com.google.android.material.imageview.ShapeableImageView
@@ -83,7 +99,6 @@
                 android:layout_weight="1"
                 />
         </LinearLayout>
-
 
         <LinearLayout
             android:id="@+id/bottomNavbar"
@@ -103,10 +118,6 @@
                 android:padding="8dp"
                 android:src="@drawable/ic_action_navbar_library2"
                 />
-
-
-
-
 
             <com.google.android.material.imageview.ShapeableImageView
 

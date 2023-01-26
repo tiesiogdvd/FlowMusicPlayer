@@ -8,12 +8,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    android:orientation="vertical"
-    android:theme="@style/AppTheme"
-    tools:context=".activities.MainActivity"
     android:background="@drawable/background_list"
     android:fitsSystemWindows="false"
-    >
+    android:orientation="vertical"
+    android:theme="@style/AppTheme"
+    tools:context=".activities.MainActivity">
 
     <ImageView
         android:layout_width="match_parent"
@@ -25,25 +24,22 @@
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragmentContainerView"
         android:name="androidx.navigation.fragment.NavHostFragment"
-        app:defaultNavHost="true"
-        app:navGraph="@navigation/navigation"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_constraintBottom_toTopOf="@+id/navbars"/>
-
+        app:defaultNavHost="true"
+        app:layout_constraintBottom_toTopOf="@+id/navbars"
+        app:navGraph="@navigation/navigation" />
 
 
     <LinearLayout
         android:id="@+id/navbars"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="5dp"
         android:animateLayoutChanges="true"
         android:background="@drawable/main_activity_bar"
         android:orientation="vertical"
-        android:layout_margin="5dp"
         app:layout_constraintBottom_toBottomOf="parent">
-
-
 
 
         <LinearLayout
@@ -62,31 +58,76 @@
                 android:layout_height="40dp"
                 android:background="@color/button"
                 android:scaleType="centerCrop"
-                app:shapeAppearanceOverlay="@style/round"
                 android:transitionName="toMusicPlayer"
-                />
+                app:shapeAppearanceOverlay="@style/round" />
 
-            <TextView
-                android:id="@+id/musicSongNameBar"
+
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:text="Title:"
-                android:textColor="@color/drawable_bar"
-                android:textSize="13dp"
-                android:layout_weight="9"/>
+                android:layout_weight="9"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/musicSongNameBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:text="Title:"
+                    android:textColor="@color/drawable_bar"
+                    android:textSize="13dp" />
+
+                <TextView
+                    android:id="@+id/musicSongArtistBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:text="Artist:"
+                    android:textColor="@color/drawable_bar"
+                    android:textSize="9dp" />
+            </LinearLayout>
 
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/playButtonBar"
+                android:layout_width="35dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:src="@drawable/ic_action_play"
+                android:tint="@color/drawable_bar"
+                app:neumorph_shadowElevation="2dp" />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="15dp"
+            android:layout_marginVertical="5dp"
+            android:gravity="center_vertical"
+            android:weightSum="10">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_weight="9"
+                android:text="Title:"
+                android:textColor="@color/drawable_bar"
+                android:textSize="13dp" />
+
+
+            <com.google.android.material.imageview.ShapeableImageView
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_gravity="center_vertical"
-                android:tint="@color/drawable_bar"
-                android:src="@drawable/ic_action_play"
-                app:neumorph_shadowElevation="2dp"
                 android:layout_weight="1"
-                />
+                android:src="@drawable/ic_action_mix"
+                android:tint="@color/drawable_bar"
+                app:neumorph_shadowElevation="2dp" />
 
         </LinearLayout>
 
@@ -94,7 +135,7 @@
             android:id="@+id/bottomNavbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="10dp"
+            android:layout_marginHorizontal="15dp"
             android:layout_marginBottom="-8dp"
             android:gravity="center"
             android:visibility="visible">
@@ -103,12 +144,11 @@
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/openLibrary"
                 style="@style/AppTheme"
-                android:transitionName="imageBarToPlayer"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:padding="12dp"
                 android:src="@drawable/ic_action_navbar_library2"
-                />
+                android:transitionName="imageBarToPlayer" />
 
 
             <Space
@@ -120,12 +160,11 @@
             <com.google.android.material.imageview.ShapeableImageView
 
                 style="@style/AppTheme"
-                android:tint="@color/drawable_bar"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:padding="14dp"
                 android:src="@drawable/ic_action_navbar_equalizer1"
-                />
+                android:tint="@color/drawable_bar" />
 
             <Space
                 android:layout_width="wrap_content"
@@ -136,12 +175,11 @@
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/openSettings"
                 style="@style/AppTheme"
-                android:tint="@color/drawable_bar"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:padding="15dp"
                 android:src="@drawable/ic_action_navbar_settings"
-                />
+                android:tint="@color/drawable_bar" />
 
 
         </LinearLayout>
@@ -152,14 +190,14 @@
     <View
         android:layout_width="100dp"
         android:layout_height="3.5dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginHorizontal="50dp"
+        android:layout_marginBottom="1dp"
+        android:alpha="0.5"
+        android:background="@drawable/round"
         app:layout_constraintBottom_toBottomOf="@id/navbars"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginBottom="1dp"
-        android:background="@drawable/round"
-        android:alpha="0.5"
-        android:layout_marginHorizontal="50dp"
-        android:layout_gravity="center_horizontal"/>
+        app:layout_constraintRight_toRightOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
