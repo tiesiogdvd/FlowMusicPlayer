@@ -102,7 +102,8 @@ public class FragmentLibrary extends Fragment {
             if(playlistsViewModel!=null){
                 playlists.clear();
                 playlists.addAll(playlistsViewModel);
-                //adapter.notifyDataSetChanged(); //Adapter will reconstruct the views on playlist LiveData changes in ViewModel
+                playlists.sort(Playlist.titleComparator);
+                adapter.notifyDataSetChanged(); //Adapter will reconstruct the views on playlist LiveData changes in ViewModel
             }
         });
     }
@@ -216,7 +217,6 @@ public class FragmentLibrary extends Fragment {
         int orientation = getContext().getResources().getConfiguration().orientation;
         if(orientation == Configuration.ORIENTATION_LANDSCAPE){recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));}
         if(orientation == Configuration.ORIENTATION_PORTRAIT){recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));}
-
         recyclerView.setAdapter(adapter);
     }
 
