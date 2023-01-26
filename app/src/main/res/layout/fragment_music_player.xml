@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activities.MainActivity"
-    android:backgroundTint="@null"
+
     android:id="@+id/layoutID"
     android:orientation="vertical"
     style="@style/light"
@@ -15,14 +15,43 @@
     android:clipToPadding="false"
     android:clipToOutline="false">
 
+
+
+
     <ImageView
         android:id="@+id/layoutBackground"
-
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/background"
         android:layout_gravity="center"
         android:adjustViewBounds="true"
         android:scaleType="fitXY" />
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutBackgroundGradientWrapper"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="450dp">
+
+        <ImageView
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:id="@+id/layoutBackgroundGradient"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+ />
+
+        <View
+            android:id="@+id/layoutGradient"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+
+            app:layout_constraintBottom_toBottomOf="parent"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
     <LinearLayout
@@ -35,6 +64,9 @@
         app:layout_constraintTop_toTopOf="parent"
         android:clipChildren="false"
         android:clipToPadding="false">
+
+
+
 
         <!--<androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
@@ -52,6 +84,7 @@
 
             <soup.neumorphism.NeumorphImageButton
                 android:id="@+id/musicImage"
+                android:visibility="invisible"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 app:layout_constraintDimensionRatio="1:1"
@@ -63,7 +96,7 @@
                 android:background="@drawable/round"
                 android:padding="25dp"
                 android:scaleType="fitCenter"
-                android:src="@drawable/ic_action_note"
+                android:src="@drawable/ic_group_38"
                 app:neumorph_lightSource="leftTop"
                 app:neumorph_shadowElevation="3dp"
                 app:neumorph_shapeType="pressed"
@@ -118,6 +151,8 @@
             android:outlineSpotShadowColor="@color/black"
             app:indicatorColor="@color/black" />
 
+
+
         <TextView
             android:id="@+id/musicSongName"
             android:layout_width="wrap_content"
@@ -148,10 +183,37 @@
             android:clipChildren="false"
             android:clipToPadding="false">
 
+
+            <com.masoudss.lib.WaveformSeekBar
+                android:animateLayoutChanges="true"
+                android:id="@+id/visualizer"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_width="wrap_content"
+                android:layout_height="150dp"
+
+                app:wave_width="6dp"
+                app:wave_gap="3dp"
+                app:wave_min_height="5dp"
+                app:wave_corner_radius="5dp"
+                app:wave_background_color="@color/white"
+                app:wave_progress_color="@color/backgroundNavbar"
+
+                app:wave_gravity="center"
+
+                app:wave_padding_top="2dp"
+                app:wave_padding_Bottom="2dp"
+                app:wave_padding_right="2dp"
+                app:wave_padding_left="2dp" />
+
+
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-
                 android:gravity="center"
                 android:orientation="horizontal"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -163,52 +225,173 @@
                 android:clipToPadding="false"
                 >
 
-                <ImageButton
-                    android:id="@+id/playlistButton"
-                    android:background="@drawable/button_selector_1"
-                    android:theme="@style/AppTheme"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    android:src="@drawable/ic_action_playlist"/>
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:alpha="0.9"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:background="@drawable/button_round_4"
+                        />
+
+                    <ImageButton
+                        android:id="@+id/playlistButton"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:background="@drawable/button_selector_1"
+                        android:theme="@style/AppTheme"
+                        android:tint="@color/text"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:src="@drawable/ic_action_playlist"
+                        tools:ignore="UseAppTint" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:alpha="0.9"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:background="@drawable/button_round_4"
+                        />
+
+                    <ImageButton
+                        android:id="@+id/lastButton"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:background="@drawable/button_selector"
+                        android:theme="@style/AppTheme"
+                        android:tint="@color/text"
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
+                        android:src="@drawable/ic_action_previous"
+                        tools:ignore="UseAppTint" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:layout_width="63dp"
+                        android:layout_height="63dp"
+                        android:alpha="0.9"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:background="@drawable/button_round_4"
+                        />
+
+                    <ImageButton
+                        android:id="@+id/playButton"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:background="@drawable/button_selector"
+                        android:theme="@style/AppTheme"
+                        android:tint="@color/text"
+                        android:layout_width="90dp"
+                        android:elevation="10dp"
+                        android:layout_height="90dp"
+                        android:src="@drawable/ic_action_play"
+                        tools:ignore="UseAppTint" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-                <ImageButton
-                    android:id="@+id/lastButton"
-                    android:background="@drawable/button_selector"
-                    android:theme="@style/AppTheme"
-                    android:layout_width="70dp"
-                    android:layout_height="70dp"
-                    android:src="@drawable/ic_action_previous" />
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:alpha="0.9"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:background="@drawable/button_round_4"
+                        />
+
+                    <ImageButton
+                        android:id="@+id/nextButton"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:background="@drawable/button_selector"
+                        android:tint="@color/text"
+                        android:theme="@style/AppTheme"
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
+
+                        android:src="@drawable/ic_action_next"
+                        tools:ignore="UseAppTint" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-                <ImageButton
-                    android:id="@+id/playButton"
-                    android:background="@drawable/button_selector"
-                    android:theme="@style/AppTheme"
-                    android:layout_width="90dp"
-                    android:elevation="10dp"
-                    android:layout_height="90dp"
-                    android:src="@drawable/ic_action_play"/>
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
 
-                <ImageButton
-                    android:id="@+id/nextButton"
-                    android:background="@drawable/button_selector"
-                    android:theme="@style/AppTheme"
-                    android:layout_width="70dp"
-                    android:layout_height="70dp"
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:alpha="0.9"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:background="@drawable/button_round_4"
+                        />
 
-                    android:src="@drawable/ic_action_next" />
+                    <ImageButton
+                        android:id="@+id/favoriteButton"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:background="@drawable/button_selector_1"
+                        android:tint="@color/text"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:src="@drawable/ic_action_favorite"
+                        tools:ignore="UseAppTint" />
 
-                <ImageButton
-                    android:id="@+id/favoriteButton"
-                    android:background="@drawable/button_selector_1"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
-                    android:src="@drawable/ic_action_favorite"/>
+
+
+
 
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
         <Space
             android:layout_width="wrap_content"
             android:layout_height="0dp"
