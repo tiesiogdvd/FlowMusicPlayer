@@ -3,6 +3,8 @@ package eu.tutorial.androidapplicationfilesystem.classes;
 //Static class to be used for converting dates, paths and etc.
 
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 public class TypeConverter {
@@ -28,6 +30,14 @@ public class TypeConverter {
 
     public static String getFilePath(String file){
         return new File(file).getParent();
+    }
+
+    public static String getDateString(){
+        Date date = new Date();
+        String dateFormat = "dd/MM/Y hh:mm:ss a";
+        SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+        String formattedDate = sdf.format(date);
+        return formattedDate;
     }
 
 }
