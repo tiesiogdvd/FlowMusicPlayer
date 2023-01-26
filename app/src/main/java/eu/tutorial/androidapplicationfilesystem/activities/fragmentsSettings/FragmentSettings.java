@@ -25,9 +25,12 @@ public class FragmentSettings extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         FragmentSettingsAudioDiscovery fragmentSettingsAudioDiscovery = new FragmentSettingsAudioDiscovery();
+        FragmentSettingsLooks fragmentSettingsLooks = new FragmentSettingsLooks();
         String fragmentSettingsTag = "fragmentSettingsAudioDiscovery";
+        String fragmentSettingsLooksTag = "fragmentSettingsLooks";
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         LinearLayout linearLayout = view.findViewById(R.id.settingsDiscovery);
+        LinearLayout linearLayout1 = view.findViewById(R.id.settingsLooks);
         linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -35,6 +38,18 @@ public class FragmentSettings extends Fragment {
                         .setCustomAnimations(R.anim.pop_in, R.anim.fade_out, R.anim.pop_in, R.anim.fade_out)
                         .replace(R.id.settingsFragment, fragmentSettingsAudioDiscovery, fragmentSettingsTag)
                         .addToBackStack(fragmentSettingsTag)
+                        //.addSharedElement(imageView ,"toMusicPlayer")
+                        .commit();
+            }
+        });
+
+        linearLayout1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fragmentManager.beginTransaction()
+                        .setCustomAnimations(R.anim.pop_in, R.anim.fade_out, R.anim.pop_in, R.anim.fade_out)
+                        .replace(R.id.settingsFragment, fragmentSettingsLooks, fragmentSettingsLooksTag)
+                        .addToBackStack(fragmentSettingsLooksTag)
                         //.addSharedElement(imageView ,"toMusicPlayer")
                         .commit();
             }
