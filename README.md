@@ -2,6 +2,9 @@
 
 This is an application for my own purposes to learn both java and android native development.
 
+Currently it is being recreated in Kotlin with modern practices such as MVVM, Jetpack Compose, Dagger-Hilt DI, Media3, States, Coroutines and etc.:
+https://github.com/tiesiogdvd/FlowMusicPlayerKotlin
+
 ![Group 317](https://user-images.githubusercontent.com/116734709/215271992-57bdf85f-ee37-4d6e-b431-5e828748c14e.png)
 
 
